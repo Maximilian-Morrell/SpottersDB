@@ -8,6 +8,8 @@ namespace SpottersDB_BackEnd
         {
             var builder = WebApplication.CreateBuilder(args);
             var app = builder.Build();
+
+            // Creating an object from the SQLController Class & tests the connection (Checks if DB exists)
             SQLController sqlcontroller = new SQLController();
             sqlcontroller.ConnectToDB("Maximilian_Morrell_3IT_2024_25");
 

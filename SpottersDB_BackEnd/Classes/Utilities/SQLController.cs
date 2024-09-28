@@ -4,9 +4,11 @@ namespace SpottersDB_BackEnd.Classes.Utilities
 {
     public class SQLController
     {
+        // Instances for reuse
         private SqlConnection con = new SqlConnection("server = (localdb)\\MSSQLLocalDB; integrated security = false;");
         private SqlCommand cmd = null;
 
+        // Checks if DB Exists
         public void ConnectToDB(string DatabaseName)
         {
             try
@@ -18,11 +20,13 @@ namespace SpottersDB_BackEnd.Classes.Utilities
             }
             catch (Exception e)
             {
+                // DB does not Exists
                 CreateDatabase(DatabaseName);
             }
             con.Close();
         }
 
+        // Creates the DB
         private void CreateDatabase(string DatabaseName)
         {
             if(con.State == System.Data.ConnectionState.Open)
