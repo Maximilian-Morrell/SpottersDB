@@ -116,7 +116,7 @@ namespace SpottersDB_BackEnd.Classes.Structure
         }
 
         // Full Constructor
-        public Airport(string ICAO, string IATA, string Name, string Description, string City, int CountryID)
+        public Airport(string ICAO = "", string IATA = "", string Name = "", string Description = "", string City = "", int CountryID = )
         {
             this.ICAO_Code = ICAO;
             this.IATA_Code = IATA;
