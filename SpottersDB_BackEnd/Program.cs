@@ -15,7 +15,8 @@ namespace SpottersDB_BackEnd
             sqlcontroller.ConnectToDB("Maximilian_Morrell_3IT_2024_25");
 
             // Running all of the API Handler
-            API_Get getAPI = new API_Get(app);
+            API_GET getAPI = new API_GET(app, sqlcontroller);
+            API_POST postAPI = new API_POST(app, sqlcontroller);
 
 
             app.MapGet("/", () => "Hello World!");

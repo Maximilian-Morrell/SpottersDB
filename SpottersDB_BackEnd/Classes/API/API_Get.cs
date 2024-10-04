@@ -1,8 +1,10 @@
-﻿namespace SpottersDB_BackEnd.Classes.API
+﻿using SpottersDB_BackEnd.Classes.Utilities;
+
+namespace SpottersDB_BackEnd.Classes.API
 {
-    public class API_Get : API_Base
+    public class API_GET : API_Base
     {
-        public API_Get(WebApplication app) : base(app)
+        public API_GET(WebApplication app, SQLController sqlcontroller) : base(app, sqlcontroller)
         {
 
         }

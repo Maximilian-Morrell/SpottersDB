@@ -1,4 +1,5 @@
 ﻿using Microsoft.Data.SqlClient;
+using SpottersDB_BackEnd.Classes.Structure;
 
 namespace SpottersDB_BackEnd.Classes.Utilities
 {
@@ -11,6 +12,7 @@ namespace SpottersDB_BackEnd.Classes.Utilities
         // Checks if DB Exists
         public void ConnectToDB(string DatabaseName)
         {
+            cmd = new SqlCommand("", con);
             try
             {
                 con.Open();
@@ -29,18 +31,43 @@ namespace SpottersDB_BackEnd.Classes.Utilities
         // Creates the DB
         private void CreateDatabase(string DatabaseName)
         {
-            if(con.State == System.Data.ConnectionState.Open)
+            try
             {
+                if (con.State == System.Data.ConnectionState.Open)
+                {
+                    con.Close();
+                }
+                con.ConnectionString = "server = (localdb)\\MSSQLLocalDB; integrated security = false;";
+                con.Open();
+                cmd.CommandText = "CREATE DATABASE " + DatabaseName;
+                cmd.ExecuteNonQuery();
+                con.ChangeDatabase(DatabaseName);
+                cmd.CommandText = "CREATE TABLE Countries (CountryID INT NOT NULL IDENTITY, ICAOCode char(10), CountryName char(255), PRIMARY KEY(CountryID))";
+                cmd.ExecuteNonQuery();
                 con.Close();
+                ConnectToDB(DatabaseName);
             }
-            con.ConnectionString = "server = (localdb)\\MSSQLLocalDB; integrated security = false;";
-            con.Open();
-            cmd = new SqlCommand("CREATE DATABASE " +  DatabaseName, con);
-            cmd.ExecuteNonQuery();
-            con.Close();
-            ConnectToDB(DatabaseName);
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+            }
         }
 
+        public void AddCountry(Country country)
+        {
+            try
+            {
+                con.Open();
+                cmd.CommandText = @$"INSERT INTO Countries (ICAOCode, CountryName) VALUES ('{country.ICAO_Code}', '{country.Name}')";
+                cmd.ExecuteNonQuery();
+                con.Close();
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e.Message);
+            }
 
+            con.Close();
+        }
     }
 }
