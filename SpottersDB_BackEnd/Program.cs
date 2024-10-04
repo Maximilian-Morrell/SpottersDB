@@ -1,3 +1,4 @@
+using SpottersDB_BackEnd.Classes.API;
 using SpottersDB_BackEnd.Classes.Utilities;
 
 namespace SpottersDB_BackEnd
@@ -13,8 +14,13 @@ namespace SpottersDB_BackEnd
             SQLController sqlcontroller = new SQLController();
             sqlcontroller.ConnectToDB("Maximilian_Morrell_3IT_2024_25");
 
+            // Running all of the API Handler
+            API_Get getAPI = new API_Get(app);
+
 
             app.MapGet("/", () => "Hello World!");
+            // Fallback if route is not found
+            app.MapFallback(() => Results.NotFound(StatusCodes.Status404NotFound + " - API Route Not Found"));
 
             app.Run();
         }
