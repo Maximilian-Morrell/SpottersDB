@@ -16,7 +16,7 @@
             }
         }
         
-        private string ICAO
+        public string ICAO
         {
             get
             {
@@ -28,7 +28,7 @@
             }
         }
 
-        private string IATA
+        public string IATA
         {
             get
             {
@@ -40,7 +40,7 @@
             }
         }
 
-        private string Name
+        public string Name
         {
             get
             {

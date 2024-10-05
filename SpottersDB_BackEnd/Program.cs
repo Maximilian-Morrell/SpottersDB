@@ -12,7 +12,7 @@ namespace SpottersDB_BackEnd
 
             // Creating an object from the SQLController Class & tests the connection (Checks if DB exists)
             SQLController sqlcontroller = new SQLController();
-            sqlcontroller.ConnectToDB("Maximilian_Morrell_3IT_2024_25");
+            sqlcontroller.ConnectToDB("Maximilian_Morrell_3IT_2024_25", app);
 
             // Running all of the API Handler
             API_GET getAPI = new API_GET(app, sqlcontroller);

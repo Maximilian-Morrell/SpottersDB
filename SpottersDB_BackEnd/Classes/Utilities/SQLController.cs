@@ -8,13 +8,16 @@ namespace SpottersDB_BackEnd.Classes.Utilities
         // Instances for reuse
         private SqlConnection con = new SqlConnection("server = (localdb)\\MSSQLLocalDB; integrated security = false;");
         private SqlCommand cmd = null;
+        private WebApplication app;
 
         // Checks if DB Exists
-        public void ConnectToDB(string DatabaseName)
+        public void ConnectToDB(string DatabaseName, WebApplication app)
         {
             cmd = new SqlCommand("", con);
             try
             {
+                // Access the WebApp for logger & stuff
+                this.app = app;
                 // Trys to connect to DB
                 con.Open();
                 con.ChangeDatabase(DatabaseName);
@@ -44,21 +47,27 @@ namespace SpottersDB_BackEnd.Classes.Utilities
                 // Creates the DB
                 cmd.CommandText = "CREATE DATABASE " + DatabaseName + ";";
                 cmd.ExecuteNonQuery();
+                app.Logger.LogInformation("Created the Database: " + DatabaseName);
                 con.ChangeDatabase(DatabaseName);
                 // Creates the Countries Table
-                cmd.CommandText = "CREATE TABLE Countries (CountryID INT NOT NULL PRIMARY KEY IDENTITY, ICAOCode char(10), CountryName char(255));";
+                cmd.CommandText = "CREATE TABLE Countries (CountryID INT NOT NULL PRIMARY KEY IDENTITY, ICAOCode char(10), CountryName text);";
                 cmd.ExecuteNonQuery();
+                app.Logger.LogInformation("Created the Table Countries");
                 // Creates the Airports Table
-                cmd.CommandText = "Create TABLE Airports (AirpotID INT NOT NULL PRIMARY KEY IDENTITY, ICAOCode char(4), IATACode char(3), AirportName char(255), AirportDescription text, AirportCity char(255), CountryID int, CONSTRAINT [FK_Airport_Country] FOREIGN KEY ([CountryID]) REFERENCES [Countries](CountryID));";
+                cmd.CommandText = "Create TABLE Airports (AirpotID INT NOT NULL PRIMARY KEY IDENTITY, ICAOCode char(4), IATACode char(3), AirportName text, AirportDescription text, AirportCity text, CountryID int, CONSTRAINT [FK_Airport_Country] FOREIGN KEY ([CountryID]) REFERENCES [Countries](CountryID));";
                 cmd.ExecuteNonQuery();
-                // Creates the Airline Object
-
+                app.Logger.LogInformation("Created the Table Airports");
+                // Creates the Airline Table
+                cmd.CommandText = "Create TABLE Airlines (AirlineID INT NOT NULL PRIMARY KEY IDENTITY, ICAOCode char(10), IATACode char(10), AirlineName text, AirlineLocation text);";
+                cmd.ExecuteNonQuery();
+                app.Logger.LogInformation("Created the Table Airlines");
+                // Create the AircraftType Table
                 con.Close();
-                ConnectToDB(DatabaseName);
+                ConnectToDB(DatabaseName, app);
             }
             catch (Exception e)
             {
-                Console.WriteLine(e);
+                app.Logger.LogError(e.Message);
             }
         }
 
@@ -67,13 +76,14 @@ namespace SpottersDB_BackEnd.Classes.Utilities
             try
             {
                 con.Open();
-                cmd.CommandText = $@"INSERT INTO Countries (ICAOCode, CountryName) VALUES ('{country.ICAO_Code}', '{country.Name}')";
+                cmd.CommandText = $"INSERT INTO Countries (ICAOCode, CountryName) VALUES ('{country.ICAO_Code}', '{country.Name}')";
                 cmd.ExecuteNonQuery();
+                app.Logger.LogInformation("Saved a Country Object");
                 con.Close();
             }
             catch (Exception e)
             {
-                Console.WriteLine(e.Message);
+                app.Logger.LogError(e.Message);
             }
 
             con.Close();
@@ -86,11 +96,29 @@ namespace SpottersDB_BackEnd.Classes.Utilities
                 con.Open();
                 cmd.CommandText = $"INSERT INTO Airports (ICAOCode, IATACode, AirportName, AirportDescription, AirportCity, CountryID) VALUES ('{airport.ICAO_Code}', '{airport.IATA_Code}', '{airport.Name}', '{airport.Description}', '{airport.City}', '{airport.CountryID}')";
                 cmd.ExecuteNonQuery();
+                app.Logger.LogInformation("Saved an Airport Object");
                 con.Close();
             }
             catch (Exception e)
             {
-                Console.WriteLine(e.Message);
+                app.Logger.LogError(e.Message);
+            }
+            con.Close();
+        }
+
+        public void AddAirline(Airline airline)
+        {
+            try
+            {
+                con.Open();
+                cmd.CommandText = $"INSERT INTO Airlines (ICAOCode, IATACode, AirlineName, AirlineLocation) VALUES ('{airline.ICAO}', '{airline.IATA}', '{airline.Name}', '{airline.Location}');";
+                cmd.ExecuteNonQuery();
+                app.Logger.LogInformation("Saved an Airline Object");
+                con.Close();
+            }
+            catch (Exception e)
+            {
+                app.Logger.LogError(e.Message);
             }
             con.Close();
         }
