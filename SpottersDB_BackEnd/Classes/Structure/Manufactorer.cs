@@ -4,7 +4,7 @@
     {
         private int _ID;
         private string _Name;
-        private string _Location;
+        private int _Region;
 
         public int ID
         {
@@ -30,15 +30,15 @@
             }
         }
 
-        public string Location
+        public int Region
         {
             get
             {
-                return _Location;
+                return _Region;
             }
             set
             {
-                _Location = value;
+                _Region = value;
             }
         }
 
@@ -47,10 +47,10 @@
 
         }
 
-        public Manufactorer(string Name, string Location)
+        public Manufactorer(string Name, int Region)
         {
             this.Name = Name;
-            this.Location = Location;
+            this.Region = Region;
         }
     }
 }

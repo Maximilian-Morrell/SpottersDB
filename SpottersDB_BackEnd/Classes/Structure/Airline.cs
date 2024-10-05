@@ -6,7 +6,7 @@
         private string _ICAO;
         private string _IATA;
         private string _Name;
-        private string _Location;
+        private int _Region;
 
         public int ID
         {
@@ -52,15 +52,15 @@
             }
         }
 
-        public string Location
+        public int Region
         {
             get
             {
-                return _Location;
+                return _Region;
             }
             set
             {
-                _Location = value;
+                _Region = value;
             }
         }
 
@@ -69,12 +69,12 @@
 
         }
 
-        public Airline(string ICAO, string IATA, string Name, string Location)
+        public Airline(string ICAO, string IATA, string Name, int Region)
         {
             this.ICAO = ICAO;
             this.IATA = IATA;
             this.Name = Name;
-            this.Location = Location;
+            this.Region = Region;
         }
     }
 }
