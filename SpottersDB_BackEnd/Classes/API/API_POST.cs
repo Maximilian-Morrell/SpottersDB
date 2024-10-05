@@ -27,6 +27,7 @@ namespace SpottersDB_BackEnd.Classes.API
             app.MapPost("/Post/Manufactorer", (HttpRequest req) => Post_Manufactorer(req));
 
             // Post AircraftType Route
+            app.MapPost("/Post/AircraftType", (HttpRequest req) => Post_AircraftType(req));
 
             // Post Aircraft Route
 
@@ -84,6 +85,20 @@ namespace SpottersDB_BackEnd.Classes.API
                 IFormCollection form = await req.ReadFormAsync();
                 Manufactorer manufactorer = new Manufactorer(form["Name"], Convert.ToInt32(form["Region"]));
                 sqlcontroller.AddManufactorer(manufactorer);
+            }
+            catch (Exception e)
+            {
+
+            }
+        }
+
+        private async void Post_AircraftType(HttpRequest req)
+        {
+            try
+            {
+                IFormCollection form = await req.ReadFormAsync();
+                AircraftType aircraftType = new AircraftType(form["ICAO"], form["FullName"], form["NickName"], Convert.ToInt32(form["ManufactorerID"]));
+                sqlcontroller.AddAircraftType(aircraftType);
             }
             catch (Exception e)
             {

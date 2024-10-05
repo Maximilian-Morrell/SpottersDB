@@ -69,11 +69,12 @@
 
         }
 
-        public AircraftType(string ICAOCode, string FullName, int ManufactorerID)
+        public AircraftType(string ICAOCode, string FullName, string NickName, int ManufactorerID)
         {
             this.ICAOCode = ICAOCode;
             this.FullName = FullName;
             this.ManufactorerID = ManufactorerID;
+            this.NickName = NickName;
         }
     }
 }

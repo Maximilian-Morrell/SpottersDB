@@ -65,6 +65,10 @@ namespace SpottersDB_BackEnd.Classes.Utilities
                 cmd.CommandText = "CREATE TABLE Manufactorers (ManufactorerID int NOT NULL PRIMARY KEY IDENTITY, ManufactorerName text, ManufactorerRegion int, CONSTRAINT [FK_Manufactorer_Country] FOREIGN KEY ([ManufactorerRegion]) REFERENCES [Countries](CountryID));";
                 cmd.ExecuteNonQuery();
                 app.Logger.LogInformation("Created the Table Manufactorers");
+                // Create the AircraftType Table
+                cmd.CommandText = "CREATE TABLE AircraftTypes (AircraftTypeID int NOT NULL PRIMARY KEY IDENTITY, AircraftTypeICAO char(10), AircraftTypeName text, AircraftTypeNickName text, AircraftTypeManufactorerID int, CONSTRAINT [FK_AircraftType_Manufactorer] FOREIGN KEY ([AircraftTypeManufactorerID]) REFERENCES [Manufactorers](ManufactorerID));";
+                cmd.ExecuteNonQuery();
+                app.Logger.LogInformation("Created the Table AircraftTypes");
                 con.Close();
                 ConnectToDB(DatabaseName, app);
             }
@@ -81,7 +85,7 @@ namespace SpottersDB_BackEnd.Classes.Utilities
                 con.Open();
                 cmd.CommandText = $"INSERT INTO Countries (CountryICAOCode, CountryName) VALUES ('{country.ICAO_Code}', '{country.Name}')";
                 cmd.ExecuteNonQuery();
-                app.Logger.LogInformation("Saved a Country Object");
+                app.Logger.LogInformation("Saved a Country Object", country);
                 con.Close();
             }
             catch (Exception e)
@@ -99,7 +103,7 @@ namespace SpottersDB_BackEnd.Classes.Utilities
                 con.Open();
                 cmd.CommandText = $"INSERT INTO Airports (AirportICAOCode, AirportIATACode, AirportName, AirportDescription, AirportCity, CountryID) VALUES ('{airport.ICAO_Code}', '{airport.IATA_Code}', '{airport.Name}', '{airport.Description}', '{airport.City}', '{airport.CountryID}')";
                 cmd.ExecuteNonQuery();
-                app.Logger.LogInformation("Saved an Airport Object");
+                app.Logger.LogInformation("Saved an Airport Object", airport);
                 con.Close();
             }
             catch (Exception e)
@@ -116,7 +120,7 @@ namespace SpottersDB_BackEnd.Classes.Utilities
                 con.Open();
                 cmd.CommandText = $"INSERT INTO Airlines (AirlineICAOCode, AirlineIATACode, AirlineName, AirlineRegion) VALUES ('{airline.ICAO}', '{airline.IATA}', '{airline.Name}', '{airline.Region}');";
                 cmd.ExecuteNonQuery();
-                app.Logger.LogInformation("Saved an Airline Object");
+                app.Logger.LogInformation("Saved an Airline Object", airline);
                 con.Close();
             }
             catch (Exception e)
@@ -133,13 +137,30 @@ namespace SpottersDB_BackEnd.Classes.Utilities
                 con.Open();
                 cmd.CommandText = $"INSERT INTO Manufactorers (ManufactorerName, ManufactorerRegion) VALUES ('{manufactorer.Name}','{manufactorer.Region}');";
                 cmd.ExecuteNonQuery();
-                app.Logger.LogInformation("Saved a Manufactorer Object");
+                app.Logger.LogInformation("Saved a Manufactorer Object", manufactorer);
+                con.Close();
             }
             catch (Exception e)
             {
                 app.Logger.LogError(e.Message);
             }
             con.Close();
+        }
+
+        public void AddAircraftType(AircraftType aircraftType)
+        {
+            try
+            {
+                con.Open();
+                cmd.CommandText = $"INSERT INTO AircraftTypes (AircraftTypeICAO, AircraftTypeName, AircraftTypeNickName, AircraftTypeManufactorerID) VALUES ('{aircraftType.ICAOCode}', '{aircraftType.FullName}', '{aircraftType.NickName}', '{aircraftType.ManufactorerID}');";
+                cmd.ExecuteNonQuery();
+                app.Logger.LogInformation("Saved an AircraftType Object", aircraftType);
+                con.Close();
+            }
+            catch (Exception e)
+            {
+                app.Logger.LogError(e.Message);
+            }
         }
     }
 }
