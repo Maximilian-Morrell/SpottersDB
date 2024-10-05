@@ -44,7 +44,7 @@ namespace SpottersDB_BackEnd.Classes.Structure
         {
             get
             {
-                return _ICAO_Code;
+                return _IATA_Code;
             }
             set
             {
