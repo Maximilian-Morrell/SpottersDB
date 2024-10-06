@@ -83,6 +83,10 @@ namespace SpottersDB_BackEnd.Classes.Utilities
                 cmd.CommandText = "CREATE TABLE Aircrafts (AircraftID int NOT NULL PRIMARY KEY IDENTITY, AircraftRegistration char(6), AircraftDescription text, AircraftTypeID int, AircraftCountryID int, AircraftAirlineID int, CONSTRAINT [FK_Aircraft_AircraftType] FOREIGN KEY ([AircraftTypeID]) REFERENCES [AircraftTypes](AircraftTypeID), CONSTRAINT [FK_Aircraft_Country] FOREIGN KEY ([AircraftCountryID]) REFERENCES [Countries](CountryID), CONSTRAINT [FK_Aircraft_Airline] FOREIGN KEY ([AircraftAirlineID]) REFERENCES [Airlines](AirlineID));";
                 cmd.ExecuteNonQuery();
                 app.Logger.LogInformation("Created the Table Aircrafts");
+                // Create Spotting Trip Table
+                cmd.CommandText = "CREATE TABLE SpottingTrips (SpottingTripID int NOT NULL PRIMARY KEY IDENTITY, SpottingTripStart datetime2(0), SpottingTripEnd datetime2(0), SpottingTripName text, SpottingTripDescription text);";
+                cmd.ExecuteNonQuery();
+                app.Logger.LogInformation("Created the Table SpottingTrips");
                 con.Close();
                 ConnectToDB(DatabaseName, app);
             }
@@ -185,11 +189,30 @@ namespace SpottersDB_BackEnd.Classes.Utilities
                 cmd.CommandText = $"INSERT INTO Aircrafts (AircraftRegistration, AircraftDescription, AircraftTypeID, AircraftCountryID, AircraftAirlineID) VALUES('{aircraft.Registration}', '{aircraft.Description}', '{aircraft.TypeID}', '{aircraft.CountryID}', '{aircraft.AirlineID}');";
                 cmd.ExecuteNonQuery();
                 app.Logger.LogInformation("Saved an Aircraft Object", aircraft);
+                con.Close();
             }
             catch (Exception e)
             {
                 app.Logger.LogError(e.Message);
             }
+            con.Close();
+        }
+
+        public void AddSpottingTrip(SpottingTrip spottingTrip)
+        {
+            try
+            {
+                con.Open();
+                cmd.CommandText = $"INSERT INTO SpottingTrips (SpottingTripStart, SpottingTripEnd, SpottingTripName, SpottingTripDescription) VALUES ('{spottingTrip.Start.ToString("yyyy-MM-dd HH:mm:ss")}', '{spottingTrip.End.ToString("yyyy-MM-dd HH:mm:ss")}', '{spottingTrip.Name}', '{spottingTrip.Description}');";
+                cmd.ExecuteNonQuery();
+                app.Logger.LogInformation("Saved a SpottingTrip Object", spottingTrip);
+                con.Close();
+            }
+            catch (Exception e)
+            {
+                app.Logger.LogError(e.Message);
+            }
+            con.Close();
         }
     }
 }

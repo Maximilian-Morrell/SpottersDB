@@ -33,6 +33,7 @@ namespace SpottersDB_BackEnd.Classes.API
             app.MapPost("/Post/Aircraft", (HttpRequest req) => Post_Aircraft(req));
 
             // Post SpottingTrip Route
+            app.MapPost("/Post/SpottingTrip", (HttpRequest req) => Post_SpottingTrip(req));
 
             // Post SpottingPicture Route
         }
@@ -114,6 +115,22 @@ namespace SpottersDB_BackEnd.Classes.API
                 IFormCollection form = await req.ReadFormAsync();
                 Aircraft aircraft = new Aircraft(form["Registration"], form["Description"], Convert.ToInt32(form["TypeID"]), Convert.ToInt32(form["CountryID"]), Convert.ToInt32(form["AirlineID"]));
                 sqlcontroller.AddAircraft(aircraft);
+            }
+            catch (Exception e)
+            {
+
+            }
+        }
+
+        private async void Post_SpottingTrip(HttpRequest req)
+        {
+
+            /// ToDo: Linking Table
+            try
+            {
+                IFormCollection form = await req.ReadFormAsync();
+                SpottingTrip spottingTrip = new SpottingTrip(Convert.ToDateTime(form["Start"]), Convert.ToDateTime(form["End"]), form["Name"], form["Description"]);
+                sqlcontroller.AddSpottingTrip(spottingTrip);
             }
             catch (Exception e)
             {
