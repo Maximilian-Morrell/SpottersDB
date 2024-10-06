@@ -30,6 +30,7 @@ namespace SpottersDB_BackEnd.Classes.API
             app.MapPost("/Post/AircraftType", (HttpRequest req) => Post_AircraftType(req));
 
             // Post Aircraft Route
+            app.MapPost("/Post/Aircraft", (HttpRequest req) => Post_Aircraft(req));
 
             // Post SpottingTrip Route
 
@@ -99,6 +100,20 @@ namespace SpottersDB_BackEnd.Classes.API
                 IFormCollection form = await req.ReadFormAsync();
                 AircraftType aircraftType = new AircraftType(form["ICAO"], form["FullName"], form["NickName"], Convert.ToInt32(form["ManufactorerID"]));
                 sqlcontroller.AddAircraftType(aircraftType);
+            }
+            catch (Exception e)
+            {
+
+            }
+        }
+
+        private async void Post_Aircraft(HttpRequest req)
+        {
+            try
+            {
+                IFormCollection form = await req.ReadFormAsync();
+                Aircraft aircraft = new Aircraft(form["Registration"], form["Description"], Convert.ToInt32(form["TypeID"]), Convert.ToInt32(form["CountryID"]), Convert.ToInt32(form["AirlineID"]));
+                sqlcontroller.AddAircraft(aircraft);
             }
             catch (Exception e)
             {
