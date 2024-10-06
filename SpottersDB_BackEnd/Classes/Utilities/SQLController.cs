@@ -10,7 +10,7 @@ namespace SpottersDB_BackEnd.Classes.Utilities
         private SqlCommand cmd = null;
         private WebApplication app;
         // JUST FOR DEBUGGING
-        private bool isDebugMode = true;
+        private bool isDebugMode = false;
 
         // Checks if DB Exists
         public void ConnectToDB(string DatabaseName, WebApplication app)
@@ -64,7 +64,7 @@ namespace SpottersDB_BackEnd.Classes.Utilities
                 cmd.ExecuteNonQuery();
                 app.Logger.LogInformation("Created the Table Countries");
                 // Creates the Airports Table
-                cmd.CommandText = "CREATE TABLE Airports (AirpotID int NOT NULL PRIMARY KEY IDENTITY, AirportICAOCode char(4), AirportIATACode char(3), AirportName text, AirportDescription text, AirportCity text, CountryID int, CONSTRAINT [FK_Airport_Country] FOREIGN KEY ([CountryID]) REFERENCES [Countries](CountryID));";
+                cmd.CommandText = "CREATE TABLE Airports (AirportID int NOT NULL PRIMARY KEY IDENTITY, AirportICAOCode char(4), AirportIATACode char(3), AirportName text, AirportDescription text, AirportCity text, CountryID int, CONSTRAINT [FK_Airport_Country] FOREIGN KEY ([CountryID]) REFERENCES [Countries](CountryID));";
                 cmd.ExecuteNonQuery();
                 app.Logger.LogInformation("Created the Table Airports");
                 // Creates the Airline Table
@@ -87,6 +87,10 @@ namespace SpottersDB_BackEnd.Classes.Utilities
                 cmd.CommandText = "CREATE TABLE SpottingTrips (SpottingTripID int NOT NULL PRIMARY KEY IDENTITY, SpottingTripStart datetime2(0), SpottingTripEnd datetime2(0), SpottingTripName text, SpottingTripDescription text);";
                 cmd.ExecuteNonQuery();
                 app.Logger.LogInformation("Created the Table SpottingTrips");
+                // Create SpottingPicture Table
+                cmd.CommandText = "CREATE TABLE SpottingPictures (SpottingPictureID int NOT NULL PRIMARY KEY IDENTITY, SpottingPictureName text, SpottingPictureDescription text, SpottingPictureURL text, SpottingPictureOriginalFileName text, SpottingPictureSpottingTripID int, SpottingPictureAircraftID int, SpottingPictureAirportID int, CONSTRAINT [FK_SpottingPicture_SpottingTrip] FOREIGN KEY ([SpottingPictureSpottingTripID]) REFERENCES [SpottingTrips](SpottingTripID), CONSTRAINT [FK_SpottingPicture_Aircraft] FOREIGN KEY ([SpottingPictureAircraftID]) REFERENCES [Aircrafts](AircraftID), CONSTRAINT [FK_SpottingPicture_Airport] FOREIGN KEY ([SpottingPictureAirportID]) REFERENCES [Airports](AirportID));";
+                cmd.ExecuteNonQuery();
+                app.Logger.LogInformation("Created the Table SpottingPictures");
                 con.Close();
                 ConnectToDB(DatabaseName, app);
             }
@@ -206,6 +210,23 @@ namespace SpottersDB_BackEnd.Classes.Utilities
                 cmd.CommandText = $"INSERT INTO SpottingTrips (SpottingTripStart, SpottingTripEnd, SpottingTripName, SpottingTripDescription) VALUES ('{spottingTrip.Start.ToString("yyyy-MM-dd HH:mm:ss")}', '{spottingTrip.End.ToString("yyyy-MM-dd HH:mm:ss")}', '{spottingTrip.Name}', '{spottingTrip.Description}');";
                 cmd.ExecuteNonQuery();
                 app.Logger.LogInformation("Saved a SpottingTrip Object", spottingTrip);
+                con.Close();
+            }
+            catch (Exception e)
+            {
+                app.Logger.LogError(e.Message);
+            }
+            con.Close();
+        }
+
+        public void AddSpottingPicture(SpottingPicture spottingPicture)
+        {
+            try
+            {
+                con.Open();
+                cmd.CommandText = $"INSERT INTO SpottingPictures (SpottingPictureName, SpottingPictureDescription, SpottingPictureURL, SpottingPictureOriginalFileName, SpottingPictureSpottingTripID, SpottingPictureAircraftID, SpottingPictureAirportID) VALUES ('{spottingPicture.Name}','{spottingPicture.Description}','{spottingPicture.PictureUrl}','{spottingPicture.OriginalFileName}','{spottingPicture.SpottingTripID}','{spottingPicture.AircraftID}','{spottingPicture.AirportID}');";
+                cmd.ExecuteNonQuery();
+                app.Logger.LogInformation("Saved a SpottingPicture Object", spottingPicture);
                 con.Close();
             }
             catch (Exception e)

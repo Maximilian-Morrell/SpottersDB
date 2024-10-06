@@ -36,6 +36,7 @@ namespace SpottersDB_BackEnd.Classes.API
             app.MapPost("/Post/SpottingTrip", (HttpRequest req) => Post_SpottingTrip(req));
 
             // Post SpottingPicture Route
+            app.MapPost("/Post/SpottingPicture", (HttpRequest req) => Post_SpottingPicture(req));
         }
 
         private async void Post_Country(HttpRequest req)
@@ -135,6 +136,35 @@ namespace SpottersDB_BackEnd.Classes.API
             catch (Exception e)
             {
 
+            }
+        }
+
+        private async void Post_SpottingPicture(HttpRequest req)
+        {
+            string BasePath = Program.Domain + "/Pic";
+
+            try
+            {
+                IFormFile file = req.Form.Files[0];
+
+                IFormCollection form = await req.ReadFormAsync();
+                string FolderPath = Path.GetFullPath(Environment.CurrentDirectory) + "/Images";
+                string OldFileName = file.FileName;
+                string FileExtension = Path.GetExtension(file.FileName);
+                string FileName = Guid.NewGuid().ToString() + FileExtension;
+
+                FileStream fs = File.Create(FolderPath + "/" + FileName);
+                file.CopyTo(fs);
+                fs.Close();
+                fs.Close();
+
+                string URL = BasePath + "/" + FileName;
+                SpottingPicture spottingPicture = new SpottingPicture(form["Name"], form["Description"], URL, OldFileName, Convert.ToInt32(form["SpottingTripID"]), Convert.ToInt32(form["AircraftID"]), Convert.ToInt32(form["AirportID"]));
+                sqlcontroller.AddSpottingPicture(spottingPicture);
+            }
+            catch (Exception e)
+            {
+                app.Logger.LogError(e.Message);
             }
         }
     }
