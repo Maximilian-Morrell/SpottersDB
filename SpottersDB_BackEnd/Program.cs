@@ -22,6 +22,7 @@ namespace SpottersDB_BackEnd
             // Running all of the API Handler
             API_GET getAPI = new API_GET(app, sqlcontroller);
             API_POST postAPI = new API_POST(app, sqlcontroller);
+            API_PATCH patchAPI = new API_PATCH(app, sqlcontroller);
 
             //Setting up the FileStorage for the Images
             Directory.CreateDirectory(Path.GetFullPath(Environment.CurrentDirectory) + "/Images");

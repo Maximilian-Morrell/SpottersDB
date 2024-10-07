@@ -48,5 +48,12 @@
             this.ICAO_Code = ICAO_Code;
             this.Name = Name;
         }
+
+        public Country(int ID, string ICAO_Code, string Name)
+        {
+            this._ID = ID;
+            this.Name= Name;
+            this.ICAO_Code= ICAO_Code;
+        }
     }
 }

@@ -10,7 +10,7 @@ namespace SpottersDB_BackEnd.Classes.Utilities
         private SqlCommand cmd = null;
         private WebApplication app;
         // JUST FOR DEBUGGING
-        private bool isDebugMode = false;
+        private bool isDebugMode = true;
 
         // Checks if DB Exists
         public void ConnectToDB(string DatabaseName, WebApplication app)
@@ -227,6 +227,23 @@ namespace SpottersDB_BackEnd.Classes.Utilities
                 cmd.CommandText = $"INSERT INTO SpottingPictures (SpottingPictureName, SpottingPictureDescription, SpottingPictureURL, SpottingPictureOriginalFileName, SpottingPictureSpottingTripID, SpottingPictureAircraftID, SpottingPictureAirportID) VALUES ('{spottingPicture.Name}','{spottingPicture.Description}','{spottingPicture.PictureUrl}','{spottingPicture.OriginalFileName}','{spottingPicture.SpottingTripID}','{spottingPicture.AircraftID}','{spottingPicture.AirportID}');";
                 cmd.ExecuteNonQuery();
                 app.Logger.LogInformation("Saved a SpottingPicture Object", spottingPicture);
+                con.Close();
+            }
+            catch (Exception e)
+            {
+                app.Logger.LogError(e.Message);
+            }
+            con.Close();
+        }
+
+        public void UpdateCountry(Country country)
+        {
+            try
+            {
+                con.Open();
+                cmd.CommandText = $"UPDATE Countries SET CountryICAOCode = '{country.ICAO_Code}', CountryName = '{country.Name}' WHERE CountryID = {country.ID}";
+                cmd.ExecuteNonQuery();
+                app.Logger.LogInformation("Updated Countries Object");
                 con.Close();
             }
             catch (Exception e)
