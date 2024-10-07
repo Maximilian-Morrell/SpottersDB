@@ -252,6 +252,23 @@ namespace SpottersDB_BackEnd.Classes.Utilities
             }
             con.Close();
         }
+
+        public void UpdateAirport(Airport airport)
+        {
+            try
+            {
+                con.Open();
+                cmd.CommandText = $"UPDATE Airports SET AirportICAOCode = '{airport.ICAO_Code}', AirportIATACode = '{airport.IATA_Code}', AirportName = '{airport.Name}', AirportDescription = '{airport.Description}', AirportCity = '{airport.City}', CountryID = {airport.CountryID}";
+                cmd.ExecuteNonQuery();
+                app.Logger.LogInformation("Updated Airport Object");
+                con.Close();
+            }
+            catch (Exception e)
+            {
+                app.Logger.LogError(e.Message);
+            }
+            con.Close();
+        }
     }
 }
 

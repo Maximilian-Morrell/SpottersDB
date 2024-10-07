@@ -18,6 +18,10 @@ namespace SpottersDB_BackEnd.Classes.Structure
             {
                 return _ID;
             }
+            private set
+            {
+                _ID = value;
+            }
         }
 
         public string ICAO_Code
@@ -116,8 +120,19 @@ namespace SpottersDB_BackEnd.Classes.Structure
         }
 
         // Full Constructor
-        public Airport(string ICAO = "", string IATA = "", string Name = "", string Description = "", string City = "", int CountryID = -1)
+        public Airport(string ICAO, string IATA, string Name, string Description, string City, int CountryID)
         {
+            this.ICAO_Code = ICAO;
+            this.IATA_Code = IATA;
+            this.Name = Name;
+            this.Description = Description;
+            this.City = City;
+            this.CountryID = CountryID;
+        }
+
+        public Airport(int ID, string ICAO, string IATA, string Name, string Description, string City, int CountryID)
+        {
+            this.ID = ID;
             this.ICAO_Code = ICAO;
             this.IATA_Code = IATA;
             this.Name = Name;

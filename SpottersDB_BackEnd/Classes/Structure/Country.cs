@@ -12,6 +12,10 @@
             {
                 return _ID;
             }
+            private set
+            {
+                _ID = value;
+            }
         }
 
         public string ICAO_Code
@@ -51,7 +55,7 @@
 
         public Country(int ID, string ICAO_Code, string Name)
         {
-            this._ID = ID;
+            this.ID = ID;
             this.Name= Name;
             this.ICAO_Code= ICAO_Code;
         }

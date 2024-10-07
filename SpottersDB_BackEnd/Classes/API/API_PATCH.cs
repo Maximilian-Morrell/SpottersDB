@@ -1,4 +1,5 @@
-﻿using SpottersDB_BackEnd.Classes.Structure;
+﻿using Microsoft.AspNetCore.Server.HttpSys;
+using SpottersDB_BackEnd.Classes.Structure;
 using SpottersDB_BackEnd.Classes.Utilities;
 
 namespace SpottersDB_BackEnd.Classes.API
@@ -12,8 +13,11 @@ namespace SpottersDB_BackEnd.Classes.API
 
         protected override void MainAPI()
         {
-            // Post Country Route
+            // Patch Country Route
             app.MapPost("/Patch/Country", (HttpRequest req) => PATCH_Country(req));
+
+            // Patch Airport Route
+            app.MapPost("/Patch/Airport", (HttpRequest req) => PATCH_Airport(req));
         }
 
         private async void PATCH_Country(HttpRequest req)
@@ -23,6 +27,20 @@ namespace SpottersDB_BackEnd.Classes.API
                 IFormCollection form = await req.ReadFormAsync();
                 Country country = new Country(Convert.ToInt32(form["ID"]), form["ICAO"], form["Name"]);
                 sqlcontroller.UpdateCountry(country);
+            }
+            catch (Exception e)
+            {
+
+            }
+        }
+
+        private async void PATCH_Airport(HttpRequest req)
+        {
+            try
+            {
+                IFormCollection form = await req.ReadFormAsync();
+                Airport airport = new Airport(Convert.ToInt32(form["ID"]), form["ICAO"], form["IATA"], form["Name"], form["Description"], form["City"], Convert.ToInt32(form["Country"]));
+                sqlcontroller.UpdateAirport(airport);
             }
             catch (Exception e)
             {

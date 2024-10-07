@@ -145,20 +145,25 @@ namespace SpottersDB_BackEnd.Classes.API
 
             try
             {
-                IFormFile file = req.Form.Files[0];
+                string URL = "";
+                string OldFileName = "";
+                if (req.Form.Files.Count > 0)
+                {
+                    IFormFile file = req.Form.Files[0];
 
+                    string FolderPath = Path.GetFullPath(Environment.CurrentDirectory) + "/Images";
+                    OldFileName = file.FileName;
+                    string FileExtension = Path.GetExtension(file.FileName);
+                    string FileName = Guid.NewGuid().ToString() + FileExtension;
+
+                    FileStream fs = File.Create(FolderPath + "/" + FileName);
+                    file.CopyTo(fs);
+                    fs.Close();
+                    fs.Close();
+
+                    URL = BasePath + "/" + FileName;
+                }
                 IFormCollection form = await req.ReadFormAsync();
-                string FolderPath = Path.GetFullPath(Environment.CurrentDirectory) + "/Images";
-                string OldFileName = file.FileName;
-                string FileExtension = Path.GetExtension(file.FileName);
-                string FileName = Guid.NewGuid().ToString() + FileExtension;
-
-                FileStream fs = File.Create(FolderPath + "/" + FileName);
-                file.CopyTo(fs);
-                fs.Close();
-                fs.Close();
-
-                string URL = BasePath + "/" + FileName;
                 SpottingPicture spottingPicture = new SpottingPicture(form["Name"], form["Description"], URL, OldFileName, Convert.ToInt32(form["SpottingTripID"]), Convert.ToInt32(form["AircraftID"]), Convert.ToInt32(form["AirportID"]));
                 sqlcontroller.AddSpottingPicture(spottingPicture);
             }
