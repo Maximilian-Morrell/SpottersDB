@@ -18,6 +18,9 @@ namespace SpottersDB_BackEnd.Classes.API
 
             // Patch Airport Route
             app.MapPost("/Patch/Airport", (HttpRequest req) => PATCH_Airport(req));
+
+            // Patch Airline Route
+            app.MapPost("/Patch/Airline", (HttpRequest req) => PATCH_Airline(req));
         }
 
         private async void PATCH_Country(HttpRequest req)
@@ -45,6 +48,20 @@ namespace SpottersDB_BackEnd.Classes.API
             catch (Exception e)
             {
 
+            }
+        }
+
+        private async void PATCH_Airline(HttpRequest req)
+        {
+            try
+            {
+                IFormCollection form = await req.ReadFormAsync();
+                Airline airline = new Airline(Convert.ToInt32(form["ID"]), form["ICAO"], form["IATA"], form["Name"], Convert.ToInt32(form["Region"]));
+                sqlcontroller.UpdateAirline(airline);
+            }
+            catch (Exception e)
+            {
+                
             }
         }
     }

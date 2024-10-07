@@ -14,6 +14,10 @@
             {
                 return _ID;
             }
+            private set
+            {
+                _ID = value;
+            }
         }
         
         public string ICAO
@@ -71,6 +75,15 @@
 
         public Airline(string ICAO, string IATA, string Name, int Region)
         {
+            this.ICAO = ICAO;
+            this.IATA = IATA;
+            this.Name = Name;
+            this.Region = Region;
+        }
+
+        public Airline(int ID, string ICAO, string IATA, string Name, int Region)
+        {
+            this.ID = ID;
             this.ICAO = ICAO;
             this.IATA = IATA;
             this.Name = Name;
