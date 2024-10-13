@@ -14,6 +14,11 @@
             {
                 return _ID;
             }
+
+            private set
+            {
+                _ID = value;
+            }
         }
 
         public string ICAOCode
@@ -71,6 +76,15 @@
 
         public AircraftType(string ICAOCode, string FullName, string NickName, int ManufactorerID)
         {
+            this.ICAOCode = ICAOCode;
+            this.FullName = FullName;
+            this.ManufactorerID = ManufactorerID;
+            this.NickName = NickName;
+        }
+
+        public AircraftType(int ID, string ICAOCode, string FullName, string NickName, int ManufactorerID)
+        {
+            this.ID = ID;
             this.ICAOCode = ICAOCode;
             this.FullName = FullName;
             this.ManufactorerID = ManufactorerID;

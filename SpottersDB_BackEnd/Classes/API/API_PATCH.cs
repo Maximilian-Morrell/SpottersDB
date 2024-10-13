@@ -21,6 +21,9 @@ namespace SpottersDB_BackEnd.Classes.API
 
             // Patch Airline Route
             app.MapPost("/Patch/Airline", (HttpRequest req) => PATCH_Airline(req));
+
+            // Patch AircraftType Route
+            app.MapPost("/Patch/AircraftType", (HttpRequest req) => PATCH_AircraftType(req));
         }
 
         private async void PATCH_Country(HttpRequest req)
@@ -62,6 +65,20 @@ namespace SpottersDB_BackEnd.Classes.API
             catch (Exception e)
             {
                 
+            }
+        }
+
+        private async void PATCH_AircraftType(HttpRequest req)
+        {
+            try
+            {
+                IFormCollection form = await req.ReadFormAsync();
+                AircraftType aircraftType = new AircraftType(Convert.ToInt32(form["ID"]), form["ICAO"], form["FullName"], form["NickName"], Convert.ToInt32(form["ManufactorerID"]));
+                sqlcontroller.UpdateAircraftType(aircraftType);
+            }
+            catch (Exception e)
+            {
+                app.Logger.LogError(e.Message);
             }
         }
     }

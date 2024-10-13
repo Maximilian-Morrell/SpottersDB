@@ -286,6 +286,23 @@ namespace SpottersDB_BackEnd.Classes.Utilities
             }
             con.Close();
         }
+
+        public void UpdateAircraftType(AircraftType aircraftType)
+        {
+            try
+            {
+                con.Open();
+                cmd.CommandText = $"UPDATE AircraftTypes SET AircraftTypeICAO = '{aircraftType.ICAOCode}', AircraftTypeName = '{aircraftType.NickName}', AircraftTypeNickName = '{aircraftType.NickName}', AircraftTypeManufactorerID = {aircraftType.ManufactorerID} WHERE AircraftTypeID = {aircraftType.ID}";
+                cmd.ExecuteNonQuery();
+                app.Logger.LogInformation("Updated AircraftType Object");
+                con.Close();
+            }
+            catch (Exception e)
+            {
+                app.Logger.LogError(e.Message);
+            }
+            con.Close();
+        }
     }
 }
 
