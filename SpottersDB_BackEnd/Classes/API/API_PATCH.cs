@@ -27,6 +27,9 @@ namespace SpottersDB_BackEnd.Classes.API
 
             // Patch Manufactorer Route
             app.MapPost("/Patch/Manufactorer", (HttpRequest req) => PATCH_Manufactorer(req));
+
+            // Patch Aircraft Route
+            app.MapPost("/Patch/Aircraft", (HttpRequest req) => PATCH_Aircraft(req));
         }
 
         private async void PATCH_Country(HttpRequest req)
@@ -92,6 +95,20 @@ namespace SpottersDB_BackEnd.Classes.API
                 IFormCollection form = await req.ReadFormAsync();
                 Manufactorer manufactorer = new Manufactorer(Convert.ToInt32(form["ID"]), form["Name"], Convert.ToInt32(form["Region"]));
                 sqlcontroller.UpdateManufactorer(manufactorer);
+            }
+            catch (Exception e)
+            {
+
+            }
+        }
+
+        private async void PATCH_Aircraft(HttpRequest req)
+        {
+            try
+            {
+                IFormCollection form = await req.ReadFormAsync();
+                Aircraft aircraft = new Aircraft(Convert.ToInt32(form["ID"]), form["Registration"], form["Description"], Convert.ToInt32(form["TypeID"]), Convert.ToInt32(form["CountryID"]), Convert.ToInt32(form["AirlineID"]));
+                sqlcontroller .UpdateAircraft(aircraft);
             }
             catch (Exception e)
             {

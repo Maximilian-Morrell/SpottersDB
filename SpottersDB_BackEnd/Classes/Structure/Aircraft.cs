@@ -15,6 +15,10 @@
             {
                 return _ID;
             }
+            private set
+            {
+                _ID = value;
+            }
         }
 
         public string Registration
@@ -85,6 +89,16 @@
 
         public Aircraft(string Registration, string Description, int TypeID, int CountryID, int AirlineID)
         {
+            this.Registration = Registration;
+            this.Description = Description;
+            this.TypeID = TypeID;
+            this.CountryID = CountryID;
+            this.AirlineID = AirlineID;
+        }
+
+        public Aircraft(int ID, string Registration, string Description, int TypeID, int CountryID, int AirlineID)
+        {
+            this.ID = ID;
             this.Registration = Registration;
             this.Description = Description;
             this.TypeID = TypeID;

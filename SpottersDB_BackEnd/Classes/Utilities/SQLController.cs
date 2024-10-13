@@ -309,9 +309,26 @@ namespace SpottersDB_BackEnd.Classes.Utilities
             try
             {
                 con.Open();
-                cmd.CommandText = $"Update Manufactorers SET ManufactorerName = '{manufactorer.Name}', ManufactorerRegion = {manufactorer.Region} WHERE ManufactorerID = {manufactorer.ID}";
+                cmd.CommandText = $"UPDATE Manufactorers SET ManufactorerName = '{manufactorer.Name}', ManufactorerRegion = {manufactorer.Region} WHERE ManufactorerID = {manufactorer.ID}";
                 cmd.ExecuteNonQuery();
                 app.Logger.LogInformation("Updated a Manufactorer Object");
+                con.Close();
+            }
+            catch (Exception e)
+            {
+                app.Logger.LogError(e.Message);
+            }
+            con.Close();
+        }
+
+        public void UpdateAircraft(Aircraft aircraft)
+        {
+            try
+            {
+                con.Open();
+                cmd.CommandText = $"UPDATE Aircrafts SET AircraftRegistration = '{aircraft.Registration}', AircraftDescription = '{aircraft.Description}', AircraftTypeID = {aircraft.TypeID}, AircraftCountryID = {aircraft.CountryID}, AircraftAirlineID = {aircraft.AirlineID} WHERE AircraftID = {aircraft.ID}";
+                cmd.ExecuteNonQuery();
+                app.Logger.LogInformation("Updated an Aircraft Object");
                 con.Close();
             }
             catch (Exception e)
