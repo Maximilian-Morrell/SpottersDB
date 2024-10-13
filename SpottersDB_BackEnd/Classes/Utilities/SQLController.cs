@@ -303,6 +303,23 @@ namespace SpottersDB_BackEnd.Classes.Utilities
             }
             con.Close();
         }
+
+        public void UpdateManufactorer(Manufactorer manufactorer)
+        {
+            try
+            {
+                con.Open();
+                cmd.CommandText = $"Update Manufactorers SET ManufactorerName = '{manufactorer.Name}', ManufactorerRegion = {manufactorer.Region} WHERE ManufactorerID = {manufactorer.ID}";
+                cmd.ExecuteNonQuery();
+                app.Logger.LogInformation("Updated a Manufactorer Object");
+                con.Close();
+            }
+            catch (Exception e)
+            {
+                app.Logger.LogError(e.Message);
+            }
+            con.Close();
+        }
     }
 }
 

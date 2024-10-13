@@ -12,7 +12,7 @@
             {
                 return _ID;
             }
-            set
+            private set
             {
                 _ID = value;
             }
@@ -49,6 +49,13 @@
 
         public Manufactorer(string Name, int Region)
         {
+            this.Name = Name;
+            this.Region = Region;
+        }
+
+        public Manufactorer(int ID, string Name, int Region)
+        {
+            this.ID = ID;
             this.Name = Name;
             this.Region = Region;
         }
