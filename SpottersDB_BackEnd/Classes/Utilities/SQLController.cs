@@ -13,7 +13,7 @@ namespace SpottersDB_BackEnd.Classes.Utilities
         private SqlDataReader reader = null;
         private WebApplication app;
         // JUST FOR DEBUGGING
-        private bool isDebugMode = true;
+        private bool isDebugMode = false;
 
         // Checks if DB Exists
         public void ConnectToDB(string DatabaseName, WebApplication app)
@@ -377,13 +377,12 @@ namespace SpottersDB_BackEnd.Classes.Utilities
 
         public List<Country> GetCountries()
         {
-            List<Country> Countries = null;
+            List<Country> Countries = new List<Country>();
             try
             {
                 con.Open();
                 cmd.CommandText = $"SELECT * FROM Countries";
                 reader = cmd.ExecuteReader();
-                Countries = new List<Country>();
                 while (reader.Read())
                 {
                     Country country = new Country(Convert.ToInt32(reader["CountryID"]), Convert.ToString(reader["CountryICAOCode"]), Convert.ToString(reader["CountryName"]));
@@ -421,6 +420,51 @@ namespace SpottersDB_BackEnd.Classes.Utilities
             }
             con.Close();
             return country;
+        }
+
+        public List<Airport> GetAirports()
+        {
+            List<Airport> Airports = new List<Airport>();
+            try
+            {
+                con.Open();
+                cmd.CommandText = $"SELECT * FROM Airports";
+                reader = cmd.ExecuteReader();
+                while (reader.Read())
+                {
+                    Airport airport = new Airport(Convert.ToInt32(reader["AirportID"]), Convert.ToString(reader["AirportICAOCode"]), Convert.ToString(reader["AirportIATACode"]), Convert.ToString(reader["AirportName"]), Convert.ToString(reader["AirportDescription"]), Convert.ToString(reader["AirportCity"]), Convert.ToInt32(reader["CountryID"]));
+                    Airports.Add(airport);
+                }
+                con.Close();
+            }
+            catch (Exception e)
+            {
+                app.Logger.LogError(e.Message);
+            }
+            con.Close();
+            return Airports;
+        }
+
+        public Airport GetAirportByID(int ID)
+        {
+            Airport airport = null;
+            try
+            {
+                con.Open();
+                cmd.CommandText = $"SELECT * FROM Airports WHERE AirportID = {ID}";
+                reader = cmd.ExecuteReader();
+                while (reader.Read())
+                {
+                    airport = new Airport(Convert.ToInt32(reader["AirportID"]), Convert.ToString(reader["AirportICAOCode"]), Convert.ToString(reader["AirportIATACode"]), Convert.ToString(reader["AirportName"]), Convert.ToString(reader["AirportDescription"]), Convert.ToString(reader["AirportCity"]), Convert.ToInt32(reader["CountryID"]));
+                }
+                con.Close();
+            }
+            catch (Exception e)
+            {
+                app.Logger.LogError(e.Message);
+            }
+            con.Close();
+            return airport;
         }
     }
 }

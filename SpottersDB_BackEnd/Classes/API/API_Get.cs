@@ -17,29 +17,31 @@ namespace SpottersDB_BackEnd.Classes.API
             app.MapGet("/Get/Countries", GET_Countries);
             // Get Country by ID Route
             app.MapGet("/Get/Country", (int ID) => GET_Country(ID));
+
+            // Get Airports Route
+            app.MapGet("/Get/Airports", GET_Airports);
+            // Get Airport by ID Route
+            app.MapGet("/Get/Airport", (int ID) => GET_Airport(ID));
         }
 
         private List<Country> GET_Countries()
         {
-            List<Country> countries = sqlcontroller.GetCountries();
-            foreach(Country country in countries)
-            {
-                foreach(PropertyInfo propertyInfo in typeof(Country).GetProperties())
-                {
-                    app.Logger.LogInformation(propertyInfo.Name + ": " + propertyInfo.GetValue(country, null));
-                }
-            }
-            return countries;
+            return sqlcontroller.GetCountries();
         }
 
         private Country GET_Country(int ID)
         {
-            Country country = sqlcontroller.GetCountryByID(ID);
-            foreach (PropertyInfo propertyInfo in typeof(Country).GetProperties())
-            {
-                app.Logger.LogInformation(propertyInfo.Name + ": " + propertyInfo.GetValue(country, null));
-            }
-            return country;
+            return sqlcontroller.GetCountryByID(ID);
+        }
+
+        private List<Airport> GET_Airports()
+        {
+            return sqlcontroller.GetAirports();
+        }
+
+        private Airport GET_Airport(int ID)
+        {
+            return sqlcontroller.GetAirportByID(ID);
         }
     }
 }
