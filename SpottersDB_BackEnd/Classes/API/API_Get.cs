@@ -22,6 +22,11 @@ namespace SpottersDB_BackEnd.Classes.API
             app.MapGet("/Get/Airports", GET_Airports);
             // Get Airport by ID Route
             app.MapGet("/Get/Airport", (int ID) => GET_Airport(ID));
+
+            // Get Airlines Route
+            app.MapGet("/Get/Airlines", GET_Airlines);
+            // Get Airline By ID Route
+            app.MapGet("/Get/Airline", (int ID) => GET_Airline(ID));
         }
 
         private List<Country> GET_Countries()
@@ -42,6 +47,16 @@ namespace SpottersDB_BackEnd.Classes.API
         private Airport GET_Airport(int ID)
         {
             return sqlcontroller.GetAirportByID(ID);
+        }
+
+        private List<Airline> GET_Airlines()
+        {
+            return sqlcontroller.GetAirlines();
+        }
+
+        private Airline GET_Airline(int ID)
+        {
+            return sqlcontroller.GetAirlineByID(ID);
         }
     }
 }

@@ -63,15 +63,15 @@ namespace SpottersDB_BackEnd.Classes.Utilities
                 app.Logger.LogInformation("Created the Database: " + DatabaseName);
                 con.ChangeDatabase(DatabaseName);
                 // Creates the Countries Table
-                cmd.CommandText = "CREATE TABLE Countries (CountryID int NOT NULL PRIMARY KEY IDENTITY, CountryICAOCode varchar(10), CountryName text);";
+                cmd.CommandText = "CREATE TABLE Countries (CountryID int NOT NULL PRIMARY KEY IDENTITY, CountryICAOCode varchar(10), CountryName varchar(255);";
                 cmd.ExecuteNonQuery();
                 app.Logger.LogInformation("Created the Table Countries");
                 // Creates the Airports Table
-                cmd.CommandText = "CREATE TABLE Airports (AirportID int NOT NULL PRIMARY KEY IDENTITY, AirportICAOCode char(4), AirportIATACode char(3), AirportName text, AirportDescription text, AirportCity text, CountryID int, CONSTRAINT [FK_Airport_Country] FOREIGN KEY ([CountryID]) REFERENCES [Countries](CountryID));";
+                cmd.CommandText = "CREATE TABLE Airports (AirportID int NOT NULL PRIMARY KEY IDENTITY, AirportICAOCode char(4), AirportIATACode char(3), AirportName text, AirportDescription text, AirportCity varchar(255), CountryID int, CONSTRAINT [FK_Airport_Country] FOREIGN KEY ([CountryID]) REFERENCES [Countries](CountryID));";
                 cmd.ExecuteNonQuery();
                 app.Logger.LogInformation("Created the Table Airports");
                 // Creates the Airline Table
-                cmd.CommandText = "CREATE TABLE Airlines (AirlineID int NOT NULL PRIMARY KEY IDENTITY, AirlineICAOCode char(10), AirlineIATACode char(10), AirlineName text, AirlineRegion int, CONSTRAINT [FK_Airline_Country] FOREIGN KEY ([AirlineRegion]) REFERENCES [Countries](CountryID));";
+                cmd.CommandText = "CREATE TABLE Airlines (AirlineID int NOT NULL PRIMARY KEY IDENTITY, AirlineICAOCode char(3), AirlineIATACode char(2), AirlineName text, AirlineRegion int, CONSTRAINT [FK_Airline_Country] FOREIGN KEY ([AirlineRegion]) REFERENCES [Countries](CountryID));";
                 cmd.ExecuteNonQuery();
                 app.Logger.LogInformation("Created the Table Airlines");
                 // Create the Manufactorer Table
@@ -79,11 +79,11 @@ namespace SpottersDB_BackEnd.Classes.Utilities
                 cmd.ExecuteNonQuery();
                 app.Logger.LogInformation("Created the Table Manufactorers");
                 // Create the AircraftType Table
-                cmd.CommandText = "CREATE TABLE AircraftTypes (AircraftTypeID int NOT NULL PRIMARY KEY IDENTITY, AircraftTypeICAO char(10), AircraftTypeName text, AircraftTypeNickName text, AircraftTypeManufactorerID int, CONSTRAINT [FK_AircraftType_Manufactorer] FOREIGN KEY ([AircraftTypeManufactorerID]) REFERENCES [Manufactorers](ManufactorerID));";
+                cmd.CommandText = "CREATE TABLE AircraftTypes (AircraftTypeID int NOT NULL PRIMARY KEY IDENTITY, AircraftTypeICAO varchar(10), AircraftTypeName text, AircraftTypeNickName text, AircraftTypeManufactorerID int, CONSTRAINT [FK_AircraftType_Manufactorer] FOREIGN KEY ([AircraftTypeManufactorerID]) REFERENCES [Manufactorers](ManufactorerID));";
                 cmd.ExecuteNonQuery();
                 app.Logger.LogInformation("Created the Table AircraftTypes");
                 // Create the Aircraft Table
-                cmd.CommandText = "CREATE TABLE Aircrafts (AircraftID int NOT NULL PRIMARY KEY IDENTITY, AircraftRegistration char(6), AircraftDescription text, AircraftTypeID int, AircraftCountryID int, AircraftAirlineID int, CONSTRAINT [FK_Aircraft_AircraftType] FOREIGN KEY ([AircraftTypeID]) REFERENCES [AircraftTypes](AircraftTypeID), CONSTRAINT [FK_Aircraft_Country] FOREIGN KEY ([AircraftCountryID]) REFERENCES [Countries](CountryID), CONSTRAINT [FK_Aircraft_Airline] FOREIGN KEY ([AircraftAirlineID]) REFERENCES [Airlines](AirlineID));";
+                cmd.CommandText = "CREATE TABLE Aircrafts (AircraftID int NOT NULL PRIMARY KEY IDENTITY, AircraftRegistration varchar(6), AircraftDescription text, AircraftTypeID int, AircraftCountryID int, AircraftAirlineID int, CONSTRAINT [FK_Aircraft_AircraftType] FOREIGN KEY ([AircraftTypeID]) REFERENCES [AircraftTypes](AircraftTypeID), CONSTRAINT [FK_Aircraft_Country] FOREIGN KEY ([AircraftCountryID]) REFERENCES [Countries](CountryID), CONSTRAINT [FK_Aircraft_Airline] FOREIGN KEY ([AircraftAirlineID]) REFERENCES [Airlines](AirlineID));";
                 cmd.ExecuteNonQuery();
                 app.Logger.LogInformation("Created the Table Aircrafts");
                 // Create Spotting Trip Table
@@ -465,6 +465,51 @@ namespace SpottersDB_BackEnd.Classes.Utilities
             }
             con.Close();
             return airport;
+        }
+
+        public List<Airline> GetAirlines()
+        {
+            List<Airline> Airlines = new List<Airline>();
+            try
+            {
+                con.Open();
+                cmd.CommandText = $"SELECT * FROM Airlines";
+                reader = cmd.ExecuteReader();
+                while (reader.Read())
+                {
+                    Airline airline = new Airline(Convert.ToInt32(reader["AirlineID"]), Convert.ToString(reader["AirlineICAOCode"]), Convert.ToString(reader["AirlineIATACode"]), Convert.ToString(reader["AirlineName"]), Convert.ToInt32(reader["AirlineRegion"]));
+                    Airlines.Add(airline);
+                }
+                con.Close();
+            }
+            catch (Exception e)
+            {
+                app.Logger.LogError(e.Message);
+            }
+            con.Close();
+            return Airlines;
+        }
+
+        public Airline GetAirlineByID(int ID)
+        {
+            Airline airline = null;
+            try
+            {
+                con.Open();
+                cmd.CommandText = $"SELECT * FROM Airlines WHERE AirlineID = {ID}";
+                reader = cmd.ExecuteReader();
+                while (reader.Read())
+                {
+                    airline = new Airline(Convert.ToInt32(reader["AirlineID"]), Convert.ToString(reader["AirlineICAOCode"]), Convert.ToString(reader["AirlineIATACode"]), Convert.ToString(reader["AirlineName"]), Convert.ToInt32(reader["AirlineRegion"]));
+                }
+                con.Close();
+            }
+            catch (Exception e)
+            {
+                app.Logger.LogError(e.Message);
+            }
+            con.Close();
+            return airline;
         }
     }
 }
