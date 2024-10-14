@@ -14,6 +14,10 @@
             {
                 return _ID;
             }
+            private set
+            {
+                _ID = value;
+            }
         }
 
         public DateTime Start
@@ -72,6 +76,15 @@
 
         public SpottingTrip(DateTime Start, DateTime End, string Name, string Description = "")
         {
+            this.Start = Start;
+            this.End = End;
+            this.Name = Name;
+            this.Description = Description;
+        }
+
+        public SpottingTrip(int ID, DateTime Start, DateTime End, string Name, string Description = "")
+        {
+            this.ID = ID;
             this.Start = Start;
             this.End = End;
             this.Name = Name;

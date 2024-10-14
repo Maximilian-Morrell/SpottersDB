@@ -30,6 +30,9 @@ namespace SpottersDB_BackEnd.Classes.API
 
             // Patch Aircraft Route
             app.MapPost("/Patch/Aircraft", (HttpRequest req) => PATCH_Aircraft(req));
+
+            // Patch SpottingTrip Route
+            app.MapPost("/Patch/SpottingTrip", (HttpRequest req) => PATCH_SpottingTrip(req));
         }
 
         private async void PATCH_Country(HttpRequest req)
@@ -109,6 +112,20 @@ namespace SpottersDB_BackEnd.Classes.API
                 IFormCollection form = await req.ReadFormAsync();
                 Aircraft aircraft = new Aircraft(Convert.ToInt32(form["ID"]), form["Registration"], form["Description"], Convert.ToInt32(form["TypeID"]), Convert.ToInt32(form["CountryID"]), Convert.ToInt32(form["AirlineID"]));
                 sqlcontroller .UpdateAircraft(aircraft);
+            }
+            catch (Exception e)
+            {
+
+            }
+        }
+
+        private async void PATCH_SpottingTrip(HttpRequest req)
+        {
+            try
+            {
+                IFormCollection form = await req.ReadFormAsync();
+                SpottingTrip spottingTrip = new SpottingTrip(Convert.ToInt32(form["ID"]), Convert.ToDateTime(form["Start"]), Convert.ToDateTime(form["End"]), form["Name"], form["Description"]);
+                sqlcontroller.UpdateSpottingTrip(spottingTrip);
             }
             catch (Exception e)
             {

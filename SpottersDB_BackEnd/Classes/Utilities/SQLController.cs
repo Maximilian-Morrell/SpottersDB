@@ -337,6 +337,23 @@ namespace SpottersDB_BackEnd.Classes.Utilities
             }
             con.Close();
         }
+
+        public void UpdateSpottingTrip(SpottingTrip spottingTrip)
+        {
+            try
+            {
+                con.Open();
+                cmd.CommandText = $"UPDATE SpottingTrips SET SpottingTripStart = '{spottingTrip.Start.ToString("yyyy-MM-dd HH:mm:ss")}', SpottingTripEnd = '{spottingTrip.End.ToString("yyyy-MM-dd HH:mm:ss")}', SpottingTripName = '{spottingTrip.Name}', SpottingTripDescription = '{spottingTrip.Description}' WHERE SpottingTripID = {spottingTrip.ID}";
+                cmd.ExecuteNonQuery();
+                app.Logger.LogInformation("Updated a SpottingTrip Object");
+                con.Close();
+            }
+            catch (Exception e)
+            {
+                app.Logger.LogError(e.Message);
+            }
+            con.Close();
+        }
     }
 }
 

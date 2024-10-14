@@ -17,6 +17,10 @@
             {
                 return _ID;
             }
+            private set
+            {
+                _ID = value;
+            }
         }
 
         public string Name
@@ -110,6 +114,18 @@
 
         public SpottingPicture(string Name, string Description, string PictureURL, string OriginalFileName, int SpottingTripID, int AircraftID, int AirportID)
         {
+            this.Name = Name;
+            this.Description = Description;
+            this.PictureUrl = PictureURL;
+            this.OriginalFileName = OriginalFileName;
+            this.SpottingTripID = SpottingTripID;
+            this.AircraftID = AircraftID;
+            this.AirportID = AirportID;
+        }
+
+        public SpottingPicture(int ID, string Name, string Description, string PictureURL, string OriginalFileName, int SpottingTripID, int AircraftID, int AirportID)
+        {
+            this.ID = ID;
             this.Name = Name;
             this.Description = Description;
             this.PictureUrl = PictureURL;
