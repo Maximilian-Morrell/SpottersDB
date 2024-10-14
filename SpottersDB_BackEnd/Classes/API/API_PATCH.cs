@@ -33,6 +33,9 @@ namespace SpottersDB_BackEnd.Classes.API
 
             // Patch SpottingTrip Route
             app.MapPost("/Patch/SpottingTrip", (HttpRequest req) => PATCH_SpottingTrip(req));
+
+            // Patch SpottingPicture Route
+            app.MapPost("/Patch/SpottingPicture", (HttpRequest req) => PATCH_SpottingPicture(req));
         }
 
         private async void PATCH_Country(HttpRequest req)
@@ -130,6 +133,51 @@ namespace SpottersDB_BackEnd.Classes.API
             catch (Exception e)
             {
 
+            }
+        }
+
+        private async void PATCH_SpottingPicture(HttpRequest req)
+        {
+            try
+            {
+                if(req.Form.Files.Count > 0)
+                {
+                    string BasePath = Program.Domain + "/Pic";
+                    string URL = "";
+                    string OldFileName = "";
+                    
+                    IFormFile file = req.Form.Files[0];
+
+                    string FolderPath = Path.GetFullPath(Environment.CurrentDirectory) + "/Images";
+                    OldFileName = file.FileName;
+                    string FileExtension = Path.GetExtension(file.FileName);
+                    string FileName = Guid.NewGuid().ToString() + FileExtension;
+
+                    FileStream fs = File.Create(FolderPath + "/" + FileName);
+                    file.CopyTo(fs);
+                    fs.Close();
+                    fs.Close();
+
+                    URL = BasePath + "/" + FileName;
+
+                    IFormCollection form = await req.ReadFormAsync();
+                    
+                    string oldFileName = form["PictureURL"];
+                    File.Delete(FolderPath + "/" + oldFileName);
+
+                    SpottingPicture spottingPicture = new SpottingPicture(form["Name"], form["Description"], URL, OldFileName, Convert.ToInt32(form["SpottingTripID"]), Convert.ToInt32(form["AircraftID"]), Convert.ToInt32(form["AirportID"]));
+                    sqlcontroller.UpdateSpottingPicture(spottingPicture);
+                }
+                else
+                {
+                    IFormCollection form = await req.ReadFormAsync();
+                    SpottingPicture spottingPicture = new SpottingPicture(Convert.ToInt32("ID"), form["Name"], form["Description"], form["PictureURL"], form["OriginalFileName"], Convert.ToInt32(form["SpottingTripID"]), Convert.ToInt32(form["AircraftID"]), Convert.ToInt32(form["AirportID"]);
+                    sqlcontroller.UpdateSpottingPicture(spottingPicture);
+                }
+            }
+            catch (Exception e)
+            {
+                app.Logger.LogError(e.Message);
             }
         }
     }

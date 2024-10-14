@@ -354,6 +354,23 @@ namespace SpottersDB_BackEnd.Classes.Utilities
             }
             con.Close();
         }
+
+        public void UpdateSpottingPicture(SpottingPicture spottingPicture)
+        {
+            try
+            {
+                con.Open();
+                cmd.CommandText = $"UPDATE SpottingPictures SET SpottingPictureName = '{spottingPicture.Name}', SpottingPictureDescription = '{spottingPicture.Description}', SpottingPictureURL = '{spottingPicture.PictureUrl}', SpottingPictureOriginalFileName = '{spottingPicture.OriginalFileName}', SpottingPictureSpottingTripID = {spottingPicture.SpottingTripID}, SpottingPictureAircraftID = {spottingPicture.AircraftID}, SpottingPictureAirportID = {spottingPicture.AirportID} WHERE SpottingPictureID = {spottingPicture.ID}";
+                cmd.ExecuteNonQuery();
+                app.Logger.LogInformation("Updated a SpottingPicture Object");
+                con.Close();
+            }
+            catch (Exception e)
+            {
+                app.Logger.LogError(e.Message);
+            }
+            con.Close();
+        }
     }
 }
 
