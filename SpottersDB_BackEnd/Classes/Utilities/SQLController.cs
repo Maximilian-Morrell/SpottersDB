@@ -1,5 +1,7 @@
 ﻿using Microsoft.Data.SqlClient;
 using SpottersDB_BackEnd.Classes.Structure;
+using System.Data;
+using System.Data.Common;
 
 namespace SpottersDB_BackEnd.Classes.Utilities
 {
@@ -8,6 +10,7 @@ namespace SpottersDB_BackEnd.Classes.Utilities
         // Instances for reuse
         private SqlConnection con = new SqlConnection("server = (localdb)\\MSSQLLocalDB; integrated security = false;");
         private SqlCommand cmd = null;
+        private SqlDataReader reader = null;
         private WebApplication app;
         // JUST FOR DEBUGGING
         private bool isDebugMode = true;
@@ -60,7 +63,7 @@ namespace SpottersDB_BackEnd.Classes.Utilities
                 app.Logger.LogInformation("Created the Database: " + DatabaseName);
                 con.ChangeDatabase(DatabaseName);
                 // Creates the Countries Table
-                cmd.CommandText = "CREATE TABLE Countries (CountryID int NOT NULL PRIMARY KEY IDENTITY, CountryICAOCode char(10), CountryName text);";
+                cmd.CommandText = "CREATE TABLE Countries (CountryID int NOT NULL PRIMARY KEY IDENTITY, CountryICAOCode varchar(10), CountryName text);";
                 cmd.ExecuteNonQuery();
                 app.Logger.LogInformation("Created the Table Countries");
                 // Creates the Airports Table
@@ -370,6 +373,54 @@ namespace SpottersDB_BackEnd.Classes.Utilities
                 app.Logger.LogError(e.Message);
             }
             con.Close();
+        }
+
+        public List<Country> GetCountries()
+        {
+            List<Country> Countries = null;
+            try
+            {
+                con.Open();
+                cmd.CommandText = $"SELECT * FROM Countries";
+                reader = cmd.ExecuteReader();
+                Countries = new List<Country>();
+                while (reader.Read())
+                {
+                    Country country = new Country(Convert.ToInt32(reader["CountryID"]), Convert.ToString(reader["CountryICAOCode"]), Convert.ToString(reader["CountryName"]));
+                    Countries.Add(country);
+                }
+                app.Logger.LogInformation("Read " + Countries.Count + " Country Objects");
+                con.Close();
+            }
+            catch (Exception e)
+            {
+                app.Logger.LogInformation(e.Message);
+            }
+            con.Close();
+            return Countries;
+        }
+
+        public Country GetCountryByID(int ID)
+        {
+            Country country = null;
+            try
+            {
+                con.Open();
+                cmd.CommandText = $"SELECT * FROM Countries WHERE CountryID = {ID}";
+                reader = cmd.ExecuteReader();
+                while(reader.Read())
+                {
+                    country = new Country(Convert.ToInt32(reader["CountryID"]), Convert.ToString(reader["CountryICAOCode"]), Convert.ToString(reader["CountryName"]));
+                }
+                app.Logger.LogInformation("Read the Country Object with the ID: " + ID);
+                con.Close();
+            }
+            catch (Exception e)
+            {
+                app.Logger.LogInformation(e.Message);
+            }
+            con.Close();
+            return country;
         }
     }
 }
