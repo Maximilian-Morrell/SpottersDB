@@ -63,7 +63,7 @@ namespace SpottersDB_BackEnd.Classes.Utilities
                 app.Logger.LogInformation("Created the Database: " + DatabaseName);
                 con.ChangeDatabase(DatabaseName);
                 // Creates the Countries Table
-                cmd.CommandText = "CREATE TABLE Countries (CountryID int NOT NULL PRIMARY KEY IDENTITY, CountryICAOCode varchar(10), CountryName varchar(255);";
+                cmd.CommandText = "CREATE TABLE Countries (CountryID int NOT NULL PRIMARY KEY IDENTITY, CountryICAOCode varchar(10), CountryName varchar(255));";
                 cmd.ExecuteNonQuery();
                 app.Logger.LogInformation("Created the Table Countries");
                 // Creates the Airports Table
@@ -295,7 +295,7 @@ namespace SpottersDB_BackEnd.Classes.Utilities
             try
             {
                 con.Open();
-                cmd.CommandText = $"UPDATE AircraftTypes SET AircraftTypeICAO = '{aircraftType.ICAOCode}', AircraftTypeName = '{aircraftType.NickName}', AircraftTypeNickName = '{aircraftType.NickName}', AircraftTypeManufactorerID = {aircraftType.ManufactorerID} WHERE AircraftTypeID = {aircraftType.ID}";
+                cmd.CommandText = $"UPDATE AircraftTypes SET AircraftTypeICAO = '{aircraftType.ICAOCode}', AircraftTypeName = '{aircraftType.FullName}', AircraftTypeNickName = '{aircraftType.NickName}', AircraftTypeManufactorerID = {aircraftType.ManufactorerID} WHERE AircraftTypeID = {aircraftType.ID}";
                 cmd.ExecuteNonQuery();
                 app.Logger.LogInformation("Updated AircraftType Object");
                 con.Close();
@@ -411,7 +411,6 @@ namespace SpottersDB_BackEnd.Classes.Utilities
                 {
                     country = new Country(Convert.ToInt32(reader["CountryID"]), Convert.ToString(reader["CountryICAOCode"]), Convert.ToString(reader["CountryName"]));
                 }
-                app.Logger.LogInformation("Read the Country Object with the ID: " + ID);
                 con.Close();
             }
             catch (Exception e)
@@ -510,6 +509,51 @@ namespace SpottersDB_BackEnd.Classes.Utilities
             }
             con.Close();
             return airline;
+        }
+
+        public List<AircraftType> GetAircraftTypes()
+        {
+            List<AircraftType> AircraftTypes = new List<AircraftType>();
+            try
+            {
+                con.Open();
+                cmd.CommandText = $"SELECT * FROM AircraftTypes";
+                reader = cmd.ExecuteReader();
+                while (reader.Read())
+                {
+                   AircraftType aircraftType = new AircraftType(Convert.ToInt32(reader["AircraftTypeID"]), Convert.ToString(reader["AircraftTypeICAO"]), Convert.ToString(reader["AircraftTypeName"]), Convert.ToString(reader["AircraftTypeNickName"]), Convert.ToInt32(reader["AircraftTypeManufactorerID"]));
+                   AircraftTypes.Add(aircraftType);
+                }
+                con.Close();
+            }
+            catch (Exception e)
+            {
+                app.Logger.LogError(e.Message);
+            }
+            con.Close();
+            return AircraftTypes;
+        }
+
+        public AircraftType GetAircraftTypeByID(int ID)
+        {
+            AircraftType aircraftType = null;
+            try
+            {
+                con.Open();
+                cmd.CommandText = $"SELECT * FROM AircraftTypes WHERE AircraftTypeID = {ID}";
+                reader = cmd.ExecuteReader();
+                while(reader.Read())
+                {
+                    aircraftType = new AircraftType(Convert.ToInt32(reader["AircraftTypeID"]), Convert.ToString(reader["AircraftTypeICAO"]), Convert.ToString(reader["AircraftTypeName"]), Convert.ToString(reader["AircraftTypeNickName"]), Convert.ToInt32(reader["AircraftTypeManufactorerID"]));
+                }
+                con.Close();
+            }
+            catch (Exception e)
+            {
+                app.Logger.LogError(e.Message);
+            }
+            con.Close();
+            return aircraftType;
         }
     }
 }

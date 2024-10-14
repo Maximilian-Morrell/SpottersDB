@@ -1,6 +1,7 @@
 ﻿using SpottersDB_BackEnd.Classes.Structure;
 using SpottersDB_BackEnd.Classes.Utilities;
 using System.Reflection;
+using System.Text.Json;
 
 namespace SpottersDB_BackEnd.Classes.API
 {
@@ -27,6 +28,12 @@ namespace SpottersDB_BackEnd.Classes.API
             app.MapGet("/Get/Airlines", GET_Airlines);
             // Get Airline By ID Route
             app.MapGet("/Get/Airline", (int ID) => GET_Airline(ID));
+
+            // Get AircraftTypes Route
+            app.MapGet("/Get/AircraftTypes", GET_AircraftTypes);
+            // Get AircraftType By ID Route
+            app.MapGet("/Get/AircraftType", (int ID) => GET_AircraftType(ID));
+            
         }
 
         private List<Country> GET_Countries()
@@ -57,6 +64,16 @@ namespace SpottersDB_BackEnd.Classes.API
         private Airline GET_Airline(int ID)
         {
             return sqlcontroller.GetAirlineByID(ID);
+        }
+
+        private List<AircraftType> GET_AircraftTypes()
+        {
+            return sqlcontroller.GetAircraftTypes();
+        }
+
+        private AircraftType GET_AircraftType(int ID)
+        {
+            return sqlcontroller.GetAircraftTypeByID(ID);
         }
     }
 }
