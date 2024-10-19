@@ -36,5 +36,10 @@ namespace SpottersDB_FrontEnd.Classes.Utilities
             }
             return countries;
         }
+
+        public void EditCountry(Country country)
+        {
+            //_httpClient.PostAsync("/Patch/Country",)
+        }
     }
 }

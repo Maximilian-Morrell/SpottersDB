@@ -53,6 +53,12 @@ namespace SpottersDB_FrontEnd.Classes.Structure
 
         }
 
+        public Country(string ICAO, string Name)
+        {
+            icaO_Code = ICAO;
+            name = Name;
+        }
+
         public Country(int ID, string ICAO, string Name)
         {
             id = ID;
