@@ -600,6 +600,51 @@ namespace SpottersDB_BackEnd.Classes.Utilities
             con.Close();
             return manufactorer;
         }
+
+        public List<Aircraft> GetAircrafts()
+        {
+            List<Aircraft> aircrafts = new List<Aircraft>();
+            try
+            {
+                con.Open();
+                cmd.CommandText = "SELECT * FROM Aircrafts";
+                reader = cmd.ExecuteReader();
+                while(reader.Read())
+                {
+                    Aircraft aircraft = new Aircraft(Convert.ToInt32(reader["AircraftID"]), Convert.ToString(reader["AircraftRegistration"]), Convert.ToString(reader["AircraftDescription"]), Convert.ToInt32(reader["AircraftTypeID"]), Convert.ToInt32(reader["AircraftCountryID"]), Convert.ToInt32(reader["AircraftAirlineID"]));
+                    aircrafts.Add(aircraft);
+                }
+                con.Close();
+            }
+            catch (Exception e)
+            {
+                app.Logger.LogError(e.Message);
+            }
+            con.Close();
+            return aircrafts;
+        }
+
+        public Aircraft GetAircraftByID(int id)
+        {
+            Aircraft aircraft = null;
+            try
+            {
+                con.Open();
+                cmd.CommandText = $"SELECT * FROM Aircrafts WHERE AircraftID = {id}";
+                reader = cmd.ExecuteReader();
+                while(reader.Read())
+                {
+                    aircraft = new Aircraft(Convert.ToInt32(reader["AircraftID"]), Convert.ToString(reader["AircraftRegistration"]), Convert.ToString(reader["AircraftDescription"]), Convert.ToInt32(reader["AircraftTypeID"]), Convert.ToInt32(reader["AircraftCountryID"]), Convert.ToInt32(reader["AircraftAirlineID"]));
+                }
+                con.Close();
+            }
+            catch (Exception e)
+            {
+                app.Logger.LogError(e.Message);
+            }
+            con.Close();
+            return aircraft;
+        }
     }
 }
 
