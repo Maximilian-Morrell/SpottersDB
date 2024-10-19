@@ -3,12 +3,14 @@
     x:Class="SpottersDB_FrontEnd.AppShell"
     xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-    xmlns:local="clr-namespace:SpottersDB_FrontEnd"
+    xmlns:local="clr-namespace:SpottersDB_FrontEnd.Views"
     Shell.FlyoutBehavior="Disabled">
 
-    <ShellContent
-        Title="Home"
-        ContentTemplate="{DataTemplate local:MainPage}"
-        Route="MainPage" />
+    <TabBar>
+    <ShellContent 
+            Title="MainPage"
+            ContentTemplate="{DataTemplate local:MainPage}"
+            />
+    </TabBar>
 
 </Shell>
