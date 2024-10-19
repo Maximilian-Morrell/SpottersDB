@@ -48,6 +48,11 @@ namespace SpottersDB_BackEnd.Classes.API
             app.MapGet("/Get/SpottingTrips", GET_SpottingTrips);
             // Get SpottingTrip By ID Route
             app.MapGet("/Get/SpottingTrip", (int ID) => GET_SpottingTrip(ID));
+
+            // Get SpottingPictures Route
+            app.MapGet("/Get/SpottingPictures", GET_SpottingPictures);
+            // Get SpottingPicture By ID Route
+            app.MapGet("/Get/SpottingPicture", (int ID) => GET_SpottingPicture(ID));
         }
 
         private List<Country> GET_Countries()
@@ -118,6 +123,16 @@ namespace SpottersDB_BackEnd.Classes.API
         public SpottingTrip GET_SpottingTrip(int ID)
         {
             return sqlcontroller.GetSpottingTripByID(ID);
+        }
+
+        public List<SpottingPicture> GET_SpottingPictures()
+        {
+            return sqlcontroller.GetSpottingPictures();
+        }
+
+        public SpottingPicture GET_SpottingPicture(int ID)
+        {
+            return sqlcontroller.GetSpottingPictureByID(ID);
         }
     }
 }

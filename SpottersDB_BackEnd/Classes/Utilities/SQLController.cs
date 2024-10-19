@@ -690,6 +690,51 @@ namespace SpottersDB_BackEnd.Classes.Utilities
             con.Close();
             return spottingTrip;
         }
+
+        public List<SpottingPicture> GetSpottingPictures()
+        {
+            List<SpottingPicture> spottingPictures = new List<SpottingPicture>();
+            try
+            {
+                con.Open();
+                cmd.CommandText = "SELECT * FROM SpottingPictures";
+                reader = cmd.ExecuteReader();
+                while(reader.Read())
+                {
+                    SpottingPicture spottingPicture = new SpottingPicture(Convert.ToInt32(reader["SpottingPictureID"]), Convert.ToString(reader["SpottingPictureName"]), Convert.ToString(reader["SpottingPictureDescription"]), Convert.ToString(reader["SpottingPictureURL"]), Convert.ToString(reader["SpottingPictureOriginalFileName"]), Convert.ToInt32(reader["SpottingPictureSpottingTripID"]), Convert.ToInt32(reader["SpottingPictureAircraftID"]), Convert.ToInt32(reader["SpottingPictureAirportID"]));
+                    spottingPictures.Add(spottingPicture);
+                }
+                con.Close();
+            }
+            catch (Exception e)
+            {
+                app.Logger.LogError(e.Message);
+            }
+            con.Close();
+            return spottingPictures;
+        }
+
+        public SpottingPicture GetSpottingPictureByID(int id)
+        {
+            SpottingPicture spottingPicture = null;
+            try
+            {
+                con.Open();
+                cmd.CommandText = $"SELECT * FROM SpottingPictures WHERE SpottingPictureID = {id}";
+                reader = cmd.ExecuteReader();
+                while(reader.Read())
+                {
+                    spottingPicture = new SpottingPicture(Convert.ToInt32(reader["SpottingPictureID"]), Convert.ToString(reader["SpottingPictureName"]), Convert.ToString(reader["SpottingPictureDescription"]), Convert.ToString(reader["SpottingPictureURL"]), Convert.ToString(reader["SpottingPictureOriginalFileName"]), Convert.ToInt32(reader["SpottingPictureSpottingTripID"]), Convert.ToInt32(reader["SpottingPictureAircraftID"]), Convert.ToInt32(reader["SpottingPictureAirportID"]));
+                }
+                con.Close();
+            }
+            catch (Exception e)
+            {
+                app.Logger.LogError(e.Message);
+            }
+            con.Close();
+            return spottingPicture;
+        }
     }
 }
 
