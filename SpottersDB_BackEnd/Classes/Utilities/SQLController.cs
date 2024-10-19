@@ -645,6 +645,51 @@ namespace SpottersDB_BackEnd.Classes.Utilities
             con.Close();
             return aircraft;
         }
+
+        public List<SpottingTrip> GetSpottingTrips()
+        {
+            List<SpottingTrip> spottingTrips = new List<SpottingTrip>();
+            try
+            {
+                con.Open();
+                cmd.CommandText = "SELECT * FROM SpottingTrips";
+                reader = cmd.ExecuteReader();
+                while(reader.Read())
+                {
+                    SpottingTrip spottingTrip = new SpottingTrip(Convert.ToInt32(reader["SpottingTripID"]), Convert.ToDateTime(reader["SpottingTripStart"]), Convert.ToDateTime(reader["SpottingTripEnd"]), Convert.ToString(reader["SpottingTripName"]), Convert.ToString(reader["SpottingTripDescription"]));
+                    spottingTrips.Add(spottingTrip);
+                }
+                con.Close();
+            }
+            catch (Exception e)
+            {
+                app.Logger.LogError(e.Message);
+            }
+            con.Close();
+            return spottingTrips;
+        }
+
+        public SpottingTrip GetSpottingTripByID(int id)
+        {
+            SpottingTrip spottingTrip = null;
+            try
+            {
+                con.Open();
+                cmd.CommandText = $"SELECT * FROM SpottingTrips WHERE SpottingTripID = {id}";
+                reader = cmd.ExecuteReader();
+                while(reader.Read())
+                {
+                    spottingTrip = new SpottingTrip(Convert.ToInt32(reader["SpottingTripID"]), Convert.ToDateTime(reader["SpottingTripStart"]), Convert.ToDateTime(reader["SpottingTripEnd"]), Convert.ToString(reader["SpottingTripName"]), Convert.ToString(reader["SpottingTripDescription"]));
+                }
+                con.Close();
+            }
+            catch (Exception e)
+            {
+                app.Logger.LogError(e.Message);
+            }
+            con.Close();
+            return spottingTrip;
+        }
     }
 }
 
