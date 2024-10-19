@@ -15,10 +15,10 @@
             <ColumnDefinition></ColumnDefinition>
         </Grid.ColumnDefinitions>
         <Label Grid.Row="0" Grid.Column="0" Text="ICAO:"></Label>
-        <Editor Grid.Row="0" Grid.Column="1" x:Name="CountryICAO"></Editor>
+        <Entry Grid.Row="0" Grid.Column="1" x:Name="CountryICAO"></Entry>
 
         <Label Grid.Row="1" Grid.Column="0" Text="Name:"></Label>
-        <Editor Grid.Row="1" Grid.Column="1" x:Name="CountryName"></Editor>
+        <Entry Grid.Row="1" Grid.Column="1" x:Name="CountryName"></Entry>
 
         <Button Grid.Row="2" Grid.ColumnSpan="2" Text="Submit" x:Name="Submit"></Button>
     </Grid>
