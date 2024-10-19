@@ -555,6 +555,51 @@ namespace SpottersDB_BackEnd.Classes.Utilities
             con.Close();
             return aircraftType;
         }
+
+        public List<Manufactorer> GetManufactorers()
+        {
+            List<Manufactorer> Manufactorers = new List<Manufactorer>();
+            try
+            {
+                con.Open();
+                cmd.CommandText = $"SELECT * FROM Manufactorers";
+                reader = cmd.ExecuteReader();
+                while(reader.Read())
+                {
+                    Manufactorer manufactorer = new Manufactorer(Convert.ToInt32(reader["ManufactorerID"]), Convert.ToString(reader["ManufactorerName"]), Convert.ToInt32(reader["ManufactorerRegion"]));
+                    Manufactorers.Add(manufactorer);
+                }
+                con.Close();
+            }
+            catch (Exception e)
+            {
+                app.Logger.LogError(e.Message);
+            }
+            con.Close();
+            return Manufactorers;
+        }
+
+        public Manufactorer GetManufactorerByID(int id)
+        {
+            Manufactorer manufactorer = null;
+            try
+            {
+                con.Open();
+                cmd.CommandText = $"SELECT * FROM Manufactorers WHERE ManufactorerID = {id}";
+                reader = cmd.ExecuteReader();
+                while(reader.Read())
+                {
+                    manufactorer = new Manufactorer(Convert.ToInt32(reader["ManufactorerID"]), Convert.ToString(reader["ManufactorerName"]), Convert.ToInt32(reader["ManufactorerRegion"]));
+                }
+                con.Close();
+            }
+            catch (Exception e)
+            {
+                app.Logger.LogError(e.Message);
+            }
+            con.Close();
+            return manufactorer;
+        }
     }
 }
 
