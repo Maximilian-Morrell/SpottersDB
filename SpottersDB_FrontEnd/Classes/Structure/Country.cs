@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace SpottersDB_FrontEnd.Classes.Structure
 {
-    internal class Country
+    public class Country
     {
         private int _CountryID;
         private string _CountryICAOCode;

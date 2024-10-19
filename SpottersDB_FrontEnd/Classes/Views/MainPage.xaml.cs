@@ -22,12 +22,22 @@ namespace SpottersDB_FrontEnd.Classes.Views
 
         private async void LoadCountries()
         {
+
             countries = await httpController.GetCountries();
             foreach(Country country in countries)
             {
                 CountryCard countryCard = new CountryCard();
+                countryCard.EditClicked += CountryCard_EditClicked;
                 CountryParent.Children.Add(countryCard.Card(country));
             }
+        }
+
+        private EventHandler CountryCard_EditClicked(Country country)
+        {
+            EditCountryModal editCountryModal = new EditCountryModal(country);
+            Navigation.PushAsync(editCountryModal);
+
+            return null;
         }
     }
 }
