@@ -12,7 +12,7 @@
 
                     </HorizontalStackLayout>
                 </ScrollView>
-                <Button Text="Add a Country" HorizontalOptions="StartAndExpand"></Button>
+                <Button Text="Add a Country" HorizontalOptions="StartAndExpand" x:Name="AddCountry"></Button>
             </VerticalStackLayout>
         </VerticalStackLayout>
 

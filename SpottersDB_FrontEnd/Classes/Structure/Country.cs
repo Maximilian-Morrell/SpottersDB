@@ -32,7 +32,14 @@ namespace SpottersDB_FrontEnd.Classes.Structure
             }
             set
             {
-                _CountryICAOCode = value;
+                if(value == null)
+                {
+                    _CountryICAOCode = "";
+                }
+                else
+                {
+                    _CountryICAOCode = value;
+                }
             }
         }
 
@@ -44,7 +51,14 @@ namespace SpottersDB_FrontEnd.Classes.Structure
             }
             set
             {
-                _CountryName = value;
+                if(value == null)
+                {
+                    _CountryName = "";
+                }
+                else
+                {
+                    _CountryName = value;
+                }
             }
         }
 

@@ -37,9 +37,25 @@ namespace SpottersDB_FrontEnd.Classes.Utilities
             return countries;
         }
 
-        public void EditCountry(Country country)
+        public async Task<HttpResponseMessage> EditCountry(Country country)
         {
-            //_httpClient.PostAsync("/Patch/Country",)
+            MultipartFormDataContent content = new MultipartFormDataContent();
+            content.Add(new StringContent(country.id.ToString()), "ID");
+            content.Add(new StringContent(country.icaO_Code), "ICAO");
+            content.Add(new StringContent(country.name), "Name");
+
+            HttpResponseMessage response = await _httpClient.PostAsync("/Patch/Country", content);
+            return response;
+        }
+
+        public async Task<HttpResponseMessage> AddCountry(Country country)
+        {
+            MultipartFormDataContent content = new MultipartFormDataContent();
+            content.Add(new StringContent(country.icaO_Code), "ICAO");
+            content.Add(new StringContent(country.name), "Name");
+
+            HttpResponseMessage response = await _httpClient.PostAsync("/Post/Country", content);
+            return response;
         }
     }
 }

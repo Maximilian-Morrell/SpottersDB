@@ -101,6 +101,7 @@ namespace SpottersDB_BackEnd.Classes.Utilities
             {
                 app.Logger.LogError(e.Message);
             }
+            con.Close();
         }
 
         public void AddCountry(Country country)

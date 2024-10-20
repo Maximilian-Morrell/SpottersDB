@@ -13,15 +13,24 @@ namespace SpottersDB_FrontEnd.Classes.Views
             InitializeComponent();
             httpController = new HTTP_Controller();
             LoadEverything();
+            AddCountry.Clicked += AddCountry_Clicked;
         }
 
-        private void LoadEverything()
+        public void LoadEverything()
         {
             LoadCountries();
         }
 
+        protected override void OnAppearing()
+        {
+            LoadEverything();
+            base.OnAppearing();
+        }
+
         private async void LoadCountries()
         {
+
+            CountryParent.Children.Clear();
 
             countries = await httpController.GetCountries();
             foreach(Country country in countries)
@@ -30,6 +39,12 @@ namespace SpottersDB_FrontEnd.Classes.Views
                 countryCard.EditClicked += CountryCard_EditClicked;
                 CountryParent.Children.Add(countryCard.Card(country));
             }
+        }
+
+        private void AddCountry_Clicked(object sender, EventArgs e)
+        {
+            EditCountryModal editCountryModal = new EditCountryModal();
+            Navigation.PushAsync(editCountryModal);
         }
 
         private EventHandler CountryCard_EditClicked(Country country)
