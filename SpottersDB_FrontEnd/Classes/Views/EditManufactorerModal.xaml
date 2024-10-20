@@ -1,27 +1,25 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:Structure="clr-namespace:SpottersDB_FrontEnd.Classes.Structure"
              x:Class="SpottersDB_FrontEnd.Classes.Views.EditManufactorerModal"
              Title="EditManufactorerModal">
-    <Grid MaximumHeightRequest="420" Padding="20" RowSpacing="10" VerticalOptions="StartAndExpand">
+    
+    <Grid MaximumHeightRequest="420" Padding="20" RowSpacing="10" VerticalOptions="StartAndExpand" x:Name="GridMain">
         <Grid.RowDefinitions>
-            <RowDefinition></RowDefinition>
-            <RowDefinition></RowDefinition>
-            <RowDefinition></RowDefinition>
+            <RowDefinition/>
+            <RowDefinition/>
+            <RowDefinition/>
         </Grid.RowDefinitions>
         <Grid.ColumnDefinitions>
-            <ColumnDefinition></ColumnDefinition>
-            <ColumnDefinition></ColumnDefinition>
+            <ColumnDefinition/>
+            <ColumnDefinition/>
         </Grid.ColumnDefinitions>
-        <Label Grid.Row="0" Grid.Column="0" Text="Name:"></Label>
-        <Entry Grid.Row="0" Grid.Column="1" x:Name="ManufactorerName"></Entry>
+        <Label Grid.Row="0" Grid.Column="0" Text="Name:"/>
+        <Entry Grid.Row="0" Grid.Column="1" x:Name="ManufactorerName"/>
 
-        <Label Grid.Row="1" Grid.Column="0" Text="Region: "></Label>
-        <Picker Grid.Row="1" Grid.Column="1" Title="Select a Region" x:Name="ManufactorerRegionDropDown">
-            <Picker.ItemsSource>
-            </Picker.ItemsSource>
-        </Picker>
+        <Label Grid.Row="1" Grid.Column="0" Text="Region: "/>
 
-        <Button Grid.Row="2" Grid.ColumnSpan="2" Text="Submit" x:Name="Submit"></Button>
+        <Button Grid.Row="2" Grid.ColumnSpan="2" Text="Submit" x:Name="Submit"/>
     </Grid>
 </ContentPage>
