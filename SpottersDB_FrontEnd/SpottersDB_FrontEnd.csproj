@@ -52,6 +52,9 @@
 	  <MauiXaml Update="Classes\Views\EditCountryModal.xaml">
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>
+	  <MauiXaml Update="Classes\Views\EditManufactorerModal.xaml">
+	    <Generator>MSBuild:Compile</Generator>
+	  </MauiXaml>
 	</ItemGroup>
 
 </Project>

@@ -5,40 +5,68 @@ using SpottersDB_FrontEnd.Classes.Utilities;
 namespace SpottersDB_FrontEnd.Classes.Views
 {
     public partial class MainPage : ContentPage
-    {
-        HTTP_Controller httpController;
-        List<Country> countries;
+    {   
         public MainPage()
         {
             InitializeComponent();
-            httpController = new HTTP_Controller();
-            LoadEverything();
             AddCountry.Clicked += AddCountry_Clicked;
         }
 
-        public void LoadEverything()
+        public async void LoadEverything()
         {
             LoadCountries();
         }
 
-        protected override void OnAppearing()
+        protected override void OnNavigatedTo(NavigatedToEventArgs args)
         {
             LoadEverything();
-            base.OnAppearing();
+            base.OnNavigatedTo(args);
         }
 
         private async void LoadCountries()
         {
 
             CountryParent.Children.Clear();
+            RegionParent.Children.Clear();
 
-            countries = await httpController.GetCountries();
+            List<Country> countries = await HTTP_Controller.GetCountries();
             foreach(Country country in countries)
             {
                 CountryCard countryCard = new CountryCard();
                 countryCard.EditClicked += CountryCard_EditClicked;
-                CountryParent.Children.Add(countryCard.Card(country));
+                if(country.icaO_Code == "")
+                {
+                    RegionParent.Children.Add(countryCard.Card(country));
+                }
+                else
+                {
+                    CountryParent.Children.Add(countryCard.Card(country));
+                }
             }
+
+            LoadManufactorers();
+        }
+
+        private async void LoadManufactorers()
+        {
+            ManufactorerParent.Children.Clear();
+
+            List<Manufactorer> manufactorers = await HTTP_Controller.GetManufactorers();
+            foreach(Manufactorer manufactorer in manufactorers)
+            {
+                ManufactorerCard man = new ManufactorerCard();
+                man.EditClicked += Manufactorer_EditClicked;
+                Frame f = await man.Card(manufactorer);
+                ManufactorerParent.Children.Add(f);
+            }
+        }
+
+        private EventHandler Manufactorer_EditClicked(Manufactorer manufactorer)
+        {
+            EditManufactorerModal editManufactorerModal = new EditManufactorerModal(manufactorer);
+            Navigation.PushAsync(editManufactorerModal);
+
+            return null;
         }
 
         private void AddCountry_Clicked(object sender, EventArgs e)

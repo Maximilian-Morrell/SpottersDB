@@ -29,18 +29,17 @@ public partial class EditCountryModal : ContentPage
 
     private async void Submit_Clicked(object sender, EventArgs e)
     {
-        HTTP_Controller httpController = new HTTP_Controller();
         Country c;
         if (IsEdit)
         {
             c = new Country(ID, CountryICAO.Text, CountryName.Text);
-            await httpController.EditCountry(c);
+            await HTTP_Controller.EditCountry(c);
             Navigation.RemovePage(this);
         }
         else
         {
             c = new Country(CountryICAO.Text, CountryName.Text);
-            await httpController.AddCountry(c);
+            await HTTP_Controller.AddCountry(c);
             Navigation.RemovePage(this);
         }
 

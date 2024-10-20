@@ -1,5 +1,4 @@
 ﻿using SpottersDB_FrontEnd.Classes.Structure;
-using Microsoft.Maui;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -8,20 +7,13 @@ using System.Threading.Tasks;
 
 namespace SpottersDB_FrontEnd.Classes.UI_Elements.Cards
 {
-    internal class CountryCard
+    class ManufactorerCard
     {
-        public CountryCard()
+        public delegate EventHandler EditClickHandler(Manufactorer manufactorer);
+        public event EditClickHandler EditClicked;
+
+        public async Task<Frame> Card(Manufactorer manufactorer)
         {
-
-        }
-
-        public delegate EventHandler EditClickedHandler(Country country);
-        public event EditClickedHandler EditClicked;
-
-        public Frame Card(Country country)
-        {
-            
-
             Frame f = new Frame();
             f.CornerRadius = 10;
             f.Padding = 10;
@@ -34,23 +26,23 @@ namespace SpottersDB_FrontEnd.Classes.UI_Elements.Cards
             parent.Spacing = 10;
 
             Label lblName = new Label();
-            lblName.Text = country.name;
+            lblName.Text = manufactorer.name;
             lblName.FontSize = 48;
             lblName.FontAttributes = FontAttributes.Bold;
             lblName.HorizontalTextAlignment = TextAlignment.Center;
             parent.Children.Add(lblName);
 
-            Label lblICAO = new Label();
-            lblICAO.Text = country.icaO_Code;
-            lblICAO.HorizontalTextAlignment = TextAlignment.Center;
-            parent.Children.Add(lblICAO);
+            Label lblRegion = new Label();
+            Country c = await manufactorer.GetRegion();
+            lblRegion.Text = c.name;
+            lblRegion.HorizontalTextAlignment = TextAlignment.Center;
+            parent.Children.Add(lblRegion);
 
             Button editBtn = new Button();
             editBtn.Text = "Edit";
-            editBtn.CommandParameter = country;
+            editBtn.CommandParameter = manufactorer;
             editBtn.Clicked += EditBtn_Clicked;
             editBtn.HorizontalOptions = LayoutOptions.Center;
-
             parent.Children.Add(editBtn);
 
             return f;
@@ -59,8 +51,8 @@ namespace SpottersDB_FrontEnd.Classes.UI_Elements.Cards
         private void EditBtn_Clicked(object sender, EventArgs e)
         {
             Button b = sender as Button;
-            EditClickedHandler handler = EditClicked;
-            handler(b.CommandParameter as Country);
+            EditClickHandler handler = EditClicked;
+            handler(b.CommandParameter as Manufactorer);
         }
     }
 }

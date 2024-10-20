@@ -18,6 +18,7 @@ namespace SpottersDB_BackEnd.Classes.Utilities
         // Checks if DB Exists
         public void ConnectToDB(string DatabaseName, WebApplication app)
         {
+
             cmd = new SqlCommand("", con);
             // JUST FOR DEBUGGING
             if (isDebugMode)
@@ -26,6 +27,7 @@ namespace SpottersDB_BackEnd.Classes.Utilities
                 cmd.CommandText = "DROP DATABASE " + DatabaseName;
                 cmd.ExecuteNonQuery();
                 isDebugMode = false;
+                con.Close();
             }
             try
             {
@@ -101,13 +103,22 @@ namespace SpottersDB_BackEnd.Classes.Utilities
             {
                 app.Logger.LogError(e.Message);
             }
-            con.Close();
+
+            if (con.State == System.Data.ConnectionState.Open)
+            {
+                con.Close();
+            }
         }
 
         public void AddCountry(Country country)
         {
             try
             {
+                if (con.State == System.Data.ConnectionState.Open)
+                {
+                    con.Close();
+                }
+
                 con.Open();
                 cmd.CommandText = $"INSERT INTO Countries (CountryICAOCode, CountryName) VALUES ('{country.ICAO_Code}', '{country.Name}')";
                 cmd.ExecuteNonQuery();
@@ -119,7 +130,10 @@ namespace SpottersDB_BackEnd.Classes.Utilities
                 app.Logger.LogError(e.Message);
             }
 
-            con.Close();
+            if (con.State == System.Data.ConnectionState.Open)
+            {
+                con.Close();
+            }
         }
 
         public void AddAirport(Airport airport)
@@ -136,7 +150,11 @@ namespace SpottersDB_BackEnd.Classes.Utilities
             {
                 app.Logger.LogError(e.Message);
             }
-            con.Close();
+
+            if (con.State == System.Data.ConnectionState.Open)
+            {
+                con.Close();
+            }
         }
 
         public void AddAirline(Airline airline)
@@ -153,7 +171,11 @@ namespace SpottersDB_BackEnd.Classes.Utilities
             {
                 app.Logger.LogError(e.Message);
             }
-            con.Close();
+
+            if (con.State == System.Data.ConnectionState.Open)
+            {
+                con.Close();
+            }
         }
 
         public void AddManufactorer(Manufactorer manufactorer)
@@ -170,7 +192,11 @@ namespace SpottersDB_BackEnd.Classes.Utilities
             {
                 app.Logger.LogError(e.Message);
             }
-            con.Close();
+
+            if (con.State == System.Data.ConnectionState.Open)
+            {
+                con.Close();
+            }
         }
 
         public void AddAircraftType(AircraftType aircraftType)
@@ -186,6 +212,11 @@ namespace SpottersDB_BackEnd.Classes.Utilities
             catch (Exception e)
             {
                 app.Logger.LogError(e.Message);
+            }
+
+            if (con.State == System.Data.ConnectionState.Open)
+            {
+                con.Close();
             }
         }
 
@@ -203,7 +234,11 @@ namespace SpottersDB_BackEnd.Classes.Utilities
             {
                 app.Logger.LogError(e.Message);
             }
-            con.Close();
+
+            if (con.State == System.Data.ConnectionState.Open)
+            {
+                con.Close();
+            }
         }
 
         public void AddSpottingTrip(SpottingTrip spottingTrip)
@@ -220,7 +255,11 @@ namespace SpottersDB_BackEnd.Classes.Utilities
             {
                 app.Logger.LogError(e.Message);
             }
-            con.Close();
+
+            if (con.State == System.Data.ConnectionState.Open)
+            {
+                con.Close();
+            }
         }
 
         public void AddSpottingPicture(SpottingPicture spottingPicture)
@@ -237,7 +276,11 @@ namespace SpottersDB_BackEnd.Classes.Utilities
             {
                 app.Logger.LogError(e.Message);
             }
-            con.Close();
+
+            if (con.State == System.Data.ConnectionState.Open)
+            {
+                con.Close();
+            }
         }
 
         public void UpdateCountry(Country country)
@@ -254,7 +297,11 @@ namespace SpottersDB_BackEnd.Classes.Utilities
             {
                 app.Logger.LogError(e.Message);
             }
-            con.Close();
+
+            if (con.State == System.Data.ConnectionState.Open)
+            {
+                con.Close();
+            }
         }
 
         public void UpdateAirport(Airport airport)
@@ -271,7 +318,11 @@ namespace SpottersDB_BackEnd.Classes.Utilities
             {
                 app.Logger.LogError(e.Message);
             }
-            con.Close();
+
+            if (con.State == System.Data.ConnectionState.Open)
+            {
+                con.Close();
+            }
         }
 
         public void UpdateAirline(Airline airline)
@@ -288,7 +339,11 @@ namespace SpottersDB_BackEnd.Classes.Utilities
             {
                 app.Logger.LogError(e.Message);
             }
-            con.Close();
+
+            if (con.State == System.Data.ConnectionState.Open)
+            {
+                con.Close();
+            }
         }
 
         public void UpdateAircraftType(AircraftType aircraftType)
@@ -305,7 +360,11 @@ namespace SpottersDB_BackEnd.Classes.Utilities
             {
                 app.Logger.LogError(e.Message);
             }
-            con.Close();
+
+            if (con.State == System.Data.ConnectionState.Open)
+            {
+                con.Close();
+            }
         }
 
         public void UpdateManufactorer(Manufactorer manufactorer)
@@ -322,7 +381,11 @@ namespace SpottersDB_BackEnd.Classes.Utilities
             {
                 app.Logger.LogError(e.Message);
             }
-            con.Close();
+
+            if (con.State == System.Data.ConnectionState.Open)
+            {
+                con.Close();
+            }
         }
 
         public void UpdateAircraft(Aircraft aircraft)
@@ -339,7 +402,11 @@ namespace SpottersDB_BackEnd.Classes.Utilities
             {
                 app.Logger.LogError(e.Message);
             }
-            con.Close();
+
+            if (con.State == System.Data.ConnectionState.Open)
+            {
+                con.Close();
+            }
         }
 
         public void UpdateSpottingTrip(SpottingTrip spottingTrip)
@@ -356,7 +423,11 @@ namespace SpottersDB_BackEnd.Classes.Utilities
             {
                 app.Logger.LogError(e.Message);
             }
-            con.Close();
+
+            if (con.State == System.Data.ConnectionState.Open)
+            {
+                con.Close();
+            }
         }
 
         public void UpdateSpottingPicture(SpottingPicture spottingPicture)
@@ -373,7 +444,11 @@ namespace SpottersDB_BackEnd.Classes.Utilities
             {
                 app.Logger.LogError(e.Message);
             }
-            con.Close();
+
+            if (con.State == System.Data.ConnectionState.Open)
+            {
+                con.Close();
+            }
         }
 
         public List<Country> GetCountries()
@@ -396,7 +471,11 @@ namespace SpottersDB_BackEnd.Classes.Utilities
             {
                 app.Logger.LogInformation(e.Message);
             }
-            con.Close();
+
+            if (con.State == System.Data.ConnectionState.Open)
+            {
+                con.Close();
+            }
             return Countries;
         }
 
@@ -418,7 +497,12 @@ namespace SpottersDB_BackEnd.Classes.Utilities
             {
                 app.Logger.LogInformation(e.Message);
             }
-            con.Close();
+
+            if (con.State == System.Data.ConnectionState.Open)
+            {
+                con.Close();
+            }
+
             return country;
         }
 
@@ -441,7 +525,12 @@ namespace SpottersDB_BackEnd.Classes.Utilities
             {
                 app.Logger.LogError(e.Message);
             }
-            con.Close();
+
+            if (con.State == System.Data.ConnectionState.Open)
+            {
+                con.Close();
+            }
+
             return Airports;
         }
 
@@ -463,7 +552,12 @@ namespace SpottersDB_BackEnd.Classes.Utilities
             {
                 app.Logger.LogError(e.Message);
             }
-            con.Close();
+
+            if (con.State == System.Data.ConnectionState.Open)
+            {
+                con.Close();
+            }
+
             return airport;
         }
 
@@ -486,7 +580,12 @@ namespace SpottersDB_BackEnd.Classes.Utilities
             {
                 app.Logger.LogError(e.Message);
             }
-            con.Close();
+
+            if (con.State == System.Data.ConnectionState.Open)
+            {
+                con.Close();
+            }
+
             return Airlines;
         }
 
@@ -508,7 +607,12 @@ namespace SpottersDB_BackEnd.Classes.Utilities
             {
                 app.Logger.LogError(e.Message);
             }
-            con.Close();
+
+            if (con.State == System.Data.ConnectionState.Open)
+            {
+                con.Close();
+            }
+
             return airline;
         }
 
@@ -531,7 +635,12 @@ namespace SpottersDB_BackEnd.Classes.Utilities
             {
                 app.Logger.LogError(e.Message);
             }
-            con.Close();
+
+            if (con.State == System.Data.ConnectionState.Open)
+            {
+                con.Close();
+            }
+
             return AircraftTypes;
         }
 
@@ -553,7 +662,12 @@ namespace SpottersDB_BackEnd.Classes.Utilities
             {
                 app.Logger.LogError(e.Message);
             }
-            con.Close();
+
+            if (con.State == System.Data.ConnectionState.Open)
+            {
+                con.Close();
+            }
+
             return aircraftType;
         }
 
@@ -576,7 +690,12 @@ namespace SpottersDB_BackEnd.Classes.Utilities
             {
                 app.Logger.LogError(e.Message);
             }
-            con.Close();
+
+            if (con.State == System.Data.ConnectionState.Open)
+            {
+                con.Close();
+            }
+
             return Manufactorers;
         }
 
@@ -598,7 +717,12 @@ namespace SpottersDB_BackEnd.Classes.Utilities
             {
                 app.Logger.LogError(e.Message);
             }
-            con.Close();
+
+            if (con.State == System.Data.ConnectionState.Open)
+            {
+                con.Close();
+            }
+
             return manufactorer;
         }
 
@@ -621,7 +745,12 @@ namespace SpottersDB_BackEnd.Classes.Utilities
             {
                 app.Logger.LogError(e.Message);
             }
-            con.Close();
+
+            if (con.State == System.Data.ConnectionState.Open)
+            {
+                con.Close();
+            }
+
             return aircrafts;
         }
 
@@ -643,7 +772,12 @@ namespace SpottersDB_BackEnd.Classes.Utilities
             {
                 app.Logger.LogError(e.Message);
             }
-            con.Close();
+
+            if (con.State == System.Data.ConnectionState.Open)
+            {
+                con.Close();
+            }
+
             return aircraft;
         }
 
@@ -666,7 +800,12 @@ namespace SpottersDB_BackEnd.Classes.Utilities
             {
                 app.Logger.LogError(e.Message);
             }
-            con.Close();
+
+            if (con.State == System.Data.ConnectionState.Open)
+            {
+                con.Close();
+            }
+
             return spottingTrips;
         }
 
@@ -688,7 +827,12 @@ namespace SpottersDB_BackEnd.Classes.Utilities
             {
                 app.Logger.LogError(e.Message);
             }
-            con.Close();
+
+            if (con.State == System.Data.ConnectionState.Open)
+            {
+                con.Close();
+            }
+
             return spottingTrip;
         }
 
@@ -711,7 +855,12 @@ namespace SpottersDB_BackEnd.Classes.Utilities
             {
                 app.Logger.LogError(e.Message);
             }
-            con.Close();
+
+            if (con.State == System.Data.ConnectionState.Open)
+            {
+                con.Close();
+            }
+
             return spottingPictures;
         }
 
@@ -733,7 +882,12 @@ namespace SpottersDB_BackEnd.Classes.Utilities
             {
                 app.Logger.LogError(e.Message);
             }
-            con.Close();
+
+            if (con.State == System.Data.ConnectionState.Open)
+            {
+                con.Close();
+            }
+
             return spottingPicture;
         }
     }
