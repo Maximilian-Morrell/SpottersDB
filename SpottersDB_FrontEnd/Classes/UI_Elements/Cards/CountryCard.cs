@@ -28,30 +28,57 @@ namespace SpottersDB_FrontEnd.Classes.UI_Elements.Cards
             f.BackgroundColor = Color.FromRgb(128, 128, 128);
             f.HasShadow = true;
 
-            VerticalStackLayout parent = new VerticalStackLayout();
+            Grid parent = new Grid
+            {
+                RowDefinitions =
+                {
+                    new RowDefinition{Height = new GridLength(2, GridUnitType.Star)},
+                    new RowDefinition(),
+                   // new RowDefinition(), - for the delete Button
+                    new RowDefinition()
+                }
+            };
+
             f.Content = parent;
-            parent.MinimumWidthRequest = 400;
-            parent.Spacing = 10;
+            parent.MaximumWidthRequest = 500;
+            parent.WidthRequest = 400;
+            parent.MaximumHeightRequest = 250;
+            parent.HeightRequest = 250;
+            parent.Margin = 10;
 
             Label lblName = new Label();
             lblName.Text = country.name;
-            lblName.FontSize = 48;
+            lblName.FontSize = 40;
             lblName.FontAttributes = FontAttributes.Bold;
+            lblName.VerticalOptions = LayoutOptions.Fill;
+            lblName.VerticalTextAlignment = TextAlignment.Center;
             lblName.HorizontalTextAlignment = TextAlignment.Center;
-            parent.Children.Add(lblName);
+            parent.Add(lblName, 0, 0);
 
-            Label lblICAO = new Label();
-            lblICAO.Text = country.icaO_Code;
-            lblICAO.HorizontalTextAlignment = TextAlignment.Center;
-            parent.Children.Add(lblICAO);
+            if (country.icaO_Code == "")
+            {
+                Grid.SetRowSpan(lblName, 2);
+                lblName.FontSize = 55;
+                parent.MaximumHeightRequest = 200;
+                parent.HeightRequest = 200;
+            }
+            else
+            {
+                Label lblICAO = new Label();
+                lblICAO.Text = country.icaO_Code;
+                lblICAO.FontSize = 30;
+                lblICAO.HorizontalTextAlignment = TextAlignment.Center;
+                parent.Add(lblICAO, 0, 1);
+            }
 
             Button editBtn = new Button();
             editBtn.Text = "Edit";
             editBtn.CommandParameter = country;
             editBtn.Clicked += EditBtn_Clicked;
-            editBtn.HorizontalOptions = LayoutOptions.Center;
+            editBtn.VerticalOptions = LayoutOptions.End;
+           // editBtn.HorizontalOptions = LayoutOptions.Center;
 
-            parent.Children.Add(editBtn);
+            parent.Add(editBtn,0,2);
 
             return f;
         }

@@ -10,6 +10,13 @@ namespace SpottersDB_FrontEnd.Classes.Views
         {
             InitializeComponent();
             AddCountry.Clicked += AddCountry_Clicked;
+            AddManufactorer.Clicked += AddManufactorer_Clicked;
+        }
+
+        private void AddManufactorer_Clicked(object sender, EventArgs e)
+        {
+            EditManufactorerModal editManufactorerModal = new EditManufactorerModal();
+            Navigation.PushAsync(editManufactorerModal);
         }
 
         public async void LoadEverything()

@@ -20,30 +20,49 @@ namespace SpottersDB_FrontEnd.Classes.UI_Elements.Cards
             f.BackgroundColor = Color.FromRgb(128, 128, 128);
             f.HasShadow = true;
 
-            VerticalStackLayout parent = new VerticalStackLayout();
+            Grid parent = new Grid
+            {
+                RowDefinitions =
+                {
+                    new RowDefinition(),
+                    new RowDefinition(),
+                   // new RowDefinition(), - for the delete Button
+                    new RowDefinition()
+                }
+            };
+
             f.Content = parent;
-            parent.MinimumWidthRequest = 400;
-            parent.Spacing = 10;
+            parent.MaximumWidthRequest = 500;
+            parent.WidthRequest = 400;
+            parent.MaximumHeightRequest = 200;
+            parent.HeightRequest = 200;
+            parent.Margin = 10;
 
             Label lblName = new Label();
             lblName.Text = manufactorer.name;
-            lblName.FontSize = 48;
+            lblName.FontSize = 58;
             lblName.FontAttributes = FontAttributes.Bold;
             lblName.HorizontalTextAlignment = TextAlignment.Center;
-            parent.Children.Add(lblName);
+            lblName.VerticalTextAlignment = TextAlignment.Center;
+            lblName.VerticalOptions = LayoutOptions.Center;
+            parent.Add(lblName, 0,0);
 
             Label lblRegion = new Label();
             Country c = await manufactorer.GetRegion();
             lblRegion.Text = c.name;
             lblRegion.HorizontalTextAlignment = TextAlignment.Center;
-            parent.Children.Add(lblRegion);
+            lblRegion.FontSize = 30;
+            lblRegion.VerticalOptions = LayoutOptions.Center;
+            lblRegion.VerticalTextAlignment = TextAlignment.Center;
+            parent.Add(lblRegion, 0,1);
 
             Button editBtn = new Button();
             editBtn.Text = "Edit";
             editBtn.CommandParameter = manufactorer;
             editBtn.Clicked += EditBtn_Clicked;
-            editBtn.HorizontalOptions = LayoutOptions.Center;
-            parent.Children.Add(editBtn);
+            editBtn.HorizontalOptions = LayoutOptions.Fill;
+            editBtn.VerticalOptions = LayoutOptions.End;
+            parent.Add(editBtn, 0, 2);
 
             return f;
         }

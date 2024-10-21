@@ -7,6 +7,7 @@ public partial class EditCountryModal : ContentPage
 {
     bool IsEdit;
     int ID;
+
 	public EditCountryModal()
 	{
 		InitializeComponent();
@@ -14,6 +15,17 @@ public partial class EditCountryModal : ContentPage
         Submit.Text = "Create";
         IsEdit = false;
         Submit.Clicked += Submit_Clicked;
+    }
+
+    public EditCountryModal(bool IsRegionOnly)
+    {
+        InitializeComponent();
+        Title = "Create new Country";
+        Submit.Text = "Create";
+        IsEdit = false;
+        Submit.Clicked += Submit_Clicked;
+
+        CountryICAO.IsEnabled = !IsRegionOnly;
     }
 
     public EditCountryModal(Country c)

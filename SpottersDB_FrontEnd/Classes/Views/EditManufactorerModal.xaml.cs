@@ -2,6 +2,7 @@ using Microsoft.Maui.Platform;
 using SpottersDB_FrontEnd.Classes.Structure;
 using SpottersDB_FrontEnd.Classes.Utilities;
 using System.Collections;
+using System.Reflection;
 
 namespace SpottersDB_FrontEnd.Classes.Views;
 
@@ -9,14 +10,33 @@ public partial class EditManufactorerModal : ContentPage
 {
     public List<Country> Countries = new List<Country>();
     bool IsEditing;
-    int ID = -1;
     Manufactorer manufactorer;
+    Picker RegionPicker = null;
 
     public EditManufactorerModal()
 	{
 		InitializeComponent();
         IsEditing = false;
-	}
+        Submit.Clicked += Submit_Clicked;
+    }
+
+    private void Submit_Clicked(object sender, EventArgs e)
+    {
+        string Name = ManufactorerName.Text;
+        int Region = Countries[RegionPicker.SelectedIndex].id;
+        if (IsEditing)
+        {
+           Manufactorer newManufactorer = new Manufactorer(manufactorer.id, Name, Region);
+           HTTP_Controller.UpdateManufactorer(newManufactorer);
+        }
+        else
+        {
+           Manufactorer newManufactorer = new Manufactorer(Name, Region);
+           HTTP_Controller.AddNewManufactorer(newManufactorer);
+        }
+
+        Navigation.RemovePage(this);
+    }
 
     public EditManufactorerModal(Manufactorer man)
     {
@@ -25,42 +45,61 @@ public partial class EditManufactorerModal : ContentPage
         manufactorer = man;
         IsEditing = true;
         ManufactorerName.Text = manufactorer.name;
-        GetAllRegions();
+        Submit.Clicked += Submit_Clicked;
+    }
 
+    protected override void OnNavigatedTo(NavigatedToEventArgs args)
+    {
+        GetAllRegions();
+        base.OnNavigatedTo(args);
     }
 
     public async void GetAllRegions()
     {
-        List<Country> CountriesAll = await HTTP_Controller.GetCountries();
-        Picker test = new Picker();
-        List<string> regionNames = new List<string>();
-
-        foreach (Country country in CountriesAll)
+        if(RegionPicker != null)
         {
-            if(country.icaO_Code == "")
-            {
-                regionNames.Add(country.name);
-                Countries.Add(country);
-            }
+            GridMain.Children.Remove(RegionPicker);
         }
 
-        test.ItemsSource = regionNames;
+        Countries = await HTTP_Controller.GetRegions();
+        RegionPicker  = new Picker();
+        List<string> regionNames = new List<string>();
 
+        foreach (Country country in Countries)
+        {
+            regionNames.Add(country.name + " - " + country.id);
+        }
+
+        regionNames.Add("Create New");
+
+        RegionPicker.ItemsSource = regionNames;
+
+        RegionPicker.Title = "Select a Country";
 
         if (IsEditing)
         {
-            ID = Countries.FindIndex(c => c.id == manufactorer.region);
-            test.SelectedIndex = ID;
+            int ID = Countries.FindIndex(c => c.id == manufactorer.region);
+            RegionPicker.SelectedIndex = ID;
         }
 
-        test.SelectedIndexChanged += CountrySelectionChanged;
+        RegionPicker.SelectedIndexChanged += RegionPickerSelectionChange;
 
-        GridMain.Add(test, 1, 1);
+        GridMain.Add(RegionPicker, 1, 1);
     }
 
-    private void CountrySelectionChanged(object sender, EventArgs e)
+    private void RegionPickerSelectionChange(object sender, EventArgs e)
     {
-        Picker picker = sender as Picker;
-        manufactorer.region = Countries[ID].id;
+        switch(RegionPicker.SelectedItem)
+        {
+            case "Create New":
+                CreateNewRegion();
+                break;
+        }
+    }
+
+    private void CreateNewRegion()
+    {
+        EditCountryModal editCountryModal = new EditCountryModal(true);
+        Navigation.PushAsync(editCountryModal);
     }
 }

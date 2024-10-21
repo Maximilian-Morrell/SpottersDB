@@ -479,6 +479,34 @@ namespace SpottersDB_BackEnd.Classes.Utilities
             return Countries;
         }
 
+        public List<Country> GetRegions()
+        {
+            List<Country> Countries = new List<Country>();
+            try
+            {
+                con.Open();
+                cmd.CommandText = "SELECT * FROM Countries WHERE CountryICAOCode = ''";
+                reader = cmd.ExecuteReader();
+                while (reader.Read())
+                {
+                    Country country = new Country(Convert.ToInt32(reader["CountryID"]), Convert.ToString(reader["CountryICAOCode"]), Convert.ToString(reader["CountryName"]));
+                    Countries.Add(country);
+                }
+                app.Logger.LogInformation("Read " + Countries.Count + " Country Objects");
+                con.Close();
+            }
+            catch (Exception e)
+            {
+                app.Logger.LogInformation(e.Message);
+            }
+
+            if (con.State == System.Data.ConnectionState.Open)
+            {
+                con.Close();
+            }
+            return Countries;
+        }
+
         public Country GetCountryByID(int ID)
         {
             Country country = null;

@@ -49,9 +49,27 @@ namespace SpottersDB_FrontEnd.Classes.Structure
             }
         }
 
+        public Manufactorer()
+        {
+
+        }
+
+        public Manufactorer(string Name, int Region)
+        {
+            this.name = Name;
+            this.region = Region;
+        }
+
+        public Manufactorer(int ID, string Name, int Region)
+        {
+            this.id = ID;
+            this.name = Name;
+            this.region = Region;
+        }
+
         public async Task<Country> GetRegion()
         {
-            return await HTTP_Controller.GetCountryByID(id);
+            return await HTTP_Controller.GetCountryByID(region);
         }
     }
 }

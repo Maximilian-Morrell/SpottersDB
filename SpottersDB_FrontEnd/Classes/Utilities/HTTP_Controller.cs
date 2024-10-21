@@ -39,6 +39,23 @@ namespace SpottersDB_FrontEnd.Classes.Utilities
             return countries;
         }
 
+        public static async Task<List<Country>> GetRegions()
+        {
+            List<Country> countries = new List<Country>();
+            HttpClient client = GetHttpClient();
+            try
+            {
+                HttpResponseMessage respone = await client.GetAsync("/Get/Regions");
+                string content = await respone.Content.ReadAsStringAsync();
+                countries = JsonSerializer.Deserialize<List<Country>>(content);
+            }
+            catch (Exception e)
+            {
+
+            }
+            return countries;
+        }
+
         public static async Task<HttpResponseMessage> EditCountry(Country country)
         {
             HttpClient client = GetHttpClient();
@@ -96,6 +113,31 @@ namespace SpottersDB_FrontEnd.Classes.Utilities
 
             }
             return manufactorers;
+        }
+
+        public static async Task<HttpResponseMessage> UpdateManufactorer(Manufactorer manufactorer)
+        {
+            HttpClient client = GetHttpClient();
+            
+            MultipartFormDataContent content = new MultipartFormDataContent();
+            content.Add(new StringContent(manufactorer.id.ToString()), "ID");
+            content.Add(new StringContent(manufactorer.name), "Name");
+            content.Add(new StringContent(manufactorer.region.ToString()), "Region");
+
+            HttpResponseMessage response = await client.PostAsync("/Patch/Manufactorer", content);
+            return response;
+        }
+
+        public static async Task<HttpResponseMessage> AddNewManufactorer(Manufactorer manufactorer)
+        {
+            HttpClient client = GetHttpClient();
+
+            MultipartFormDataContent content = new MultipartFormDataContent();
+            content.Add(new StringContent(manufactorer.name), "Name");
+            content.Add(new StringContent(manufactorer.region.ToString()), "Region");
+
+            HttpResponseMessage response = await client.PostAsync("/Post/Manufactorer", content);
+            return response;
         }
     }
 }
