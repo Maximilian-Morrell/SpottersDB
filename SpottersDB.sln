@@ -5,7 +5,7 @@ VisualStudioVersion = 17.0.31903.59
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SpottersDB_BackEnd", "SpottersDB_BackEnd\SpottersDB_BackEnd.csproj", "{1448A8D9-4824-4CE3-B7D9-EF008FE1AE4C}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SpottersDB_FrontEnd", "SpottersDB_FrontEnd\SpottersDB_FrontEnd.csproj", "{E5098113-429A-4A46-9639-7AF5AD5C8CBB}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SpottersDB_FrontEnd", "SpottersDB_FrontEnd\SpottersDB_FrontEnd.csproj", "{E5098113-429A-4A46-9639-7AF5AD5C8CBB}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -26,5 +26,8 @@ Global
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {9B3F792D-6B7A-4D98-8BA3-612691F33D64}
 	EndGlobalSection
 EndGlobal

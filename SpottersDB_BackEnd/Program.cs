@@ -8,7 +8,7 @@ namespace SpottersDB_BackEnd
 {
     public class Program
     {
-        public static string Domain = "https://localhost:7090";
+        public static string Domain = "";
 
         public static void Main(string[] args)
         {
@@ -36,7 +36,8 @@ namespace SpottersDB_BackEnd
             // Fallback if route is not found
             app.MapFallback(() => Results.NotFound(StatusCodes.Status404NotFound + " - API Route Not Found"));
 
-            app.Run(Domain);
+            app.UseHttpLogging();
+            app.Run();
         }
     }
 }
