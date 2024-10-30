@@ -36,7 +36,6 @@ namespace SpottersDB_BackEnd
             // Fallback if route is not found
             app.MapFallback(() => Results.NotFound(StatusCodes.Status404NotFound + " - API Route Not Found"));
 
-            app.UseHttpLogging();
             app.Run();
         }
     }
