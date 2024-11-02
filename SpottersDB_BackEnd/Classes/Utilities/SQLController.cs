@@ -947,10 +947,9 @@ namespace SpottersDB_BackEnd.Classes.Utilities
             return spottingPicture;
         }
 
-        public List<string> GetNewestImageFromCountry(int Country)
+        public string GetNewestImageFromCountry(int Country)
         {
             string newestImage = "";
-            List<string> debug = new List<string>();
             try
             {
                 con.Open();
@@ -960,7 +959,6 @@ namespace SpottersDB_BackEnd.Classes.Utilities
                     while(reader.Read())
                     {
                         newestImage = Convert.ToString(reader["SpottingPictureURL"]);
-                        debug.Add(newestImage);
                     }
                 }
                 con.Close();
@@ -970,7 +968,7 @@ namespace SpottersDB_BackEnd.Classes.Utilities
                 app.Logger.LogError(e.Message);
             }
             con.Close();
-            return debug;
+            return newestImage;
         }
 
         public List<Airport> GetAirportsFromSpottingTrip(int ID)

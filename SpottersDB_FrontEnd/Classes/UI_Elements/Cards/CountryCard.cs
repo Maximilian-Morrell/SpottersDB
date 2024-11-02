@@ -19,7 +19,7 @@ namespace SpottersDB_FrontEnd.Classes.UI_Elements.Cards
         public delegate EventHandler EditClickedHandler(Country country);
         public event EditClickedHandler EditClicked;
 
-        public Frame Card(Country country)
+        public Frame Card(Country country, string URL)
         {
             
 
@@ -28,12 +28,13 @@ namespace SpottersDB_FrontEnd.Classes.UI_Elements.Cards
             f.Padding = 10;
             f.BackgroundColor = Color.FromRgb(128, 128, 128);
             f.HasShadow = true;
+            f.Padding = 0;
+            f.Margin = 0;
 
             Grid parent = new Grid
             {
                 RowDefinitions =
                 {
-                    new RowDefinition{Height = new GridLength(2, GridUnitType.Star)},
                     new RowDefinition{Height = new GridLength(2, GridUnitType.Star)},
                     new RowDefinition(),
                    // new RowDefinition(), - for the delete Button
@@ -68,13 +69,15 @@ namespace SpottersDB_FrontEnd.Classes.UI_Elements.Cards
             }
             else
             {
-                string URL = HTTP_Controller.GetNewestPhotoFromCountry(country.id).Result;
-                parent.Add(ImageItem.GetImageItem(URL), 0, 1);
+                Frame imgF = ImageItem.GetImageItem(URL);
+                imgF.Scale = 1.2;
+                parent.SetRowSpan(imgF, 3);
+                parent.Children.Add(imgF);
                 Label lblICAO = new Label();
                 lblICAO.Text = country.icaO_Code;
                 lblICAO.FontSize = 30;
                 lblICAO.HorizontalTextAlignment = TextAlignment.Center;
-                parent.Add(lblICAO, 0, 2);
+                parent.Add(lblICAO, 0, 1);
             }
 
             Button editBtn = new Button();
@@ -84,7 +87,7 @@ namespace SpottersDB_FrontEnd.Classes.UI_Elements.Cards
             editBtn.VerticalOptions = LayoutOptions.End;
            // editBtn.HorizontalOptions = LayoutOptions.Center;
 
-            parent.Add(editBtn,0,3);
+            parent.Add(editBtn,0,2);
 
             return f;
         }

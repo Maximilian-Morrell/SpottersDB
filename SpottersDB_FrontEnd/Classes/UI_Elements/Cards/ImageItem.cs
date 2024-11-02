@@ -1,4 +1,5 @@
-﻿using System;
+﻿using SpottersDB_FrontEnd.Classes.Views;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -12,27 +13,39 @@ namespace SpottersDB_FrontEnd.Classes.UI_Elements.Cards
         public static Frame GetImageItem(string URL, string Info = "TBD")
         {
             Frame F = new Frame();
-            F.WidthRequest = 100;
-            F.HeightRequest = 100;
             F.CornerRadius = 10;
+            F.Padding = 0;
+            F.Margin = 0;
+            F.IsClippedToBounds = true;
+            F.HasShadow = false;
 
             Image image = new Image();
-            image.Source = URL;
-            image.HeightRequest = 100;
-            image.WidthRequest = 100;
+            try
+            {
+                image.Source = new UriImageSource
+                {
+                    Uri = new Uri(URL)
+                };
+            }
+            catch (Exception e)
+            {
+
+            }
+
             image.Aspect = Aspect.Fill;
 
-            Label lbl = new Label();
-            lbl.Text = Info;
-            lbl.VerticalOptions = LayoutOptions.End;
-            lbl.HorizontalOptions = LayoutOptions.Center;
-            lbl.BackgroundColor = Colors.Black.WithAlpha(0.5f);
+            BoxView boxView = new BoxView();
+            boxView.Color = Colors.Gray.WithAlpha(0.5f);
 
             Grid grid = new Grid();
+            grid.Padding = 0;
+            grid.RowSpacing = 0;
+            grid.Margin = 0;
             grid.Children.Add(image);
-            grid.Children.Add(lbl);
+            grid.Children.Add(boxView);
 
             F.Content = grid;
+            F.ZIndex = -1;
             return F;
         }
     }

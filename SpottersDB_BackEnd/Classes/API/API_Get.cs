@@ -148,7 +148,7 @@ namespace SpottersDB_BackEnd.Classes.API
             return sqlcontroller.GetRegions();
         } 
 
-        private List<string> GET_NewestImageFromCountry(int ID)
+        private string GET_NewestImageFromCountry(int ID)
         {
             return sqlcontroller.GetNewestImageFromCountry(ID);
         }

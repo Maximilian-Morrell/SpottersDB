@@ -43,11 +43,12 @@ namespace SpottersDB_FrontEnd.Classes.Views
                 countryCard.EditClicked += CountryCard_EditClicked;
                 if(country.icaO_Code == "")
                 {
-                    RegionParent.Children.Add(countryCard.Card(country));
+                    RegionParent.Children.Add(countryCard.Card(country, ""));
                 }
                 else
                 {
-                    CountryParent.Children.Add(countryCard.Card(country));
+                    string URL = await HTTP_Controller.GetNewestPhotoFromCountry(country.id);
+                    CountryParent.Children.Add(countryCard.Card(country, URL));
                 }
             }
 
