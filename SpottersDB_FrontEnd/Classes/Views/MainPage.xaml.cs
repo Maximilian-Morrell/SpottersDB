@@ -11,6 +11,13 @@ namespace SpottersDB_FrontEnd.Classes.Views
             InitializeComponent();
             AddCountry.Clicked += AddCountry_Clicked;
             AddManufactorer.Clicked += AddManufactorer_Clicked;
+            AddAircraftType.Clicked += AddAircraftType_Clicked;
+        }
+
+        private void AddAircraftType_Clicked(object sender, EventArgs e)
+        {
+            EditAircraftTypeModal editAircraftTypeModal = new EditAircraftTypeModal();
+            Navigation.PushAsync(editAircraftTypeModal);
         }
 
         private void AddManufactorer_Clicked(object sender, EventArgs e)

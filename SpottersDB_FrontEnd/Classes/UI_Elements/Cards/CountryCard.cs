@@ -69,7 +69,7 @@ namespace SpottersDB_FrontEnd.Classes.UI_Elements.Cards
             }
             else
             {
-                Frame imgF = ImageItem.GetImageItem(URL);
+                Frame imgF = ImageItem.GetImageCardItem(URL);
                 imgF.Scale = 1.2;
                 parent.SetRowSpan(imgF, 3);
                 parent.Children.Add(imgF);

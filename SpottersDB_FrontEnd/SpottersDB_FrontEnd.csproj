@@ -75,6 +75,15 @@
 	</ItemGroup>
 
 	<ItemGroup>
+	  <Compile Update="Classes\Views\EditAircraftTypeModal.xaml.cs">
+	    <DependentUpon>EditAircraftTypeModal.xaml</DependentUpon>
+	  </Compile>
+	</ItemGroup>
+
+	<ItemGroup>
+	  <MauiXaml Update="Classes\Views\EditAircraftTypeModal.xaml">
+	    <Generator>MSBuild:Compile</Generator>
+	  </MauiXaml>
 	  <MauiXaml Update="Classes\Views\EditCountryModal.xaml">
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>

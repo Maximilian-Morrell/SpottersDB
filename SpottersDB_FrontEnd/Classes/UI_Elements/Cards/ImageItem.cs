@@ -10,7 +10,7 @@ namespace SpottersDB_FrontEnd.Classes.UI_Elements.Cards
     internal class ImageItem
     {
 
-        public static Frame GetImageItem(string URL, string Info = "TBD")
+        public static Frame GetImageCardItem(string URL, string Info = "TBD")
         {
             Frame F = new Frame();
             F.CornerRadius = 10;
