@@ -33,7 +33,9 @@ namespace SpottersDB_BackEnd
             app.MapGet("/", () => "Hello World!");
             // Fallback if route is not found
             app.MapFallback(() => Results.NotFound(StatusCodes.Status404NotFound + " - API Route Not Found"));
-            app.Run();
+            app.Urls.Clear();
+            app.Urls.Add("http://localhost:5032");
+            app.Run("http://localhost:5032");
         }
     }
 }

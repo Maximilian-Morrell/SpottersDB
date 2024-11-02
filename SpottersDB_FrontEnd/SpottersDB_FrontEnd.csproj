@@ -37,7 +37,7 @@
 		<AppxPackageSigningTimestampDigestAlgorithm>SHA512</AppxPackageSigningTimestampDigestAlgorithm>
 		<SignAssembly>False</SignAssembly>
 		<AppInstallerUri>c:\\temp</AppInstallerUri>
-		<PackageCertificateThumbprint>7779CDAC8C694E308E08DE365DF6E930A8E8D250</PackageCertificateThumbprint>
+		<PackageCertificateKeyFile>SpottersDB_FrontEnd_TemporaryKey.pfx</PackageCertificateKeyFile>
 	</PropertyGroup>
 
 	<PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|net6.0-android|AnyCPU'">
