@@ -131,7 +131,7 @@ namespace SpottersDB_BackEnd.Classes.API
             {
                 IFormCollection form = await req.ReadFormAsync();
                 SpottingTrip spottingTrip = new SpottingTrip(Convert.ToDateTime(form["Start"]), Convert.ToDateTime(form["End"]), form["Name"], form["Description"]);
-                sqlcontroller.AddSpottingTrip(spottingTrip);
+                sqlcontroller.AddSpottingTrip(spottingTrip, Convert.ToInt32(form["AirportID"]));
             }
             catch (Exception e)
             {
@@ -164,7 +164,7 @@ namespace SpottersDB_BackEnd.Classes.API
                     URL = BasePath + "/" + FileName;
                 }
                 IFormCollection form = await req.ReadFormAsync();
-                SpottingPicture spottingPicture = new SpottingPicture(form["Name"], form["Description"], URL, OldFileName, Convert.ToInt32(form["SpottingTripID"]), Convert.ToInt32(form["AircraftID"]), Convert.ToInt32(form["AirportID"]));
+                SpottingPicture spottingPicture = new SpottingPicture(form["Name"], form["Description"], URL, OldFileName, Convert.ToInt32(form["SpottingTripID"]), Convert.ToInt32(form["AircraftID"]));
                 sqlcontroller.AddSpottingPicture(spottingPicture);
             }
             catch (Exception e)

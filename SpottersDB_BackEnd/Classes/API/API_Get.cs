@@ -55,6 +55,9 @@ namespace SpottersDB_BackEnd.Classes.API
             app.MapGet("/Get/SpottingPictures", GET_SpottingPictures);
             // Get SpottingPicture By ID Route
             app.MapGet("/Get/SpottingPicture", (int ID) => GET_SpottingPicture(ID));
+
+            // Get NewestImageFromCountry
+            app.MapGet("/Get/Newest/Country", (int ID) => GET_NewestImageFromCountry(ID));
         }
 
         private List<Country> GET_Countries()
@@ -141,5 +144,10 @@ namespace SpottersDB_BackEnd.Classes.API
         {
             return sqlcontroller.GetRegions();
         } 
+
+        private string GET_NewestImageFromCountry(int ID)
+        {
+            return sqlcontroller.GetNewestImageFromCountry(ID);
+        }
     }
 }

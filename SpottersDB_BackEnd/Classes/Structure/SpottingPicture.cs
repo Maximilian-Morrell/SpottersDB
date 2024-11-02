@@ -9,7 +9,6 @@
         private string _OriginalFileName;
         private int _SpottingTripID;
         private int _AircraftID;
-        private int _AirportID;
 
         public int ID
         {
@@ -95,24 +94,12 @@
             }
         }
 
-        public int AirportID
-        {
-            get
-            {
-                return _AirportID;
-            }
-            set
-            {
-                _AirportID = value;
-            }
-        }
-
         public SpottingPicture()
         {
 
         }
 
-        public SpottingPicture(string Name, string Description, string PictureURL, string OriginalFileName, int SpottingTripID, int AircraftID, int AirportID)
+        public SpottingPicture(string Name, string Description, string PictureURL, string OriginalFileName, int SpottingTripID, int AircraftID)
         {
             this.Name = Name;
             this.Description = Description;
@@ -120,10 +107,9 @@
             this.OriginalFileName = OriginalFileName;
             this.SpottingTripID = SpottingTripID;
             this.AircraftID = AircraftID;
-            this.AirportID = AirportID;
         }
 
-        public SpottingPicture(int ID, string Name, string Description, string PictureURL, string OriginalFileName, int SpottingTripID, int AircraftID, int AirportID)
+        public SpottingPicture(int ID, string Name, string Description, string PictureURL, string OriginalFileName, int SpottingTripID, int AircraftID)
         {
             this.ID = ID;
             this.Name = Name;
@@ -132,7 +118,6 @@
             this.OriginalFileName = OriginalFileName;
             this.SpottingTripID = SpottingTripID;
             this.AircraftID = AircraftID;
-            this.AirportID = AirportID;
         }
     }
 }

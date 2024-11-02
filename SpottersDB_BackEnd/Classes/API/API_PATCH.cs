@@ -165,13 +165,13 @@ namespace SpottersDB_BackEnd.Classes.API
                     string oldFileName = form["PictureURL"];
                     File.Delete(FolderPath + "/" + oldFileName);
 
-                    SpottingPicture spottingPicture = new SpottingPicture(form["Name"], form["Description"], URL, OldFileName, Convert.ToInt32(form["SpottingTripID"]), Convert.ToInt32(form["AircraftID"]), Convert.ToInt32(form["AirportID"]));
+                    SpottingPicture spottingPicture = new SpottingPicture(form["Name"], form["Description"], URL, OldFileName, Convert.ToInt32(form["SpottingTripID"]), Convert.ToInt32(form["AircraftID"]));
                     sqlcontroller.UpdateSpottingPicture(spottingPicture);
                 }
                 else
                 {
                     IFormCollection form = await req.ReadFormAsync();
-                    SpottingPicture spottingPicture = new SpottingPicture(Convert.ToInt32("ID"), form["Name"], form["Description"], form["PictureURL"], form["OriginalFileName"], Convert.ToInt32(form["SpottingTripID"]), Convert.ToInt32(form["AircraftID"]), Convert.ToInt32(form["AirportID"]));
+                    SpottingPicture spottingPicture = new SpottingPicture(Convert.ToInt32("ID"), form["Name"], form["Description"], form["PictureURL"], form["OriginalFileName"], Convert.ToInt32(form["SpottingTripID"]), Convert.ToInt32(form["AircraftID"]));
                     sqlcontroller.UpdateSpottingPicture(spottingPicture);
                 }
             }

@@ -190,5 +190,22 @@ namespace SpottersDB_FrontEnd.Classes.Utilities
             }
             return response;
         }
+
+        public static async Task<string> GetNewestPhotoFromCountry(int CountryID)
+        {
+            string URL = "";
+            try
+            {
+                HttpClient client = GetHttpClient();
+                HttpResponseMessage response = await client.GetAsync("/Get/Newest/Country?ID=" + CountryID);
+                URL = await response.Content.ReadAsStringAsync();
+            }
+            catch (Exception e)
+            {
+                Window w = new Window(new ErrorBox(e.StackTrace, e.InnerException.Message));
+                Application.Current.OpenWindow(w);
+            }
+            return URL;
+        }
     }
 }

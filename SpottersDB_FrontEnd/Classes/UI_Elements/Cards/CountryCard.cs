@@ -33,6 +33,7 @@ namespace SpottersDB_FrontEnd.Classes.UI_Elements.Cards
                 RowDefinitions =
                 {
                     new RowDefinition{Height = new GridLength(2, GridUnitType.Star)},
+                    new RowDefinition{Height = new GridLength(2, GridUnitType.Star)},
                     new RowDefinition(),
                    // new RowDefinition(), - for the delete Button
                     new RowDefinition()
@@ -55,6 +56,8 @@ namespace SpottersDB_FrontEnd.Classes.UI_Elements.Cards
             lblName.HorizontalTextAlignment = TextAlignment.Center;
             parent.Add(lblName, 0, 0);
 
+
+
             if (country.icaO_Code == "")
             {
                 Grid.SetRowSpan(lblName, 2);
@@ -68,7 +71,7 @@ namespace SpottersDB_FrontEnd.Classes.UI_Elements.Cards
                 lblICAO.Text = country.icaO_Code;
                 lblICAO.FontSize = 30;
                 lblICAO.HorizontalTextAlignment = TextAlignment.Center;
-                parent.Add(lblICAO, 0, 1);
+                parent.Add(lblICAO, 0, 2);
             }
 
             Button editBtn = new Button();
@@ -78,7 +81,7 @@ namespace SpottersDB_FrontEnd.Classes.UI_Elements.Cards
             editBtn.VerticalOptions = LayoutOptions.End;
            // editBtn.HorizontalOptions = LayoutOptions.Center;
 
-            parent.Add(editBtn,0,2);
+            parent.Add(editBtn,0,3);
 
             return f;
         }

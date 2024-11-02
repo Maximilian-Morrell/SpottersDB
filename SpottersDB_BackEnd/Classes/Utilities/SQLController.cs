@@ -93,9 +93,13 @@ namespace SpottersDB_BackEnd.Classes.Utilities
                 cmd.ExecuteNonQuery();
                 app.Logger.LogInformation("Created the Table SpottingTrips");
                 // Create SpottingPicture Table
-                cmd.CommandText = "CREATE TABLE SpottingPictures (SpottingPictureID int NOT NULL PRIMARY KEY IDENTITY, SpottingPictureName text, SpottingPictureDescription text, SpottingPictureURL text, SpottingPictureOriginalFileName text, SpottingPictureSpottingTripID int, SpottingPictureAircraftID int, SpottingPictureAirportID int, CONSTRAINT [FK_SpottingPicture_SpottingTrip] FOREIGN KEY ([SpottingPictureSpottingTripID]) REFERENCES [SpottingTrips](SpottingTripID), CONSTRAINT [FK_SpottingPicture_Aircraft] FOREIGN KEY ([SpottingPictureAircraftID]) REFERENCES [Aircrafts](AircraftID), CONSTRAINT [FK_SpottingPicture_Airport] FOREIGN KEY ([SpottingPictureAirportID]) REFERENCES [Airports](AirportID));";
+                cmd.CommandText = "CREATE TABLE SpottingPictures (SpottingPictureID int NOT NULL PRIMARY KEY IDENTITY, SpottingPictureName text, SpottingPictureDescription text, SpottingPictureURL text, SpottingPictureOriginalFileName text, SpottingPictureSpottingTripID int, SpottingPictureAircraftID int, CONSTRAINT [FK_SpottingPicture_SpottingTrip] FOREIGN KEY ([SpottingPictureSpottingTripID]) REFERENCES [SpottingTrips](SpottingTripID), CONSTRAINT [FK_SpottingPicture_Aircraft] FOREIGN KEY ([SpottingPictureAircraftID]) REFERENCES [Aircrafts](AircraftID));";
                 cmd.ExecuteNonQuery();
                 app.Logger.LogInformation("Created the Table SpottingPictures");
+                // Create SpottingTrip & Airport Link Table
+                cmd.CommandText = "CREATE TABLE SpottingTripAirports (LinkID int NOT NULL PRIMARY KEY IDENTITY, SpottingTripID int, AirportID int, CONSTRAINT [FK_SpottingTripAirport_SpottingTrip] FOREIGN KEY ([SpottingTripID]) REFERENCES [SpottingTrips](SpottingTripID), CONSTRAINT [FK_SpottingTripAirport_Airport] FOREIGN KEY ([AirportID]) REFERENCES [Airports](AirportID));";
+                cmd.ExecuteNonQuery();
+                app.Logger.LogInformation("Created the Link Table for SpottingTrips and Airports");
                 con.Close();
                 ConnectToDB(DatabaseName, app);
             }
@@ -241,12 +245,14 @@ namespace SpottersDB_BackEnd.Classes.Utilities
             }
         }
 
-        public void AddSpottingTrip(SpottingTrip spottingTrip)
+        public void AddSpottingTrip(SpottingTrip spottingTrip, int AirportID)
         {
             try
             {
                 con.Open();
-                cmd.CommandText = $"INSERT INTO SpottingTrips (SpottingTripStart, SpottingTripEnd, SpottingTripName, SpottingTripDescription) VALUES ('{spottingTrip.Start.ToString("yyyy-MM-dd HH:mm:ss")}', '{spottingTrip.End.ToString("yyyy-MM-dd HH:mm:ss")}', '{spottingTrip.Name}', '{spottingTrip.Description}');";
+                cmd.CommandText = $"INSERT INTO SpottingTrips (SpottingTripStart, SpottingTripEnd, SpottingTripName, SpottingTripDescription) VALUES ('{spottingTrip.Start.ToString("yyyy-MM-dd HH:mm:ss")}', '{spottingTrip.End.ToString("yyyy-MM-dd HH:mm:ss")}', '{spottingTrip.Name}', '{spottingTrip.Description}'); SELECT SCOPE_IDENTITY()";
+                int ID = Convert.ToInt32(cmd.ExecuteScalar());
+                cmd.CommandText = $"INSERT INTO SpottingTripAirports (SpottingTripID, AirportID) VALUES ('{ID}', '{AirportID}');";
                 cmd.ExecuteNonQuery();
                 app.Logger.LogInformation("Saved a SpottingTrip Object", spottingTrip);
                 con.Close();
@@ -267,7 +273,7 @@ namespace SpottersDB_BackEnd.Classes.Utilities
             try
             {
                 con.Open();
-                cmd.CommandText = $"INSERT INTO SpottingPictures (SpottingPictureName, SpottingPictureDescription, SpottingPictureURL, SpottingPictureOriginalFileName, SpottingPictureSpottingTripID, SpottingPictureAircraftID, SpottingPictureAirportID) VALUES ('{spottingPicture.Name}','{spottingPicture.Description}','{spottingPicture.PictureUrl}','{spottingPicture.OriginalFileName}','{spottingPicture.SpottingTripID}','{spottingPicture.AircraftID}','{spottingPicture.AirportID}');";
+                cmd.CommandText = $"INSERT INTO SpottingPictures (SpottingPictureName, SpottingPictureDescription, SpottingPictureURL, SpottingPictureOriginalFileName, SpottingPictureSpottingTripID, SpottingPictureAircraftID) VALUES ('{spottingPicture.Name}','{spottingPicture.Description}','{spottingPicture.PictureUrl}','{spottingPicture.OriginalFileName}','{spottingPicture.SpottingTripID}','{spottingPicture.AircraftID}');";
                 cmd.ExecuteNonQuery();
                 app.Logger.LogInformation("Saved a SpottingPicture Object", spottingPicture);
                 con.Close();
@@ -435,7 +441,7 @@ namespace SpottersDB_BackEnd.Classes.Utilities
             try
             {
                 con.Open();
-                cmd.CommandText = $"UPDATE SpottingPictures SET SpottingPictureName = '{spottingPicture.Name}', SpottingPictureDescription = '{spottingPicture.Description}', SpottingPictureURL = '{spottingPicture.PictureUrl}', SpottingPictureOriginalFileName = '{spottingPicture.OriginalFileName}', SpottingPictureSpottingTripID = {spottingPicture.SpottingTripID}, SpottingPictureAircraftID = {spottingPicture.AircraftID}, SpottingPictureAirportID = {spottingPicture.AirportID} WHERE SpottingPictureID = {spottingPicture.ID}";
+                cmd.CommandText = $"UPDATE SpottingPictures SET SpottingPictureName = '{spottingPicture.Name}', SpottingPictureDescription = '{spottingPicture.Description}', SpottingPictureURL = '{spottingPicture.PictureUrl}', SpottingPictureOriginalFileName = '{spottingPicture.OriginalFileName}', SpottingPictureSpottingTripID = {spottingPicture.SpottingTripID}, SpottingPictureAircraftID = {spottingPicture.AircraftID} WHERE SpottingPictureID = {spottingPicture.ID}";
                 cmd.ExecuteNonQuery();
                 app.Logger.LogInformation("Updated a SpottingPicture Object");
                 con.Close();
@@ -874,7 +880,7 @@ namespace SpottersDB_BackEnd.Classes.Utilities
                 reader = cmd.ExecuteReader();
                 while(reader.Read())
                 {
-                    SpottingPicture spottingPicture = new SpottingPicture(Convert.ToInt32(reader["SpottingPictureID"]), Convert.ToString(reader["SpottingPictureName"]), Convert.ToString(reader["SpottingPictureDescription"]), Convert.ToString(reader["SpottingPictureURL"]), Convert.ToString(reader["SpottingPictureOriginalFileName"]), Convert.ToInt32(reader["SpottingPictureSpottingTripID"]), Convert.ToInt32(reader["SpottingPictureAircraftID"]), Convert.ToInt32(reader["SpottingPictureAirportID"]));
+                    SpottingPicture spottingPicture = new SpottingPicture(Convert.ToInt32(reader["SpottingPictureID"]), Convert.ToString(reader["SpottingPictureName"]), Convert.ToString(reader["SpottingPictureDescription"]), Convert.ToString(reader["SpottingPictureURL"]), Convert.ToString(reader["SpottingPictureOriginalFileName"]), Convert.ToInt32(reader["SpottingPictureSpottingTripID"]), Convert.ToInt32(reader["SpottingPictureAircraftID"]));
                     spottingPictures.Add(spottingPicture);
                 }
                 con.Close();
@@ -902,7 +908,7 @@ namespace SpottersDB_BackEnd.Classes.Utilities
                 reader = cmd.ExecuteReader();
                 while(reader.Read())
                 {
-                    spottingPicture = new SpottingPicture(Convert.ToInt32(reader["SpottingPictureID"]), Convert.ToString(reader["SpottingPictureName"]), Convert.ToString(reader["SpottingPictureDescription"]), Convert.ToString(reader["SpottingPictureURL"]), Convert.ToString(reader["SpottingPictureOriginalFileName"]), Convert.ToInt32(reader["SpottingPictureSpottingTripID"]), Convert.ToInt32(reader["SpottingPictureAircraftID"]), Convert.ToInt32(reader["SpottingPictureAirportID"]));
+                    spottingPicture = new SpottingPicture(Convert.ToInt32(reader["SpottingPictureID"]), Convert.ToString(reader["SpottingPictureName"]), Convert.ToString(reader["SpottingPictureDescription"]), Convert.ToString(reader["SpottingPictureURL"]), Convert.ToString(reader["SpottingPictureOriginalFileName"]), Convert.ToInt32(reader["SpottingPictureSpottingTripID"]), Convert.ToInt32(reader["SpottingPictureAircraftID"]));
                 }
                 con.Close();
             }
@@ -917,6 +923,29 @@ namespace SpottersDB_BackEnd.Classes.Utilities
             }
 
             return spottingPicture;
+        }
+
+        public string GetNewestImageFromCountry(int Country)
+        {
+            string newestImage = "";
+            try
+            {
+                con.Open();
+                cmd.CommandText = $"SELECT sp.SpottingPictureURL FROM Countries c JOIN Airports a ON c.CountryID = a.CountryID JOIN SpottingTripAirports sta ON a.AirportID = sta.AirportID JOIN SpottingPictures sp ON sp.SpottingPictureSpottingTripID = sta.SpottingTripID WHERE c.CountryID = {Country};";
+                reader = cmd.ExecuteReader();
+                {
+                    while(reader.Read())
+                    {
+                        newestImage = Convert.ToString(reader[0]);
+                    }
+                }
+            }
+            catch (Exception e)
+            {
+                app.Logger.LogError(e.Message);
+            }
+
+            return newestImage;
         }
     }
 }
