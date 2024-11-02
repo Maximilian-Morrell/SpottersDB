@@ -245,15 +245,18 @@ namespace SpottersDB_BackEnd.Classes.Utilities
             }
         }
 
-        public void AddSpottingTrip(SpottingTrip spottingTrip, int AirportID)
+        public void AddSpottingTrip(SpottingTrip spottingTrip, List<int> AirportIDs)
         {
             try
             {
                 con.Open();
                 cmd.CommandText = $"INSERT INTO SpottingTrips (SpottingTripStart, SpottingTripEnd, SpottingTripName, SpottingTripDescription) VALUES ('{spottingTrip.Start.ToString("yyyy-MM-dd HH:mm:ss")}', '{spottingTrip.End.ToString("yyyy-MM-dd HH:mm:ss")}', '{spottingTrip.Name}', '{spottingTrip.Description}'); SELECT SCOPE_IDENTITY()";
                 int ID = Convert.ToInt32(cmd.ExecuteScalar());
-                cmd.CommandText = $"INSERT INTO SpottingTripAirports (SpottingTripID, AirportID) VALUES ('{ID}', '{AirportID}');";
-                cmd.ExecuteNonQuery();
+                foreach(int AirportID in AirportIDs )
+                {
+                    cmd.CommandText = $"INSERT INTO SpottingTripAirports (SpottingTripID, AirportID) VALUES ('{ID}', '{AirportID}');";
+                    cmd.ExecuteNonQuery();
+                }
                 app.Logger.LogInformation("Saved a SpottingTrip Object", spottingTrip);
                 con.Close();
             }
@@ -415,13 +418,32 @@ namespace SpottersDB_BackEnd.Classes.Utilities
             }
         }
 
-        public void UpdateSpottingTrip(SpottingTrip spottingTrip)
+        public void UpdateSpottingTrip(SpottingTrip spottingTrip, List<int> AirportIDs)
         {
             try
             {
                 con.Open();
                 cmd.CommandText = $"UPDATE SpottingTrips SET SpottingTripStart = '{spottingTrip.Start.ToString("yyyy-MM-dd HH:mm:ss")}', SpottingTripEnd = '{spottingTrip.End.ToString("yyyy-MM-dd HH:mm:ss")}', SpottingTripName = '{spottingTrip.Name}', SpottingTripDescription = '{spottingTrip.Description}' WHERE SpottingTripID = {spottingTrip.ID}";
                 cmd.ExecuteNonQuery();
+                cmd.CommandText = $"SELECT AirportID FROM SpottingTripAirports WHERE SpottingTripID = {spottingTrip.ID}";
+                reader = cmd.ExecuteReader();
+                while(reader.Read())
+                {
+                    int ID = Convert.ToInt32(reader[0]);
+                    if(AirportIDs.Contains(ID))
+                    {
+                        AirportIDs.Remove(ID);
+                    }
+                    else
+                    {
+                        cmd.CommandText = $"DELETE FROM SpottingTripAirports WHERE AirportID = {ID};";
+                    }
+                }
+                foreach (int AirportID in AirportIDs)
+                {
+                    cmd.CommandText = $"INSERT INTO SpottingTripAirports (SpottingTripID, AirportID) VALUES ('{spottingTrip.ID}', '{AirportID}');";
+                    cmd.ExecuteNonQuery();
+                }
                 app.Logger.LogInformation("Updated a SpottingTrip Object");
                 con.Close();
             }
@@ -925,9 +947,10 @@ namespace SpottersDB_BackEnd.Classes.Utilities
             return spottingPicture;
         }
 
-        public string GetNewestImageFromCountry(int Country)
+        public List<string> GetNewestImageFromCountry(int Country)
         {
             string newestImage = "";
+            List<string> debug = new List<string>();
             try
             {
                 con.Open();
@@ -936,16 +959,40 @@ namespace SpottersDB_BackEnd.Classes.Utilities
                 {
                     while(reader.Read())
                     {
-                        newestImage = Convert.ToString(reader[0]);
+                        newestImage = Convert.ToString(reader["SpottingPictureURL"]);
+                        debug.Add(newestImage);
                     }
                 }
+                con.Close();
             }
             catch (Exception e)
             {
                 app.Logger.LogError(e.Message);
             }
+            con.Close();
+            return debug;
+        }
 
-            return newestImage;
+        public List<Airport> GetAirportsFromSpottingTrip(int ID)
+        {
+            List<Airport> airports = new List<Airport>();
+            try
+            {
+                con.Open();
+                cmd.CommandText = $"SELECT a.* FROM SpottingTripAirports sta JOIN Airports a ON sta.AirportID = a.AirportID WHERE sta.SpottingTripID = {ID};";
+                reader = cmd.ExecuteReader();
+                while (reader.Read())
+                {
+                    airports.Add(new Airport(Convert.ToInt32(reader["AirportID"]), Convert.ToString(reader["AirportICAOCode"]), Convert.ToString(reader["AirportIATACode"]), Convert.ToString(reader["AirportName"]), Convert.ToString(reader["AirportDescription"]), Convert.ToString(reader["AirportCity"]), Convert.ToInt32(reader["CountryID"])));
+                }
+                con.Close();
+            }
+            catch (Exception e)
+            {
+                app.Logger.LogError(e.Message);
+            }
+            con.Close();
+            return airports;
         }
     }
 }

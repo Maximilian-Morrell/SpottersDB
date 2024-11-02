@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using SpottersDB_FrontEnd.Classes.Utilities;
 
 namespace SpottersDB_FrontEnd.Classes.UI_Elements.Cards
 {
@@ -60,13 +61,15 @@ namespace SpottersDB_FrontEnd.Classes.UI_Elements.Cards
 
             if (country.icaO_Code == "")
             {
-                Grid.SetRowSpan(lblName, 2);
+                Grid.SetRowSpan(lblName, 3);
                 lblName.FontSize = 55;
                 parent.MaximumHeightRequest = 200;
                 parent.HeightRequest = 200;
             }
             else
             {
+                string URL = HTTP_Controller.GetNewestPhotoFromCountry(country.id).Result;
+                parent.Add(ImageItem.GetImageItem(URL), 0, 1);
                 Label lblICAO = new Label();
                 lblICAO.Text = country.icaO_Code;
                 lblICAO.FontSize = 30;

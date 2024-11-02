@@ -126,16 +126,20 @@ namespace SpottersDB_BackEnd.Classes.API
         private async void Post_SpottingTrip(HttpRequest req)
         {
 
-            /// ToDo: Linking Table
             try
             {
                 IFormCollection form = await req.ReadFormAsync();
                 SpottingTrip spottingTrip = new SpottingTrip(Convert.ToDateTime(form["Start"]), Convert.ToDateTime(form["End"]), form["Name"], form["Description"]);
-                sqlcontroller.AddSpottingTrip(spottingTrip, Convert.ToInt32(form["AirportID"]));
+                List<int> AirportIDs = new List<int>();
+                foreach(string AirportID in Convert.ToString(form["AirportID"]).Split(',')) 
+                {
+                    AirportIDs.Add(Convert.ToInt32(AirportID));
+                }
+                sqlcontroller.AddSpottingTrip(spottingTrip, AirportIDs);
             }
             catch (Exception e)
             {
-
+                app.Logger.LogError(e.Message);
             }
         }
 
