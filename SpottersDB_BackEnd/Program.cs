@@ -8,8 +8,6 @@ namespace SpottersDB_BackEnd
 {
     public class Program
     {
-        public static string Domain = "";
-
         public static void Main(string[] args)
         {
             var builder = WebApplication.CreateBuilder(args);
@@ -35,7 +33,6 @@ namespace SpottersDB_BackEnd
             app.MapGet("/", () => "Hello World!");
             // Fallback if route is not found
             app.MapFallback(() => Results.NotFound(StatusCodes.Status404NotFound + " - API Route Not Found"));
-
             app.Run();
         }
     }

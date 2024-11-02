@@ -14,7 +14,7 @@ namespace SpottersDB_FrontEnd.Classes.Utilities
 {
     internal class HTTP_Controller
     {
-        private static readonly Uri _URL = new Uri("https://localhost:7090/");
+        private static readonly Uri _URL = new Uri("http://localhost:5032/");
 
         private static HttpClient GetHttpClient()
         {

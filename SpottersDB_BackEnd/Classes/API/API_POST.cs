@@ -141,7 +141,7 @@ namespace SpottersDB_BackEnd.Classes.API
 
         private async void Post_SpottingPicture(HttpRequest req)
         {
-            string BasePath = Program.Domain + "/Pic";
+            string BasePath = app.Urls.ToList()[0] + "/Pic";
 
             try
             {

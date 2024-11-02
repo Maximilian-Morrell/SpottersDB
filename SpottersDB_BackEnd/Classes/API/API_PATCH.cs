@@ -142,7 +142,7 @@ namespace SpottersDB_BackEnd.Classes.API
             {
                 if(req.Form.Files.Count > 0)
                 {
-                    string BasePath = Program.Domain + "/Pic";
+                    string BasePath = app.Urls.ToList()[0] + "/Pic";
                     string URL = "";
                     string OldFileName = "";
                     
