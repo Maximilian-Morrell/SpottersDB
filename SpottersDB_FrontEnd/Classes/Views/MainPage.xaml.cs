@@ -12,6 +12,13 @@ namespace SpottersDB_FrontEnd.Classes.Views
             AddCountry.Clicked += AddCountry_Clicked;
             AddManufactorer.Clicked += AddManufactorer_Clicked;
             AddAircraftType.Clicked += AddAircraftType_Clicked;
+            AddAirline.Clicked += AddAirline_Clicked;
+        }
+
+        private void AddAirline_Clicked(object sender, EventArgs e)
+        {
+            EditAirlineModal editAirlineModal = new EditAirlineModal();
+            Navigation.PushAsync(editAirlineModal);
         }
 
         private void AddAircraftType_Clicked(object sender, EventArgs e)
@@ -88,6 +95,27 @@ namespace SpottersDB_FrontEnd.Classes.Views
                 Frame f = await air.Card(aircraftType);
                 AircraftTypeParent.Children.Add(f);
             }
+            LoadAirlines();
+        }
+
+        private async void LoadAirlines()
+        {
+            AirlineParent.Children.Clear();
+            List<Airline> airlines = await HTTP_Controller.GetAirlines();
+            foreach(Airline airline in airlines)
+            {
+                AirlineCard air = new AirlineCard();
+                air.EditClicked += Airline_EditClicked;
+                Frame f = await air.Card(airline);
+                AirlineParent.Children.Add(f);
+            }
+        }
+
+        private EventHandler Airline_EditClicked(Airline airline)
+        {
+            EditAirlineModal editAirlineModal = new EditAirlineModal(airline);
+            Navigation.PushAsync(editAirlineModal);
+            return null;
         }
 
         private EventHandler AircraftType_EditClicked(AircraftType aircraftType)

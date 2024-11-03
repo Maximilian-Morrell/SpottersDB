@@ -52,6 +52,24 @@ namespace SpottersDB_FrontEnd.Classes.Utilities
             return countries;
         }
 
+        public static async Task<List<Country>> GetCountries(bool OnlyCountries)
+        {
+            List<Country> countries = new List<Country>();
+            try
+            {
+                HttpClient client = GetHttpClient();
+                HttpResponseMessage respone = await client.GetAsync("/Get/OnlyCountries");
+                string content = await respone.Content.ReadAsStringAsync();
+                countries = JsonSerializer.Deserialize<List<Country>>(content);
+            }
+            catch (Exception e)
+            {
+                Window w = new Window(new ErrorBox(e.StackTrace, e.InnerException.Message));
+                Application.Current.OpenWindow(w);
+            }
+            return countries;
+        }
+
         public static async Task<List<Country>> GetRegions()
         {
             List<Country> countries = new List<Country>();
@@ -288,6 +306,70 @@ namespace SpottersDB_FrontEnd.Classes.Utilities
                 Application.Current.OpenWindow(w);
             }
             return response;
+        }
+
+        public static async Task<HttpResponseMessage> AddNewAirline(Airline airline)
+        {
+            MultipartFormDataContent content = new MultipartFormDataContent();
+            HttpResponseMessage response = null;
+            try
+            {
+                HttpClient client = GetHttpClient();
+
+                content.Add(new StringContent(airline.icao), "ICAO");
+                content.Add(new StringContent(airline.iata), "IATA");
+                content.Add(new StringContent(airline.name), "Name");
+                content.Add(new StringContent(airline.region.ToString()), "Region");
+
+                response = await client.PostAsync("/Post/Airline", content);
+            }
+            catch (Exception e)
+            {
+                Window w = new Window(new ErrorBox(e.StackTrace, e.InnerException.Message));
+                Application.Current.OpenWindow(w);
+            }
+            return response;
+        }
+
+        public static async Task<HttpResponseMessage> UpdateAirline(Airline airline)
+        {
+            MultipartFormDataContent content = new MultipartFormDataContent();
+            HttpResponseMessage response = null;
+            try
+            {
+                HttpClient client = GetHttpClient();
+                content.Add(new StringContent(airline.id.ToString()), "ID");
+                content.Add(new StringContent(airline.icao), "ICAO");
+                content.Add(new StringContent(airline.iata), "IATA");
+                content.Add(new StringContent(airline.name), "Name");
+                content.Add(new StringContent(airline.region.ToString()), "Region");
+
+                response = await client.PostAsync("/Patch/Airline", content);
+            }
+            catch (Exception e)
+            {
+                Window w = new Window(new ErrorBox(e.StackTrace, e.InnerException.Message));
+                Application.Current.OpenWindow(w);
+            }
+            return response;
+        }
+
+        public static async Task<List<Airline>> GetAirlines()
+        {
+            List<Airline> airlines = new List<Airline>();
+            try
+            {
+                HttpClient client = GetHttpClient();
+                HttpResponseMessage respone = await client.GetAsync("/Get/Airlines");
+                string content = await respone.Content.ReadAsStringAsync();
+                airlines = JsonSerializer.Deserialize<List<Airline>>(content);
+            }
+            catch (Exception e)
+            {
+                Window w = new Window(new ErrorBox(e.StackTrace, e.InnerException.Message));
+                Application.Current.OpenWindow(w);
+            }
+            return airlines;
         }
     }
 }

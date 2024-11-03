@@ -16,6 +16,8 @@ namespace SpottersDB_BackEnd.Classes.API
         {
             // Get Countries Route
             app.MapGet("/Get/Countries", GET_Countries);
+            // Get Only Countries Route
+            app.MapGet("/Get/OnlyCountries", GET_OnlyCountries);
             // Get Country by ID Route
             app.MapGet("/Get/Country", (int ID) => GET_Country(ID));
             // Get Regions Route
@@ -66,6 +68,11 @@ namespace SpottersDB_BackEnd.Classes.API
         private List<Country> GET_Countries()
         {
             return sqlcontroller.GetCountries();
+        }
+
+        private List<Country> GET_OnlyCountries()
+        {
+            return sqlcontroller.GetCountries(true);
         }
 
         private Country GET_Country(int ID)

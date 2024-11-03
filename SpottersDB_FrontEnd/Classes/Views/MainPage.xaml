@@ -8,18 +8,20 @@
             <!--Countries-->
             <VerticalStackLayout Padding="20">
                 <Label Text="Countries/Regions"></Label>
-                <ScrollView Orientation="Horizontal">
-                    <VerticalStackLayout Spacing="5">
-                        <Label Text="Countries"></Label>
+                <VerticalStackLayout Spacing="5">
+                    <Label Text="Countries"></Label>
+                    <ScrollView Orientation="Horizontal">
                         <HorizontalStackLayout x:Name="CountryParent" Padding="25" Spacing="20">
 
                         </HorizontalStackLayout>
-                        <Label Text="Regions"></Label>
+                    </ScrollView>
+                    <Label Text="Regions"></Label>
+                    <ScrollView Orientation="Horizontal">
                         <HorizontalStackLayout x:Name="RegionParent" Padding="25" Spacing="20">
 
                         </HorizontalStackLayout>
-                    </VerticalStackLayout>
-                </ScrollView>
+                    </ScrollView>
+                </VerticalStackLayout>
                 <Button Text="Add a Country" HorizontalOptions="StartAndExpand" x:Name="AddCountry"></Button>
             </VerticalStackLayout>
             <!--Manufactorers-->
@@ -34,13 +36,23 @@
             </VerticalStackLayout>
             <!--AircraftType-->
             <VerticalStackLayout Padding="20">
-                <Label Text="AircraftType"></Label>
+                <Label Text="Aircraft Types"></Label>
                 <ScrollView Orientation="Horizontal">
                     <HorizontalStackLayout x:Name="AircraftTypeParent" Padding="25" Spacing="20">
 
                     </HorizontalStackLayout>
                 </ScrollView>
-                <Button Text="Add a AircraftType" HorizontalOptions="StartAndExpand" x:Name="AddAircraftType"></Button>
+                <Button Text="Add an AircraftType" HorizontalOptions="StartAndExpand" x:Name="AddAircraftType"></Button>
+            </VerticalStackLayout>
+            <!--Airline-->
+            <VerticalStackLayout Padding="20">
+                <Label Text="Airlines"></Label>
+                <ScrollView Orientation="Horizontal">
+                    <HorizontalStackLayout x:Name="AirlineParent" Padding="25" Spacing="20">
+
+                    </HorizontalStackLayout>
+                </ScrollView>
+                <Button Text="Add an Airline" HorizontalOptions="StartAndExpand" x:Name="AddAirline"></Button>
             </VerticalStackLayout>
         </VerticalStackLayout>
     </ScrollView>
