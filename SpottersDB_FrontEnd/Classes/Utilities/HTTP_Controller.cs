@@ -207,5 +207,87 @@ namespace SpottersDB_FrontEnd.Classes.Utilities
             }
             return URL;
         }
+
+        public static async Task<HttpResponseMessage> AddNewAircraftType(AircraftType aircraftType)
+        {
+            MultipartFormDataContent content = new MultipartFormDataContent();
+            HttpResponseMessage response = null;
+            try
+            {
+                HttpClient client = GetHttpClient();
+
+                content.Add(new StringContent(aircraftType.icaoCode), "ICAO");
+                content.Add(new StringContent(aircraftType.fullName), "FullName");
+                content.Add(new StringContent(aircraftType.nickName), "NickName");
+                content.Add(new StringContent(aircraftType.manufactorerID.ToString()), "ManufactorerID");
+
+                response = await client.PostAsync("/Post/AircraftType", content);
+            }
+            catch (Exception e)
+            {
+                Window w = new Window(new ErrorBox(e.StackTrace, e.InnerException.Message));
+                Application.Current.OpenWindow(w);
+            }
+            return response;
+        }
+
+        public static async Task<Manufactorer> GetManufactorerByID(int ID)
+        {
+            Manufactorer manufactorer = null;
+            try
+            {
+                HttpClient client = GetHttpClient();
+                HttpResponseMessage response = await client.GetAsync("/Get/Manufactorer?ID=" + ID);
+                string content = await response.Content.ReadAsStringAsync();
+                manufactorer = JsonSerializer.Deserialize<Manufactorer>(content);
+            }
+            catch (Exception e)
+            {
+                Window w = new Window(new ErrorBox(e.StackTrace, e.InnerException.Message));
+                Application.Current.OpenWindow(w);
+            }
+            return manufactorer;
+        }
+
+        public static async Task<List<AircraftType>> GetAircraftTypes()
+        {
+            List<AircraftType> aircraftTypes = new List<AircraftType>();
+            try
+            {
+                HttpClient client = GetHttpClient();
+                HttpResponseMessage response = await client.GetAsync("/Get/AircraftTypes");
+                string content = await response.Content.ReadAsStringAsync();
+                aircraftTypes = JsonSerializer.Deserialize<List<AircraftType>>(content);
+            }
+            catch (Exception e)
+            {
+                Window w = new Window(new ErrorBox(e.StackTrace, e.InnerException.Message));
+                Application.Current.OpenWindow(w);
+            }
+            return aircraftTypes;
+        }
+
+        public static async Task<HttpResponseMessage> UpdateAircraftType(AircraftType aircraftType)
+        {
+            MultipartFormDataContent content = new MultipartFormDataContent();
+            HttpResponseMessage response = null;
+            try
+            {
+                HttpClient client = GetHttpClient();
+                content.Add(new StringContent(aircraftType.id.ToString()), "ID");
+                content.Add(new StringContent(aircraftType.icaoCode), "ICAO");
+                content.Add(new StringContent(aircraftType.fullName), "FullName");
+                content.Add(new StringContent(aircraftType.nickName), "NickName");
+                content.Add(new StringContent(aircraftType.manufactorerID.ToString()), "ManufactorerID");
+
+                response = await client.PostAsync("/Patch/AircraftType", content);
+            }
+            catch (Exception e)
+            {
+                Window w = new Window(new ErrorBox(e.StackTrace, e.InnerException.Message));
+                Application.Current.OpenWindow(w);
+            }
+            return response;
+        }
     }
 }

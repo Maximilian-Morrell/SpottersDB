@@ -4,7 +4,7 @@
              x:Class="SpottersDB_FrontEnd.Classes.Views.EditAircraftTypeModal"
              Title="EditAircraftType">
 
-    <Grid MaximumHeightRequest="120" Padding="20" RowSpacing="10" VerticalOptions="StartAndExpand">
+    <Grid MaximumHeightRequest="120" Padding="20" RowSpacing="10" VerticalOptions="StartAndExpand" x:Name="GridMain">
         <Grid.RowDefinitions>
             <RowDefinition></RowDefinition>
             <RowDefinition></RowDefinition>
@@ -25,7 +25,7 @@
         <Label Grid.Row="2" Grid.Column="0" Text="Nickname:"></Label>
         <Entry Grid.Row="2" Grid.Column="1" x:Name="NickName"></Entry>
 
-        <Label Grid.Row="3" Grid.Column="0" Text="Region: "/>
+        <Label Grid.Row="3" Grid.Column="0" Text="Manufactorer: "/>
 
         <Button Grid.Row="4" Grid.ColumnSpan="2" Text="Submit" x:Name="Submit"></Button>
     </Grid>

@@ -74,6 +74,27 @@ namespace SpottersDB_FrontEnd.Classes.Views
                 Frame f = await man.Card(manufactorer);
                 ManufactorerParent.Children.Add(f);
             }
+            LoadAircraftTypes();
+        }
+
+        private async void LoadAircraftTypes()
+        {
+            AircraftTypeParent.Children.Clear();
+            List<AircraftType> aircraftTypes = await HTTP_Controller.GetAircraftTypes();
+            foreach(AircraftType aircraftType in aircraftTypes)
+            {
+                AircraftTypeCard air = new AircraftTypeCard();
+                air.EditClicked += AircraftType_EditClicked;
+                Frame f = await air.Card(aircraftType);
+                AircraftTypeParent.Children.Add(f);
+            }
+        }
+
+        private EventHandler AircraftType_EditClicked(AircraftType aircraftType)
+        {
+            EditAircraftTypeModal editAircraftTypeModal = new EditAircraftTypeModal(aircraftType);
+            Navigation.PushAsync(editAircraftTypeModal);
+            return null;
         }
 
         private EventHandler Manufactorer_EditClicked(Manufactorer manufactorer)
