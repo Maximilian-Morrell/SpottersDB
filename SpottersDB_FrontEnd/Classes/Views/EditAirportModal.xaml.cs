@@ -18,6 +18,8 @@ public partial class EditAirportModal : ContentPage
 
     public EditAirportModal(Airport airport)
     {
+        InitializeComponent();
+
         this.airport = airport;
 
         AirportICAO.Text = airport.icaO_Code;

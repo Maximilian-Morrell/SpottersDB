@@ -386,7 +386,7 @@ namespace SpottersDB_FrontEnd.Classes.Utilities
                 content.Add(new StringContent(airport.city), "City");
                 content.Add(new StringContent(airport.countryID.ToString()), "Country");
 
-                response = await client.PostAsync("/Patch/Airport", content);
+                response = await client.PostAsync("/Post/Airport", content);
             }
             catch (Exception e)
             {
@@ -412,7 +412,7 @@ namespace SpottersDB_FrontEnd.Classes.Utilities
                 content.Add(new StringContent(airport.city), "City");
                 content.Add(new StringContent(airport.countryID.ToString()), "Country");
 
-                response = await client.PostAsync("/Post/Airport", content);
+                response = await client.PostAsync("/Patch/Airport", content);
             }
             catch (Exception e)
             {
@@ -421,6 +421,24 @@ namespace SpottersDB_FrontEnd.Classes.Utilities
             }
 
             return response;
+        }
+
+        public static async Task<List<Airport>> GetAirports()
+        {
+            List<Airport> airports = new List<Airport>();
+            try
+            {
+                HttpClient client = GetHttpClient();
+                HttpResponseMessage respone = await client.GetAsync("/Get/Airports");
+                string content = await respone.Content.ReadAsStringAsync();
+                airports = JsonSerializer.Deserialize<List<Airport>>(content);
+            }
+            catch (Exception e)
+            {
+                Window w = new Window(new ErrorBox(e.StackTrace, e.InnerException.Message));
+                Application.Current.OpenWindow(w);
+            }
+            return airports;
         }
     }
 }

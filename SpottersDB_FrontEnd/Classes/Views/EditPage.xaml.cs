@@ -4,9 +4,9 @@ using SpottersDB_FrontEnd.Classes.Utilities;
 
 namespace SpottersDB_FrontEnd.Classes.Views
 {
-    public partial class MainPage : ContentPage
+    public partial class EditPage : ContentPage
     {   
-        public MainPage()
+        public EditPage()
         {
             InitializeComponent();
             AddCountry.Clicked += AddCountry_Clicked;
@@ -116,6 +116,27 @@ namespace SpottersDB_FrontEnd.Classes.Views
                 Frame f = await air.Card(airline);
                 AirlineParent.Children.Add(f);
             }
+            LoadAirports();
+        }
+
+        private async void LoadAirports()
+        {
+            AirportParent.Children.Clear();
+            List<Airport> airports = await HTTP_Controller.GetAirports();
+            foreach(Airport airport in airports)
+            {
+                AirportCard airportCard = new AirportCard();
+                airportCard.EditClicked += AirportCard_EditClicked;
+                Frame f = await airportCard.Card(airport);
+                AirportParent.Children.Add(f);
+            }
+        }
+
+        private EventHandler AirportCard_EditClicked(Airport airport)
+        {
+            EditAirportModal editAirportModal = new EditAirportModal(airport);
+            Navigation.PushAsync(editAirportModal);
+            return null;
         }
 
         private EventHandler Airline_EditClicked(Airline airline)

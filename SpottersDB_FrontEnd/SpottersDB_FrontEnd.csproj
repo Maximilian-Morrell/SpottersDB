@@ -78,6 +78,9 @@
 	  <Compile Update="Classes\Views\EditAircraftTypeModal.xaml.cs">
 	    <DependentUpon>EditAircraftTypeModal.xaml</DependentUpon>
 	  </Compile>
+	  <Compile Update="Classes\Views\EditPage.xaml.cs">
+	    <DependentUpon>EditPage.xaml</DependentUpon>
+	  </Compile>
 	</ItemGroup>
 
 	<ItemGroup>
