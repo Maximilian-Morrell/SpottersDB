@@ -9,7 +9,7 @@ public partial class EditAircraftModal : ContentPage
     public List<AircraftType> Types = new List<AircraftType>();
     public List<Airline> Airlines = new List<Airline>();
     bool IsEditing;
-   // Airline airline;
+    Aircraft aircraft;
     Picker CountryPicker = null;
     Picker TypePicker = null;
     Picker AirlinePicker = null;
@@ -21,12 +21,41 @@ public partial class EditAircraftModal : ContentPage
         this.IsEditing = false;
 	}
 
+    public EditAircraftModal(Aircraft aircraft)
+    {
+        InitializeComponent();
+        this.aircraft = aircraft;
+        AircraftRegistration.Text = aircraft.registration;
+        AircraftDescription.Text = aircraft.description;
+        this.IsEditing = true;
+    }
+
     protected override void OnNavigatedTo(NavigatedToEventArgs args)
     {
         GetAllTypes();
         GetAllAirlines();
         GetAllCountries();
+        Submit.Clicked += Submit_Clicked;
         base.OnNavigatedTo(args);
+    }
+
+    private void Submit_Clicked(object sender, EventArgs e)
+    {
+        int Type = Types[TypePicker.SelectedIndex].id;
+        int Airline = Airlines[AirlinePicker.SelectedIndex].id;
+        int Country = Countries[CountryPicker.SelectedIndex].id;
+        if (IsEditing)
+        {
+            int ID = aircraft.id;
+            aircraft = new Aircraft(ID, AircraftRegistration.Text, AircraftDescription.Text, Type, Airline, Country);
+            HTTP_Controller.UpdateAircraft(aircraft);
+        }
+        else
+        {
+            aircraft = new Aircraft(AircraftRegistration.Text, AircraftDescription.Text, Type, Airline, Country);
+            HTTP_Controller.AddNewAircraft(aircraft);
+        }
+        Navigation.RemovePage(this);
     }
 
     public async void GetAllTypes()
@@ -53,8 +82,8 @@ public partial class EditAircraftModal : ContentPage
 
         if (IsEditing)
         {
-            //  int ID = Countries.FindIndex(c => c.id == airline.region);
-            //  CountryPicker.SelectedIndex = ID;
+            int ID = Types.FindIndex(c => c.id == aircraft.typeID);
+            TypePicker.SelectedIndex = ID;
         }
 
         TypePicker.SelectedIndexChanged += TypePicker_SelectedIndexChanged;
@@ -102,8 +131,8 @@ public partial class EditAircraftModal : ContentPage
 
         if (IsEditing)
         {
-            //  int ID = Countries.FindIndex(c => c.id == airline.region);
-            //  CountryPicker.SelectedIndex = ID;
+            int ID = Airlines.FindIndex(c => c.id == aircraft.airlineID);
+            AirlinePicker.SelectedIndex = ID;
         }
 
         AirlinePicker.SelectedIndexChanged += AirlinePicker_SelectedIndexChanged;
@@ -151,8 +180,8 @@ public partial class EditAircraftModal : ContentPage
 
         if (IsEditing)
         {
-          //  int ID = Countries.FindIndex(c => c.id == airline.region);
-          //  CountryPicker.SelectedIndex = ID;
+            int ID = Countries.FindIndex(c => c.id == aircraft.countryID);
+            CountryPicker.SelectedIndex = ID;
         }
 
         CountryPicker.SelectedIndexChanged += CountryPickerSelectionChanged;

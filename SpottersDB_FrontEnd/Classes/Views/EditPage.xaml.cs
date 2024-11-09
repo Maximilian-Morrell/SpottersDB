@@ -137,6 +137,27 @@ namespace SpottersDB_FrontEnd.Classes.Views
                 Frame f = await airportCard.Card(airport);
                 AirportParent.Children.Add(f);
             }
+            LoadAircrafts();
+        }
+
+        private async void LoadAircrafts()
+        {
+            AircraftParent.Children.Clear();
+            List<Aircraft> aircrafts = await HTTP_Controller.GetAircrafts();
+            foreach(Aircraft aircraft in aircrafts)
+            {
+                AircraftCard aircraftCard = new AircraftCard();
+                aircraftCard.EditClicked += AircraftCard_EditClicked;
+                Frame f = await aircraftCard.Card(aircraft);
+                AircraftParent.Children.Add(f);
+            }
+        }
+
+        private EventHandler AircraftCard_EditClicked(Aircraft aircraft)
+        {
+            EditAircraftModal editAircraftModal = new EditAircraftModal(aircraft);
+            Navigation.PushAsync(editAircraftModal);
+            return null;
         }
 
         private EventHandler AirportCard_EditClicked(Airport airport)

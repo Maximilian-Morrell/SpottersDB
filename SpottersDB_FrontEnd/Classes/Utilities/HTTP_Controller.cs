@@ -267,6 +267,42 @@ namespace SpottersDB_FrontEnd.Classes.Utilities
             return manufactorer;
         }
 
+        public static async Task<Airline> GetAirlineByID(int ID)
+        {
+            Airline airline = null;
+            try
+            {
+                HttpClient client = GetHttpClient();
+                HttpResponseMessage response = await client.GetAsync("/Get/Airline?ID=" + ID);
+                string content = await response.Content.ReadAsStringAsync();
+                airline = JsonSerializer.Deserialize<Airline>(content);
+            }
+            catch (Exception e)
+            {
+                Window w = new Window(new ErrorBox(e.StackTrace, e.InnerException.Message));
+                Application.Current.OpenWindow(w);
+            }
+            return airline;
+        }
+
+        public static async Task<AircraftType> GetAircraftTypeByID(int ID)
+        {
+            AircraftType type = null;
+            try
+            {
+                HttpClient client = GetHttpClient();
+                HttpResponseMessage response = await client.GetAsync("/Get/AircraftType?ID=" + ID);
+                string content = await response.Content.ReadAsStringAsync();
+                type = JsonSerializer.Deserialize<AircraftType>(content);
+            }
+            catch (Exception e)
+            {
+                Window w = new Window(new ErrorBox(e.StackTrace, e.InnerException.Message));
+                Application.Current.OpenWindow(w);
+            }
+            return type;
+        }
+
         public static async Task<List<AircraftType>> GetAircraftTypes()
         {
             List<AircraftType> aircraftTypes = new List<AircraftType>();
@@ -439,6 +475,73 @@ namespace SpottersDB_FrontEnd.Classes.Utilities
                 Application.Current.OpenWindow(w);
             }
             return airports;
+        }
+
+        public static async Task<HttpResponseMessage> AddNewAircraft(Aircraft aircraft)
+        {
+            MultipartFormDataContent content = new MultipartFormDataContent();
+            HttpResponseMessage response = null;
+            try
+            {
+                HttpClient client = GetHttpClient();
+
+                content.Add(new StringContent(aircraft.registration), "Registration");
+                content.Add(new StringContent(aircraft.description), "Description");
+                content.Add(new StringContent(aircraft.typeID.ToString()), "TypeID");
+                content.Add(new StringContent(aircraft.countryID.ToString()), "CountryID");
+                content.Add(new StringContent(aircraft.airlineID.ToString()), "AirlineID");
+
+                response = await client.PostAsync("/Post/Aircraft", content);
+            }
+            catch (Exception e)
+            {
+                Window w = new Window(new ErrorBox(e.StackTrace, e.InnerException.Message));
+                Application.Current.OpenWindow(w);
+            }
+            return response;
+        }
+
+        public static async Task<HttpResponseMessage> UpdateAircraft(Aircraft aircraft)
+        {
+            MultipartFormDataContent content = new MultipartFormDataContent();
+            HttpResponseMessage response = null;
+            try
+            {
+                HttpClient client = GetHttpClient();
+
+                content.Add(new StringContent(aircraft.id.ToString()), "ID");
+                content.Add(new StringContent(aircraft.registration), "Registration");
+                content.Add(new StringContent(aircraft.description), "Description");
+                content.Add(new StringContent(aircraft.typeID.ToString()), "TypeID");
+                content.Add(new StringContent(aircraft.countryID.ToString()), "CountryID");
+                content.Add(new StringContent(aircraft.airlineID.ToString()), "AirlineID");
+
+                response = await client.PostAsync("/Patch/Aircraft", content);
+            }
+            catch (Exception e)
+            {
+                Window w = new Window(new ErrorBox(e.StackTrace, e.InnerException.Message));
+                Application.Current.OpenWindow(w);
+            }
+            return response;
+        }
+
+        public static async Task<List<Aircraft>> GetAircrafts()
+        {
+            List<Aircraft> aircrafts = new List<Aircraft>();
+            try
+            {
+                HttpClient client = GetHttpClient();
+                HttpResponseMessage respone = await client.GetAsync("/Get/Aircrafts");
+                string content = await respone.Content.ReadAsStringAsync();
+                aircrafts = JsonSerializer.Deserialize<List<Aircraft>>(content);
+            }
+            catch (Exception e)
+            {
+                Window w = new Window(new ErrorBox(e.StackTrace, e.InnerException.Message));
+                Application.Current.OpenWindow(w);
+            }
+            return aircrafts;
         }
     }
 }
