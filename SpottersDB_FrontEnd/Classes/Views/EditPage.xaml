@@ -56,13 +56,23 @@
             </VerticalStackLayout>
             <!--Airport-->
             <VerticalStackLayout Padding="20">
-                <Label Text="Airport"></Label>
+                <Label Text="Airports"></Label>
                 <ScrollView Orientation="Horizontal">
                     <HorizontalStackLayout x:Name="AirportParent" Padding="25" Spacing="20">
 
                     </HorizontalStackLayout>
                 </ScrollView>
                 <Button Text="Add an Airport" HorizontalOptions="StartAndExpand" x:Name="AddAirport"></Button>
+            </VerticalStackLayout>
+            <!--Aircraft-->
+            <VerticalStackLayout Padding="20">
+                <Label Text="Aircrafts"></Label>
+                <ScrollView Orientation="Horizontal">
+                    <HorizontalStackLayout x:Name="AircraftParent" Padding="25" Spacing="20">
+
+                    </HorizontalStackLayout>
+                </ScrollView>
+                <Button Text="Add an Aircraft" HorizontalOptions="StartAndExpand" x:Name="AddAircraft"></Button>
             </VerticalStackLayout>
         </VerticalStackLayout>
     </ScrollView>
