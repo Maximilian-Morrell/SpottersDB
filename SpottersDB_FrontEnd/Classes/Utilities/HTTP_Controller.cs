@@ -371,5 +371,56 @@ namespace SpottersDB_FrontEnd.Classes.Utilities
             }
             return airlines;
         }
+
+        public static async Task<HttpResponseMessage> AddAirport(Airport airport)
+        {
+            MultipartFormDataContent content = new MultipartFormDataContent();
+            HttpResponseMessage response = null;
+            try
+            {
+                HttpClient client = GetHttpClient();
+                content.Add(new StringContent(airport.icaO_Code), "ICAO");
+                content.Add(new StringContent(airport.iatA_Code), "IATA");
+                content.Add(new StringContent(airport.name), "Name");
+                content.Add(new StringContent(airport.description), "Description");
+                content.Add(new StringContent(airport.city), "City");
+                content.Add(new StringContent(airport.countryID.ToString()), "Country");
+
+                response = await client.PostAsync("/Patch/Airport", content);
+            }
+            catch (Exception e)
+            {
+                Window w = new Window(new ErrorBox(e.StackTrace, e.InnerException.Message));
+                Application.Current.OpenWindow(w);
+            }
+
+            return response;
+        }
+
+        public static async Task<HttpResponseMessage> UpdateAirport(Airport airport)
+        {
+            MultipartFormDataContent content = new MultipartFormDataContent();
+            HttpResponseMessage response = null;
+            try
+            {
+                HttpClient client = GetHttpClient();
+                content.Add(new StringContent(airport.id.ToString()), "ID");
+                content.Add(new StringContent(airport.icaO_Code), "ICAO");
+                content.Add(new StringContent(airport.iatA_Code), "IATA");
+                content.Add(new StringContent(airport.name), "Name");
+                content.Add(new StringContent(airport.description), "Description");
+                content.Add(new StringContent(airport.city), "City");
+                content.Add(new StringContent(airport.countryID.ToString()), "Country");
+
+                response = await client.PostAsync("/Post/Airport", content);
+            }
+            catch (Exception e)
+            {
+                Window w = new Window(new ErrorBox(e.StackTrace, e.InnerException.Message));
+                Application.Current.OpenWindow(w);
+            }
+
+            return response;
+        }
     }
 }
