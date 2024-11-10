@@ -97,7 +97,7 @@ namespace SpottersDB_BackEnd.Classes.Utilities
                 cmd.ExecuteNonQuery();
                 app.Logger.LogInformation("Created the Link Table for SpottingTrips and Airports");
                 // Create SpottingPicture Table
-                cmd.CommandText = "CREATE TABLE SpottingPictures (SpottingPictureID int NOT NULL PRIMARY KEY IDENTITY, SpottingPictureName text, SpottingPictureDescription text, SpottingPictureURL text, SpottingPictureOriginalFileName text, SpottingTripAirport int, SpottingPictureAircraftID int, CONSTRAINT [FK_SpottingPicture_SpottingTripAirport] FOREIGN KEY ([SpottingPictureSpottingTripAirportID]) REFERENCES [SpottingTripAirports](LinkID), CONSTRAINT [FK_SpottingPicture_Aircraft] FOREIGN KEY ([SpottingPictureAircraftID]) REFERENCES [Aircrafts](AircraftID));";
+                cmd.CommandText = "CREATE TABLE SpottingPictures (SpottingPictureID int NOT NULL PRIMARY KEY IDENTITY, SpottingPictureName text, SpottingPictureDescription text, SpottingPictureURL text, SpottingPictureOriginalFileName text, SpottingTripAirport int, SpottingPictureAircraftID int, CONSTRAINT [FK_SpottingPicture_SpottingTripAirport] FOREIGN KEY ([SpottingPictureSpottingTripAirportID]) REFERENCES [SpottingTripAirports](LinkID) ON DELETE SET NULL, CONSTRAINT [FK_SpottingPicture_Aircraft] FOREIGN KEY ([SpottingPictureAircraftID]) REFERENCES [Aircrafts](AircraftID));";
                 cmd.ExecuteNonQuery();
                 app.Logger.LogInformation("Created the Table SpottingPictures");
                 con.Close();
