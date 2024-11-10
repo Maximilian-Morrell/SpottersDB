@@ -564,6 +564,7 @@ namespace SpottersDB_FrontEnd.Classes.Utilities
 
         public static async Task<HttpResponseMessage> AddNewSpottingTrip(SpottingTrip spottingTrip)
         {
+            Thread.Sleep(500);
             MultipartFormDataContent content = new MultipartFormDataContent();
             HttpResponseMessage response = null;
             try
@@ -588,6 +589,7 @@ namespace SpottersDB_FrontEnd.Classes.Utilities
 
         public static async Task<HttpResponseMessage> UpdateSpottingTrip(SpottingTrip spottingTrip)
         {
+            Thread.Sleep(500);
             MultipartFormDataContent content = new MultipartFormDataContent();
             HttpResponseMessage response = null;
             try

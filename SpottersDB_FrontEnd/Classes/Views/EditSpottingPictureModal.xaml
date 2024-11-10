@@ -12,6 +12,7 @@
             <RowDefinition></RowDefinition>
             <RowDefinition></RowDefinition>
             <RowDefinition></RowDefinition>
+            <RowDefinition></RowDefinition>
         </Grid.RowDefinitions>
         <Grid.ColumnDefinitions>
             <ColumnDefinition></ColumnDefinition>
@@ -31,6 +32,7 @@
 
         <Label Grid.Row="4" Grid.Column="0" Text="Aircraft:"></Label>
         
-        <Button Grid.Row="4" Grid.ColumnSpan="3" Text="Submit" x:Name="Submit" VerticalOptions="End"></Button>
+        <Button Grid.Row="5" Grid.ColumnSpan="3" Text="Submit" x:Name="Submit" VerticalOptions="End"></Button>
+        <Image HeightRequest="500" VerticalOptions="Start" Grid.Row="6" Grid.Column="0" Grid.ColumnSpan="3" x:Name="PreviewImage"></Image>
     </Grid>
 </ContentPage>

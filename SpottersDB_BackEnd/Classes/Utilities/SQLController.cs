@@ -2,6 +2,7 @@
 using SpottersDB_BackEnd.Classes.Structure;
 using System.Data;
 using System.Data.Common;
+using System.Dynamic;
 
 namespace SpottersDB_BackEnd.Classes.Utilities
 {
@@ -112,6 +113,8 @@ namespace SpottersDB_BackEnd.Classes.Utilities
             {
                 con.Close();
             }
+
+            con.Close();
         }
 
         public void AddCountry(Country country)
@@ -138,6 +141,7 @@ namespace SpottersDB_BackEnd.Classes.Utilities
             {
                 con.Close();
             }
+            con.Close();
         }
 
         public void AddAirport(Airport airport)
@@ -159,6 +163,7 @@ namespace SpottersDB_BackEnd.Classes.Utilities
             {
                 con.Close();
             }
+            con.Close();
         }
 
         public void AddAirline(Airline airline)
@@ -180,6 +185,7 @@ namespace SpottersDB_BackEnd.Classes.Utilities
             {
                 con.Close();
             }
+            con.Close();
         }
 
         public void AddManufactorer(Manufactorer manufactorer)
@@ -201,6 +207,7 @@ namespace SpottersDB_BackEnd.Classes.Utilities
             {
                 con.Close();
             }
+            con.Close();
         }
 
         public void AddAircraftType(AircraftType aircraftType)
@@ -222,6 +229,7 @@ namespace SpottersDB_BackEnd.Classes.Utilities
             {
                 con.Close();
             }
+            con.Close();
         }
 
         public void AddAircraft(Aircraft aircraft)
@@ -243,6 +251,7 @@ namespace SpottersDB_BackEnd.Classes.Utilities
             {
                 con.Close();
             }
+            con.Close();
         }
 
         public void AddSpottingTrip(SpottingTrip spottingTrip, List<int> AirportIDs)
@@ -269,6 +278,7 @@ namespace SpottersDB_BackEnd.Classes.Utilities
             {
                 con.Close();
             }
+            con.Close();
         }
 
         public void AddSpottingPicture(SpottingPicture spottingPicture)
@@ -290,6 +300,7 @@ namespace SpottersDB_BackEnd.Classes.Utilities
             {
                 con.Close();
             }
+            con.Close();
         }
 
         public void UpdateCountry(Country country)
@@ -311,6 +322,7 @@ namespace SpottersDB_BackEnd.Classes.Utilities
             {
                 con.Close();
             }
+            con.Close();
         }
 
         public void UpdateAirport(Airport airport)
@@ -332,6 +344,7 @@ namespace SpottersDB_BackEnd.Classes.Utilities
             {
                 con.Close();
             }
+            con.Close();
         }
 
         public void UpdateAirline(Airline airline)
@@ -353,6 +366,7 @@ namespace SpottersDB_BackEnd.Classes.Utilities
             {
                 con.Close();
             }
+            con.Close();
         }
 
         public void UpdateAircraftType(AircraftType aircraftType)
@@ -374,6 +388,7 @@ namespace SpottersDB_BackEnd.Classes.Utilities
             {
                 con.Close();
             }
+            con.Close();
         }
 
         public void UpdateManufactorer(Manufactorer manufactorer)
@@ -395,6 +410,7 @@ namespace SpottersDB_BackEnd.Classes.Utilities
             {
                 con.Close();
             }
+            con.Close();
         }
 
         public void UpdateAircraft(Aircraft aircraft)
@@ -416,6 +432,7 @@ namespace SpottersDB_BackEnd.Classes.Utilities
             {
                 con.Close();
             }
+            con.Close();
         }
 
         public void UpdateSpottingTrip(SpottingTrip spottingTrip, List<int> AirportIDs)
@@ -470,6 +487,7 @@ namespace SpottersDB_BackEnd.Classes.Utilities
             {
                 con.Close();
             }
+            con.Close();
         }
 
         public void UpdateSpottingPicture(SpottingPicture spottingPicture)
@@ -631,7 +649,7 @@ namespace SpottersDB_BackEnd.Classes.Utilities
             {
                 con.Close();
             }
-
+            con.Close();
             return Airports;
         }
 
@@ -658,7 +676,7 @@ namespace SpottersDB_BackEnd.Classes.Utilities
             {
                 con.Close();
             }
-
+            con.Close();
             return airport;
         }
 
@@ -686,7 +704,7 @@ namespace SpottersDB_BackEnd.Classes.Utilities
             {
                 con.Close();
             }
-
+            con.Close();
             return Airlines;
         }
 
@@ -713,7 +731,7 @@ namespace SpottersDB_BackEnd.Classes.Utilities
             {
                 con.Close();
             }
-
+            con.Close();
             return airline;
         }
 
@@ -741,7 +759,7 @@ namespace SpottersDB_BackEnd.Classes.Utilities
             {
                 con.Close();
             }
-
+            con.Close();
             return AircraftTypes;
         }
 
@@ -768,7 +786,7 @@ namespace SpottersDB_BackEnd.Classes.Utilities
             {
                 con.Close();
             }
-
+            con.Close();
             return aircraftType;
         }
 
@@ -796,7 +814,7 @@ namespace SpottersDB_BackEnd.Classes.Utilities
             {
                 con.Close();
             }
-
+            con.Close();
             return Manufactorers;
         }
 
@@ -823,7 +841,7 @@ namespace SpottersDB_BackEnd.Classes.Utilities
             {
                 con.Close();
             }
-
+            con.Close();
             return manufactorer;
         }
 
@@ -851,7 +869,7 @@ namespace SpottersDB_BackEnd.Classes.Utilities
             {
                 con.Close();
             }
-
+            con.Close();
             return aircrafts;
         }
 
@@ -878,17 +896,18 @@ namespace SpottersDB_BackEnd.Classes.Utilities
             {
                 con.Close();
             }
-
+            con.Close();
             return aircraft;
         }
 
         public List<SpottingTrip> GetSpottingTrips()
         {
+            Thread.Sleep(100);
             List<SpottingTrip> spottingTrips = new List<SpottingTrip>();
             try
             {
-                con.Open();
                 cmd.CommandText = "SELECT * FROM SpottingTrips";
+                con.Open();
                 reader = cmd.ExecuteReader();
                 while(reader.Read())
                 {
@@ -906,7 +925,7 @@ namespace SpottersDB_BackEnd.Classes.Utilities
             {
                 con.Close();
             }
-
+            con.Close();
             return spottingTrips;
         }
 
@@ -933,7 +952,7 @@ namespace SpottersDB_BackEnd.Classes.Utilities
             {
                 con.Close();
             }
-
+            con.Close();
             return spottingTrip;
         }
 
@@ -961,7 +980,7 @@ namespace SpottersDB_BackEnd.Classes.Utilities
             {
                 con.Close();
             }
-
+            con.Close();
             return spottingPictures;
         }
 
@@ -988,7 +1007,7 @@ namespace SpottersDB_BackEnd.Classes.Utilities
             {
                 con.Close();
             }
-
+            con.Close();
             return spottingPicture;
         }
 
