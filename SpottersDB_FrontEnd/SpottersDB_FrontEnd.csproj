@@ -102,6 +102,9 @@
 	  <MauiXaml Update="Classes\Views\EditManufactorerModal.xaml">
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>
+	  <MauiXaml Update="Classes\Views\EditSpottingPictureModal.xaml">
+	    <Generator>MSBuild:Compile</Generator>
+	  </MauiXaml>
 	  <MauiXaml Update="Classes\Views\EditSpottingTripModal.xaml">
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>

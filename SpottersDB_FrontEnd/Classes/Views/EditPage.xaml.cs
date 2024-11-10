@@ -16,6 +16,13 @@ namespace SpottersDB_FrontEnd.Classes.Views
             AddAirport.Clicked += AddAirport_Clicked;
             AddAircraft.Clicked += AddAircraft_Clicked;
             AddSpottingTrip.Clicked += AddSpottingTrip_Clicked;
+            AddSpottingPicture.Clicked += AddSpottingPicture_Clicked;
+        }
+
+        private void AddSpottingPicture_Clicked(object sender, EventArgs e)
+        {
+            EditSpottingPictureModal editSpottingPictureModal = new EditSpottingPictureModal();
+            Navigation.PushAsync(editSpottingPictureModal);
         }
 
         private void AddSpottingTrip_Clicked(object sender, EventArgs e)
