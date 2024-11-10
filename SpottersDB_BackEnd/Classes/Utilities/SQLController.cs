@@ -92,14 +92,14 @@ namespace SpottersDB_BackEnd.Classes.Utilities
                 cmd.CommandText = "CREATE TABLE SpottingTrips (SpottingTripID int NOT NULL PRIMARY KEY IDENTITY, SpottingTripStart datetime2(0), SpottingTripEnd datetime2(0), SpottingTripName text, SpottingTripDescription text);";
                 cmd.ExecuteNonQuery();
                 app.Logger.LogInformation("Created the Table SpottingTrips");
-                // Create SpottingPicture Table
-                cmd.CommandText = "CREATE TABLE SpottingPictures (SpottingPictureID int NOT NULL PRIMARY KEY IDENTITY, SpottingPictureName text, SpottingPictureDescription text, SpottingPictureURL text, SpottingPictureOriginalFileName text, SpottingPictureSpottingTripID int, SpottingPictureAircraftID int, CONSTRAINT [FK_SpottingPicture_SpottingTrip] FOREIGN KEY ([SpottingPictureSpottingTripID]) REFERENCES [SpottingTrips](SpottingTripID), CONSTRAINT [FK_SpottingPicture_Aircraft] FOREIGN KEY ([SpottingPictureAircraftID]) REFERENCES [Aircrafts](AircraftID));";
-                cmd.ExecuteNonQuery();
-                app.Logger.LogInformation("Created the Table SpottingPictures");
                 // Create SpottingTrip & Airport Link Table
                 cmd.CommandText = "CREATE TABLE SpottingTripAirports (LinkID int NOT NULL PRIMARY KEY IDENTITY, SpottingTripID int, AirportID int, CONSTRAINT [FK_SpottingTripAirport_SpottingTrip] FOREIGN KEY ([SpottingTripID]) REFERENCES [SpottingTrips](SpottingTripID), CONSTRAINT [FK_SpottingTripAirport_Airport] FOREIGN KEY ([AirportID]) REFERENCES [Airports](AirportID));";
                 cmd.ExecuteNonQuery();
                 app.Logger.LogInformation("Created the Link Table for SpottingTrips and Airports");
+                // Create SpottingPicture Table
+                cmd.CommandText = "CREATE TABLE SpottingPictures (SpottingPictureID int NOT NULL PRIMARY KEY IDENTITY, SpottingPictureName text, SpottingPictureDescription text, SpottingPictureURL text, SpottingPictureOriginalFileName text, SpottingTripAirport int, SpottingPictureAircraftID int, CONSTRAINT [FK_SpottingPicture_SpottingTripAirport] FOREIGN KEY ([SpottingPictureSpottingTripAirportID]) REFERENCES [SpottingTripAirports](LinkID), CONSTRAINT [FK_SpottingPicture_Aircraft] FOREIGN KEY ([SpottingPictureAircraftID]) REFERENCES [Aircrafts](AircraftID));";
+                cmd.ExecuteNonQuery();
+                app.Logger.LogInformation("Created the Table SpottingPictures");
                 con.Close();
                 ConnectToDB(DatabaseName, app);
             }
@@ -426,6 +426,7 @@ namespace SpottersDB_BackEnd.Classes.Utilities
                 cmd.CommandText = $"UPDATE SpottingTrips SET SpottingTripStart = '{spottingTrip.Start.ToString("yyyy-MM-dd HH:mm:ss")}', SpottingTripEnd = '{spottingTrip.End.ToString("yyyy-MM-dd HH:mm:ss")}', SpottingTripName = '{spottingTrip.Name}', SpottingTripDescription = '{spottingTrip.Description}' WHERE SpottingTripID = {spottingTrip.ID}";
                 cmd.ExecuteNonQuery();
                 cmd.CommandText = $"SELECT AirportID FROM SpottingTripAirports WHERE SpottingTripID = {spottingTrip.ID}";
+                List<int> Airports2Delete = new List<int>();
                 reader = cmd.ExecuteReader();
                 while(reader.Read())
                 {
@@ -436,13 +437,26 @@ namespace SpottersDB_BackEnd.Classes.Utilities
                     }
                     else
                     {
-                        cmd.CommandText = $"DELETE FROM SpottingTripAirports WHERE AirportID = {ID};";
+                        Airports2Delete.Add(ID);
                     }
                 }
+
+                con.Close();
+
+                foreach(int airport2delete in Airports2Delete)
+                {
+                    con.Open();
+                    cmd.CommandText = $"DELETE FROM SpottingTripAirports WHERE AirportID = {airport2delete} AND SpottingTripID = {spottingTrip.ID};";
+                    cmd.ExecuteNonQuery();
+                    con.Close();
+                }
+
                 foreach (int AirportID in AirportIDs)
                 {
+                    con.Open();
                     cmd.CommandText = $"INSERT INTO SpottingTripAirports (SpottingTripID, AirportID) VALUES ('{spottingTrip.ID}', '{AirportID}');";
                     cmd.ExecuteNonQuery();
+                    con.Close();
                 }
                 app.Logger.LogInformation("Updated a SpottingTrip Object");
                 con.Close();
@@ -504,6 +518,7 @@ namespace SpottersDB_BackEnd.Classes.Utilities
             {
                 con.Close();
             }
+            con.Close();
             return Countries;
         }
 
@@ -532,6 +547,7 @@ namespace SpottersDB_BackEnd.Classes.Utilities
             {
                 con.Close();
             }
+            con.Close();
             return Countries;
         }
 
@@ -560,6 +576,7 @@ namespace SpottersDB_BackEnd.Classes.Utilities
             {
                 con.Close();
             }
+            con.Close();
             return Countries;
         }
 
@@ -586,7 +603,7 @@ namespace SpottersDB_BackEnd.Classes.Utilities
             {
                 con.Close();
             }
-
+            con.Close();
             return country;
         }
 

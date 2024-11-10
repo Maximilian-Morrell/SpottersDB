@@ -130,10 +130,12 @@ namespace SpottersDB_BackEnd.Classes.API
             {
                 IFormCollection form = await req.ReadFormAsync();
                 SpottingTrip spottingTrip = new SpottingTrip(Convert.ToDateTime(form["Start"]), Convert.ToDateTime(form["End"]), form["Name"], form["Description"]);
-                List<int> AirportIDs = new List<int>();
-                foreach(string AirportID in Convert.ToString(form["AirportID"]).Split(',')) 
+                List<int> AirportIDs = new List<int>(); if (form["AirportID"] != "")
                 {
-                    AirportIDs.Add(Convert.ToInt32(AirportID));
+                    foreach (string AirportID in Convert.ToString(form["AirportID"]).Split(','))
+                    {
+                        AirportIDs.Add(Convert.ToInt32(AirportID));
+                    }
                 }
                 sqlcontroller.AddSpottingTrip(spottingTrip, AirportIDs);
             }

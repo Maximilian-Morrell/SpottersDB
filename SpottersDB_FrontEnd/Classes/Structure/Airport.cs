@@ -129,6 +129,7 @@ namespace SpottersDB_FrontEnd.Classes.Structure
 
         public async Task<Country> GetRegion()
         {
+            Thread.Sleep(50);
             return await HTTP_Controller.GetCountryByID(countryID);
         }
     }

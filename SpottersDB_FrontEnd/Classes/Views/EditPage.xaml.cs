@@ -15,6 +15,13 @@ namespace SpottersDB_FrontEnd.Classes.Views
             AddAirline.Clicked += AddAirline_Clicked;
             AddAirport.Clicked += AddAirport_Clicked;
             AddAircraft.Clicked += AddAircraft_Clicked;
+            AddSpottingTrip.Clicked += AddSpottingTrip_Clicked;
+        }
+
+        private void AddSpottingTrip_Clicked(object sender, EventArgs e)
+        {
+            EditSpottingTripModal editSpottingTripModal = new EditSpottingTripModal();
+            Navigation.PushAsync(editSpottingTripModal);
         }
 
         private void AddAircraft_Clicked(object sender, EventArgs e)
@@ -151,6 +158,35 @@ namespace SpottersDB_FrontEnd.Classes.Views
                 Frame f = await aircraftCard.Card(aircraft);
                 AircraftParent.Children.Add(f);
             }
+            LoadSpottingTrips();
+        }
+
+        private async void LoadSpottingTrips()
+        {
+            try
+            {
+                SpottingTripParent.Children.Clear();
+                List<SpottingTrip> spottingTrips = await HTTP_Controller.GetSpottingTrips();
+                foreach (SpottingTrip spottingTrip in spottingTrips)
+                {
+                    SpottingTripCard spottingTripCard = new SpottingTripCard();
+                    spottingTripCard.EditClicked += SpottingTripCard_EditClicked;
+                    Frame f = await spottingTripCard.Card(spottingTrip);
+                    SpottingTripParent.Children.Add(f);
+                }
+            }
+            catch (Exception ex)
+            {
+                Window w = new Window(new ErrorBox(ex.StackTrace, ex.InnerException.Message));
+                Application.Current.OpenWindow(w);
+            }
+        }
+
+        private EventHandler SpottingTripCard_EditClicked(SpottingTrip spottingTrip, List<Airport> SelectedAirport)
+        {
+            EditSpottingTripModal editSpottingTripModal = new EditSpottingTripModal(spottingTrip, SelectedAirport);
+            Navigation.PushAsync(editSpottingTripModal);
+            return null;
         }
 
         private EventHandler AircraftCard_EditClicked(Aircraft aircraft)
