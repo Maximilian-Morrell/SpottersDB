@@ -286,7 +286,7 @@ namespace SpottersDB_BackEnd.Classes.Utilities
             try
             {
                 con.Open();
-                cmd.CommandText = $"INSERT INTO SpottingPictures (SpottingPictureName, SpottingPictureDescription, SpottingPictureURL, SpottingPictureOriginalFileName, SpottingPictureSpottingTripID, SpottingPictureAircraftID) VALUES ('{spottingPicture.Name}','{spottingPicture.Description}','{spottingPicture.PictureUrl}','{spottingPicture.OriginalFileName}','{spottingPicture.SpottingTripID}','{spottingPicture.AircraftID}');";
+                cmd.CommandText = $"INSERT INTO SpottingPictures (SpottingPictureName, SpottingPictureDescription, SpottingPictureURL, SpottingPictureOriginalFileName, SpottingTripAirportID, SpottingPictureAircraftID) VALUES ('{spottingPicture.Name}','{spottingPicture.Description}','{spottingPicture.PictureUrl}','{spottingPicture.OriginalFileName}','{spottingPicture.SpottingTripAirportID}','{spottingPicture.AircraftID}');";
                 cmd.ExecuteNonQuery();
                 app.Logger.LogInformation("Saved a SpottingPicture Object", spottingPicture);
                 con.Close();
@@ -495,7 +495,7 @@ namespace SpottersDB_BackEnd.Classes.Utilities
             try
             {
                 con.Open();
-                cmd.CommandText = $"UPDATE SpottingPictures SET SpottingPictureName = '{spottingPicture.Name}', SpottingPictureDescription = '{spottingPicture.Description}', SpottingPictureURL = '{spottingPicture.PictureUrl}', SpottingPictureOriginalFileName = '{spottingPicture.OriginalFileName}', SpottingPictureSpottingTripID = {spottingPicture.SpottingTripID}, SpottingPictureAircraftID = {spottingPicture.AircraftID} WHERE SpottingPictureID = {spottingPicture.ID}";
+                cmd.CommandText = $"UPDATE SpottingPictures SET SpottingPictureName = '{spottingPicture.Name}', SpottingPictureDescription = '{spottingPicture.Description}', SpottingPictureURL = '{spottingPicture.PictureUrl}', SpottingPictureOriginalFileName = '{spottingPicture.OriginalFileName}', SpottingTripAirportID = {spottingPicture.SpottingTripAirportID}, SpottingPictureAircraftID = {spottingPicture.AircraftID} WHERE SpottingPictureID = {spottingPicture.ID}";
                 cmd.ExecuteNonQuery();
                 app.Logger.LogInformation("Updated a SpottingPicture Object");
                 con.Close();
@@ -962,11 +962,11 @@ namespace SpottersDB_BackEnd.Classes.Utilities
             try
             {
                 con.Open();
-                cmd.CommandText = "SELECT * FROM SpottingPictures";
+                cmd.CommandText = "SELECT * FROM SpottingPictures;";
                 reader = cmd.ExecuteReader();
                 while(reader.Read())
                 {
-                    SpottingPicture spottingPicture = new SpottingPicture(Convert.ToInt32(reader["SpottingPictureID"]), Convert.ToString(reader["SpottingPictureName"]), Convert.ToString(reader["SpottingPictureDescription"]), Convert.ToString(reader["SpottingPictureURL"]), Convert.ToString(reader["SpottingPictureOriginalFileName"]), Convert.ToInt32(reader["SpottingPictureSpottingTripID"]), Convert.ToInt32(reader["SpottingPictureAircraftID"]));
+                    SpottingPicture spottingPicture = new SpottingPicture(Convert.ToInt32(reader["SpottingPictureID"]), Convert.ToString(reader["SpottingPictureName"]), Convert.ToString(reader["SpottingPictureDescription"]), Convert.ToString(reader["SpottingPictureURL"]), Convert.ToString(reader["SpottingPictureOriginalFileName"]), Convert.ToInt32(reader["SpottingTripAirportID"]), Convert.ToInt32(reader["SpottingPictureAircraftID"]));
                     spottingPictures.Add(spottingPicture);
                 }
                 con.Close();
@@ -1055,6 +1055,51 @@ namespace SpottersDB_BackEnd.Classes.Utilities
             }
             con.Close();
             return airports;
+        }
+
+        public int GetLinkID(int SpottingTripID, int AirportID)
+        {
+            int LinkID = -1;
+            try
+            {
+                con.Open();
+                cmd.CommandText = $"SELECT LinkID FROM SpottingTripAirports WHERE SpottingTripID = {SpottingTripID} AND AirportID = {AirportID}";
+                reader = cmd.ExecuteReader();
+                while (reader.Read())
+                {
+                    LinkID = Convert.ToInt32(reader[0]);
+                }
+                con.Close();
+            }
+            catch (Exception e)
+            {
+                app.Logger.LogError(e.Message);
+            }
+            con.Close();
+            return LinkID;
+        }
+
+        public List<int> GetSpottingTripAirportFromLinkID(int LinkID)
+        {
+            List<int> IDs = new List<int>();
+            try
+            {
+                con.Open();
+                cmd.CommandText = $"SELECT SpottingTripID, AirportID FROM SpottingTripAirports WHERE LinkID = {LinkID}";
+                reader = cmd.ExecuteReader();
+                while (reader.Read())
+                {
+                    IDs.Add(Convert.ToInt32(reader["SpottingTripID"]));
+                    IDs.Add(Convert.ToInt32(reader["AirportID"]));
+                }
+                con.Close();
+            }
+            catch (Exception e)
+            {
+                app.Logger.LogError(e.Message);
+            }
+            con.Close();
+            return IDs;
         }
     }
 }

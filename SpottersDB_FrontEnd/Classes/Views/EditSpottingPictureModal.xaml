@@ -23,7 +23,7 @@
         <Entry Grid.Row="0" Grid.ColumnSpan="2" Grid.Column="1" x:Name="SpottingPictureName"></Entry>
 
         <Label Grid.Row="1" Grid.Column="0" Text="Spotting Picture Description:"></Label>
-        <Entry Grid.Row="1" Grid.ColumnSpan="2" Grid.Column="1" x:Name="SpottingTripDescription"></Entry>
+        <Entry Grid.Row="1" Grid.ColumnSpan="2" Grid.Column="1" x:Name="SpottingPictureDescription"></Entry>
 
         <Label Grid.Row="2" Grid.Column="0" Text="Spotting Picture:"></Label>
         <Button Grid.Row="2" Grid.ColumnSpan="2" Grid.Column="1" Text="Select Image" x:Name="BtnFilePicker"></Button>

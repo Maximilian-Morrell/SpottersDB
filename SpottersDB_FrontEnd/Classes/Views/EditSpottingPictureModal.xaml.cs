@@ -1,6 +1,6 @@
-using MetalPerformanceShaders;
 using SpottersDB_FrontEnd.Classes.Structure;
 using SpottersDB_FrontEnd.Classes.Utilities;
+using System;
 
 namespace SpottersDB_FrontEnd.Classes.Views;
 
@@ -11,7 +11,7 @@ public partial class EditSpottingPictureModal : ContentPage
     public List<Aircraft> Aircrafts = new List<Aircraft>();
     FileResult fileResult;
     bool IsEditing;
-    //Manufactorer manufactorer;
+    SpottingPicture spottingPicture;
     Picker SpottingTripPicker = null;
     Picker AirportPicker = null;
     Picker AircraftPicker = null;
@@ -22,6 +22,28 @@ public partial class EditSpottingPictureModal : ContentPage
         this.IsEditing = false;
         Submit.Clicked += Submit_Clicked;
         BtnFilePicker.Clicked += BtnFilePicker_Clicked;
+    }
+
+    public EditSpottingPictureModal(SpottingPicture spottingPicture)
+    {
+        InitializeComponent();
+        this.IsEditing = true;
+        Submit.Clicked += Submit_Clicked;
+        BtnFilePicker.Clicked += BtnFilePicker_Clicked;
+        this.spottingPicture = spottingPicture;
+        SetUp();
+        GetAllAirports();
+        
+    }
+
+    private async void SetUp()
+    {
+        SpottingPictureName.Text = spottingPicture.name;
+        spottingPicture.description = spottingPicture.description;
+        PreviewImage.Source = new UriImageSource
+        {
+            Uri = new Uri(spottingPicture.pictureUrl)
+        };
     }
 
     private void BtnFilePicker_Clicked(object sender, EventArgs e)
@@ -40,16 +62,32 @@ public partial class EditSpottingPictureModal : ContentPage
 
     private void Submit_Clicked(object sender, EventArgs e)
     {
+        SaveSpottingPicture();
+    }
+
+    private async void SaveSpottingPicture()
+    {
         int Aircraft = Aircrafts[AircraftPicker.SelectedIndex].id;
         int SpottingTrip = SpottingTrips[SpottingTripPicker.SelectedIndex].id;
         int Airport = Airports[AirportPicker.SelectedIndex].id;
+
+        int LinkID = await HTTP_Controller.GetLinkID(SpottingTrip, Airport);
+
         if (IsEditing)
         {
+            if(fileResult != null)
+            {
 
+            }
+            else
+            {
+
+            }
         }
         else
         {
-
+            spottingPicture = new SpottingPicture(SpottingPictureName.Text, SpottingPictureDescription.Text, LinkID, Aircraft);
+            HTTP_Controller.AddNewSpottingPicture(spottingPicture, fileResult);
         }
 
         Navigation.RemovePage(this);
@@ -91,8 +129,9 @@ public partial class EditSpottingPictureModal : ContentPage
 
         if (IsEditing)
         {
-           // int ID = Countries.FindIndex(c => c.id == manufactorer.region);
-           // RegionPicker.SelectedIndex = ID;
+            List<int> ID = await HTTP_Controller.GetSpottingTripAirport(spottingPicture.spottingTripAirportID);
+            int PickerID = SpottingTrips.FindIndex(s => s.id == ID[0]);
+            SpottingTripPicker.SelectedIndex = PickerID;
         }
 
         SpottingTripPicker.SelectedIndexChanged += SpottingTripPickerSelectionChanged;
@@ -124,8 +163,8 @@ public partial class EditSpottingPictureModal : ContentPage
 
         if (IsEditing)
         {
-            // int ID = Countries.FindIndex(c => c.id == manufactorer.region);
-            // RegionPicker.SelectedIndex = ID;
+            int ID = Aircrafts.FindIndex(a => a.id == spottingPicture.aircraftID);
+            AircraftPicker.SelectedIndex = ID;
         }
 
         AircraftPicker.SelectedIndexChanged += AircraftPickerSelectionChanged;
@@ -183,8 +222,9 @@ public partial class EditSpottingPictureModal : ContentPage
 
         if (IsEditing)
         {
-            // int ID = Countries.FindIndex(c => c.id == manufactorer.region);
-            // RegionPicker.SelectedIndex = ID;
+            List<int> ID = await HTTP_Controller.GetSpottingTripAirport(spottingPicture.spottingTripAirportID);
+            int PickerID = Airports.FindIndex(s => s.id == ID[1]);
+            AirportPicker.SelectedIndex = PickerID;
         }
 
         AirportPicker.IsEnabled = true;

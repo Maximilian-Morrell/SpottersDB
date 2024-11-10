@@ -170,7 +170,7 @@ namespace SpottersDB_BackEnd.Classes.API
                     URL = BasePath + "/" + FileName;
                 }
                 IFormCollection form = await req.ReadFormAsync();
-                SpottingPicture spottingPicture = new SpottingPicture(form["Name"], form["Description"], URL, OldFileName, Convert.ToInt32(form["SpottingTripID"]), Convert.ToInt32(form["AircraftID"]));
+                SpottingPicture spottingPicture = new SpottingPicture(form["Name"], form["Description"], URL, OldFileName, Convert.ToInt32(form["SpottingTripAirport"]), Convert.ToInt32(form["AircraftID"]));
                 sqlcontroller.AddSpottingPicture(spottingPicture);
             }
             catch (Exception e)

@@ -187,6 +187,35 @@ namespace SpottersDB_FrontEnd.Classes.Views
                 Window w = new Window(new ErrorBox(ex.StackTrace, ex.InnerException.Message));
                 Application.Current.OpenWindow(w);
             }
+            LoadSpottingPictures();
+        }
+
+        private async void LoadSpottingPictures()
+        {
+            try
+            {
+                SpottingPictureParent.Children.Clear();
+                List<SpottingPicture> SpottingPictures = await HTTP_Controller.GetSpottingPictures();
+                foreach(SpottingPicture spottingPicture in SpottingPictures)
+                {
+                    SpottingPictureCard spottingPictureCard = new SpottingPictureCard();
+                    Frame f = await spottingPictureCard.Card(spottingPicture);
+                    spottingPictureCard.EditClicked += SpottingPictureCard_EditClicked;
+                    SpottingPictureParent.Children.Add(f);
+                }
+            }
+            catch (Exception ex)
+            {
+                Window w = new Window(new ErrorBox(ex.StackTrace, ex.InnerException.Message));
+                Application.Current.OpenWindow(w);
+            }
+        }
+
+        private EventHandler SpottingPictureCard_EditClicked(SpottingPicture spottingPicture)
+        {
+            EditSpottingPictureModal editSpottingPictureModal = new EditSpottingPictureModal(spottingPicture);
+            Navigation.PushAsync(editSpottingPictureModal);
+            return null;
         }
 
         private EventHandler SpottingTripCard_EditClicked(SpottingTrip spottingTrip, List<Airport> SelectedAirport)

@@ -1,4 +1,11 @@
-﻿namespace SpottersDB_BackEnd.Classes.Structure
+﻿using SpottersDB_FrontEnd.Classes.Utilities;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace SpottersDB_FrontEnd.Classes.Structure
 {
     public class SpottingPicture
     {
@@ -7,22 +14,22 @@
         private string _Description;
         private string _PictureUrl;
         private string _OriginalFileName;
-        private int _SpottingTripID;
+        private int _SpottingTripAirportID;
         private int _AircraftID;
 
-        public int ID
+        public int id
         {
             get
             {
                 return _ID;
             }
-            private set
+            set
             {
                 _ID = value;
             }
         }
 
-        public string Name
+        public string name
         {
             get
             {
@@ -34,7 +41,7 @@
             }
         }
 
-        public string Description
+        public string description
         {
             get
             {
@@ -46,7 +53,7 @@
             }
         }
 
-        public string PictureUrl
+        public string pictureUrl
         {
             get
             {
@@ -58,7 +65,7 @@
             }
         }
 
-        public string OriginalFileName
+        public string orginalFileName
         {
             get
             {
@@ -70,19 +77,19 @@
             }
         }
 
-        public int SpottingTripAirportID
+        public int spottingTripAirportID
         {
             get
             {
-                return _SpottingTripID;
+                return _SpottingTripAirportID;
             }
             set
             {
-                _SpottingTripID = value;
+                _SpottingTripAirportID = value;
             }
         }
 
-        public int AircraftID
+        public int aircraftID
         {
             get
             {
@@ -99,25 +106,26 @@
 
         }
 
-        public SpottingPicture(string Name, string Description, string PictureURL, string OriginalFileName, int SpottingTripAirportID, int AircraftID)
+        public SpottingPicture(string Name, string Description, int SpottingTripAirportID, int AircraftID)
         {
-            this.Name = Name;
-            this.Description = Description;
-            this.PictureUrl = PictureURL;
-            this.OriginalFileName = OriginalFileName;
-            this.SpottingTripAirportID = SpottingTripAirportID;
-            this.AircraftID = AircraftID;
+            this.name = Name;
+            this.description = Description;
+            this.spottingTripAirportID = SpottingTripAirportID;
+            this.aircraftID = AircraftID;
         }
 
-        public SpottingPicture(int ID, string Name, string Description, string PictureURL, string OriginalFileName, int SpottingTtipAirportID, int AircraftID)
+        public SpottingPicture(int ID, string Name, string Description, int SpottingTripAirportID, int AircraftID)
         {
-            this.ID = ID;
-            this.Name = Name;
-            this.Description = Description;
-            this.PictureUrl = PictureURL;
-            this.OriginalFileName = OriginalFileName;
-            this.SpottingTripAirportID = SpottingTtipAirportID;
-            this.AircraftID = AircraftID;
+            this.id = ID;
+            this.name = Name;
+            this.description = Description;
+            this.spottingTripAirportID = SpottingTripAirportID;
+            this.aircraftID = AircraftID;
+        }
+
+        public async Task<List<int>> GetSpottingTripAirport()
+        {
+            return await HTTP_Controller.GetSpottingTripAirport(spottingTripAirportID);
         }
     }
 }

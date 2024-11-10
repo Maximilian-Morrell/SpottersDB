@@ -63,6 +63,10 @@ namespace SpottersDB_BackEnd.Classes.API
 
             //Get Airports from SpottingTrip Route
             app.MapGet("/Get/Airports/SpottingTrip", (int ID) => GET_AirportsFromSpottingTrip(ID));
+
+            //Get SpottingTripLinkTable Route
+            app.MapGet("/Get/SpottingTripAirport/LinkID", (int SpottingTripID, int AirportID) => GET_LinkID(SpottingTripID, AirportID));
+            app.MapGet("/Get/SpottingTripAirport/SpottingTripAirport", (int LinkID) => GET_SpottingTripAirport(LinkID));
         }
 
         private List<Country> GET_Countries()
@@ -163,6 +167,16 @@ namespace SpottersDB_BackEnd.Classes.API
         private List<Airport> GET_AirportsFromSpottingTrip(int ID)
         {
             return sqlcontroller.GetAirportsFromSpottingTrip(ID);
+        }
+
+        private int GET_LinkID(int SpottingTripID, int AirportID)
+        {
+            return sqlcontroller.GetLinkID(SpottingTripID, AirportID);
+        }
+
+        private List<int> GET_SpottingTripAirport(int LinkID)
+        {
+            return sqlcontroller.GetSpottingTripAirportFromLinkID(LinkID);
         }
     }
 }

@@ -477,6 +477,24 @@ namespace SpottersDB_FrontEnd.Classes.Utilities
             return airports;
         }
 
+        public static async Task<Airport> GetAirport(int ID)
+        {
+            Airport airport = null;
+            try
+            {
+                HttpClient client = GetHttpClient();
+                HttpResponseMessage respone = await client.GetAsync("/Get/Airport?ID=" + ID);
+                string content = await respone.Content.ReadAsStringAsync();
+                airport = JsonSerializer.Deserialize<Airport>(content);
+            }
+            catch (Exception e)
+            {
+                Window w = new Window(new ErrorBox(e.StackTrace, e.InnerException.Message));
+                Application.Current.OpenWindow(w);
+            }
+            return airport;
+        }
+
         public static async Task<HttpResponseMessage> AddNewAircraft(Aircraft aircraft)
         {
             MultipartFormDataContent content = new MultipartFormDataContent();
@@ -542,6 +560,24 @@ namespace SpottersDB_FrontEnd.Classes.Utilities
                 Application.Current.OpenWindow(w);
             }
             return aircrafts;
+        }
+
+        public static async Task<Aircraft> GetAircraft(int ID)
+        {
+            Aircraft aircraft = null;
+            try
+            {
+                HttpClient client = GetHttpClient();
+                HttpResponseMessage respone = await client.GetAsync("/Get/Aircraft?ID="+ ID);
+                string content = await respone.Content.ReadAsStringAsync();
+                aircraft = JsonSerializer.Deserialize<Aircraft>(content);
+            }
+            catch (Exception e)
+            {
+                Window w = new Window(new ErrorBox(e.StackTrace, e.InnerException.Message));
+                Application.Current.OpenWindow(w);
+            }
+            return aircraft;
         }
 
         public static async Task<List<Airport>> GetAirportsFromSpottingTrip(int ID)
@@ -630,5 +666,154 @@ namespace SpottersDB_FrontEnd.Classes.Utilities
             }
             return spottingTrips;
         }
+
+        public static async Task<SpottingTrip> GetSpottingTrip(int ID)
+        {
+            SpottingTrip spottingTrip = null;
+            try
+            {
+                HttpClient client = GetHttpClient();
+                HttpResponseMessage respone = await client.GetAsync("/Get/SpottingTrip?ID=" + ID);
+                string content = await respone.Content.ReadAsStringAsync();
+                spottingTrip = JsonSerializer.Deserialize<SpottingTrip>(content);
+            }
+            catch (Exception e)
+            {
+                Window w = new Window(new ErrorBox(e.StackTrace, e.InnerException.Message));
+                Application.Current.OpenWindow(w);
+            }
+            return spottingTrip;
+        }
+
+        public static async Task<int> GetLinkID(int SpottingTripID, int AirportID)
+        {
+            int LinkID = -1;
+            try
+            {
+                HttpClient client = GetHttpClient();
+                HttpResponseMessage respone = await client.GetAsync($"/Get/SpottingTripAirport/LinkID?SpottingTripID={SpottingTripID}&AirportID={AirportID}");
+                string content = await respone.Content.ReadAsStringAsync();
+                LinkID = JsonSerializer.Deserialize<int>(content);
+            }
+            catch (Exception e)
+            {
+                Window w = new Window(new ErrorBox(e.StackTrace, e.InnerException.Message));
+                Application.Current.OpenWindow(w);
+            }
+            return LinkID;
+        }
+
+        public static async Task<List<int>> GetSpottingTripAirport(int LinkID)
+        {
+            List<int> SpottingTripAirport = new List<int>();
+            try
+            {
+                HttpClient client = GetHttpClient();
+                HttpResponseMessage respone = await client.GetAsync($"/Get/SpottingTripAirport/SpottingTripAirport?LinkID={LinkID}");
+                string content = await respone.Content.ReadAsStringAsync();
+                SpottingTripAirport = JsonSerializer.Deserialize<List<int>>(content);
+            }
+            catch (Exception e)
+            {
+                Window w = new Window(new ErrorBox(e.StackTrace, e.InnerException.Message));
+                Application.Current.OpenWindow(w);
+            }
+            return SpottingTripAirport;
+        }
+
+        public static async Task<HttpResponseMessage> UpdateSpottingTrip(SpottingPicture spottingPicture)
+        {
+            Thread.Sleep(500);
+            MultipartFormDataContent content = new MultipartFormDataContent();
+            HttpResponseMessage response = null;
+            try
+            {
+                HttpClient client = GetHttpClient();
+
+                content.Add(new StringContent(spottingPicture.name), "Name");
+                content.Add(new StringContent(spottingPicture.description), "Description");
+                content.Add(new StringContent(spottingPicture.spottingTripAirportID.ToString()), "SpottinTripAirport");
+                content.Add(new StringContent(spottingPicture.spottingTripAirportID.ToString()), "AircraftID");
+
+                response = await client.PostAsync("/Patch/SpottingPicture", content);
+            }
+            catch (Exception e)
+            {
+                Window w = new Window(new ErrorBox(e.StackTrace, e.InnerException.Message));
+                Application.Current.OpenWindow(w);
+            }
+            return response;
+        }
+
+        public static async Task<HttpResponseMessage> UpdateSpottingTrip(SpottingPicture spottingPicture, FileResult file)
+        {
+            Thread.Sleep(500);
+            MultipartFormDataContent content = new MultipartFormDataContent();
+            HttpResponseMessage response = null;
+            try
+            {
+                HttpClient client = GetHttpClient();
+
+                content.Add(new StringContent(spottingPicture.name), "Name");
+                content.Add(new StringContent(spottingPicture.description), "Description");
+                content.Add(new StringContent(spottingPicture.spottingTripAirportID.ToString()), "SpottinTripAirport");
+                content.Add(new StringContent(spottingPicture.spottingTripAirportID.ToString()), "AircraftID");
+                StreamContent Picture = new StreamContent(File.OpenRead(file.FullPath));
+                content.Add(Picture, "File", file.FileName);
+
+                response = await client.PostAsync("/Patch/SpottingPicture", content);
+            }
+            catch (Exception e)
+            {
+                Window w = new Window(new ErrorBox(e.StackTrace, e.InnerException.Message));
+                Application.Current.OpenWindow(w);
+            }
+            return response;
+        }
+
+        public static async Task<HttpResponseMessage> AddNewSpottingPicture(SpottingPicture spottingPicture, FileResult file)
+        {
+            Thread.Sleep(500);
+            MultipartFormDataContent content = new MultipartFormDataContent();
+            HttpResponseMessage response = null;
+            try
+            {
+                HttpClient client = GetHttpClient();
+
+                content.Add(new StringContent(spottingPicture.name), "Name");
+                content.Add(new StringContent(spottingPicture.description), "Description");
+                content.Add(new StringContent(spottingPicture.spottingTripAirportID.ToString()), "SpottingTripAirport");
+                content.Add(new StringContent(spottingPicture.aircraftID.ToString()), "AircraftID");
+                StreamContent Picture = new StreamContent(File.OpenRead(file.FullPath));
+                content.Add(Picture, "File", file.FileName);
+
+                response = await client.PostAsync("/Post/SpottingPicture", content);
+            }
+            catch (Exception e)
+            {
+                Window w = new Window(new ErrorBox(e.StackTrace, e.InnerException.Message));
+                Application.Current.OpenWindow(w);
+            }
+            return response;
+        }
+
+        public static async Task<List<SpottingPicture>> GetSpottingPictures()
+        {
+            List<SpottingPicture> spottingPictures = new List<SpottingPicture>();
+            try
+            {
+                HttpClient client = GetHttpClient();
+                HttpResponseMessage respone = await client.GetAsync("/Get/SpottingPictures");
+                string content = await respone.Content.ReadAsStringAsync();
+                spottingPictures = JsonSerializer.Deserialize<List<SpottingPicture>>(content);
+            }
+            catch (Exception e)
+            {
+                Window w = new Window(new ErrorBox(e.StackTrace, e.InnerException.Message));
+                Application.Current.OpenWindow(w);
+            }
+            return spottingPictures;
+        }
+
     }
 }
