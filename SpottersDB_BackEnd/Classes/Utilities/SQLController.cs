@@ -97,7 +97,7 @@ namespace SpottersDB_BackEnd.Classes.Utilities
                 cmd.ExecuteNonQuery();
                 app.Logger.LogInformation("Created the Link Table for SpottingTrips and Airports");
                 // Create SpottingPicture Table
-                cmd.CommandText = "CREATE TABLE SpottingPictures (SpottingPictureID int NOT NULL PRIMARY KEY IDENTITY, SpottingPictureName text, SpottingPictureDescription text, SpottingPictureURL text, SpottingPictureOriginalFileName text, SpottingTripAirport int, SpottingPictureAircraftID int, CONSTRAINT [FK_SpottingPicture_SpottingTripAirport] FOREIGN KEY ([SpottingPictureSpottingTripAirportID]) REFERENCES [SpottingTripAirports](LinkID) ON DELETE SET NULL, CONSTRAINT [FK_SpottingPicture_Aircraft] FOREIGN KEY ([SpottingPictureAircraftID]) REFERENCES [Aircrafts](AircraftID));";
+                cmd.CommandText = "CREATE TABLE SpottingPictures (SpottingPictureID int NOT NULL PRIMARY KEY IDENTITY, SpottingPictureName text, SpottingPictureDescription text, SpottingPictureURL text, SpottingPictureOriginalFileName text, SpottingTripAirportID int, SpottingPictureAircraftID int, CONSTRAINT [FK_SpottingPicture_SpottingTripAirport] FOREIGN KEY ([SpottingTripAirportID]) REFERENCES [SpottingTripAirports](LinkID) ON DELETE SET NULL, CONSTRAINT [FK_SpottingPicture_Aircraft] FOREIGN KEY ([SpottingPictureAircraftID]) REFERENCES [Aircrafts](AircraftID));";
                 cmd.ExecuteNonQuery();
                 app.Logger.LogInformation("Created the Table SpottingPictures");
                 con.Close();
@@ -998,7 +998,7 @@ namespace SpottersDB_BackEnd.Classes.Utilities
             try
             {
                 con.Open();
-                cmd.CommandText = $"SELECT sp.SpottingPictureURL FROM Countries c JOIN Airports a ON c.CountryID = a.CountryID JOIN SpottingTripAirports sta ON a.AirportID = sta.AirportID JOIN SpottingPictures sp ON sp.SpottingPictureSpottingTripID = sta.SpottingTripID WHERE c.CountryID = {Country};";
+                cmd.CommandText = $"SELECT sp.SpottingPictureURL FROM Countries c JOIN Airports a ON c.CountryID = a.CountryID JOIN SpottingTripAirports sta ON a.AirportID = sta.AirportID JOIN SpottingPictures sp ON sp.SpottingTripAirportID = sta.LinkID WHERE c.CountryID = {Country};";
                 reader = cmd.ExecuteReader();
                 {
                     while(reader.Read())

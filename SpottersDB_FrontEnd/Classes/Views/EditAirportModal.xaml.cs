@@ -13,12 +13,14 @@ public partial class EditAirportModal : ContentPage
     public EditAirportModal()
 	{
 		InitializeComponent();
+        Submit.Clicked += Submit_Clicked;
         IsEditing = false;
 	}
 
     public EditAirportModal(Airport airport)
     {
         InitializeComponent();
+        Submit.Clicked += Submit_Clicked;
         this.IsEditing = true;
         this.airport = airport;
 
@@ -32,7 +34,6 @@ public partial class EditAirportModal : ContentPage
     protected override void OnNavigatedTo(NavigatedToEventArgs args)
     {
         GetAllCountries();
-        Submit.Clicked += Submit_Clicked;
         base.OnNavigatedTo(args);
     }
 

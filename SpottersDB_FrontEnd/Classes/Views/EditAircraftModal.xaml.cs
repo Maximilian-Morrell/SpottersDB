@@ -18,12 +18,14 @@ public partial class EditAircraftModal : ContentPage
     public EditAircraftModal()
 	{
 		InitializeComponent();
+        Submit.Clicked += Submit_Clicked;
         this.IsEditing = false;
 	}
 
     public EditAircraftModal(Aircraft aircraft)
     {
         InitializeComponent();
+        Submit.Clicked += Submit_Clicked;
         this.aircraft = aircraft;
         AircraftRegistration.Text = aircraft.registration;
         AircraftDescription.Text = aircraft.description;
@@ -35,7 +37,6 @@ public partial class EditAircraftModal : ContentPage
         GetAllTypes();
         GetAllAirlines();
         GetAllCountries();
-        Submit.Clicked += Submit_Clicked;
         base.OnNavigatedTo(args);
     }
 
