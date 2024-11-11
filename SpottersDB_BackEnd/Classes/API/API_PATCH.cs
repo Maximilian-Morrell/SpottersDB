@@ -128,11 +128,19 @@ namespace SpottersDB_BackEnd.Classes.API
             {
                 IFormCollection form = await req.ReadFormAsync();
                 SpottingTrip spottingTrip = new SpottingTrip(Convert.ToInt32(form["ID"]), Convert.ToDateTime(form["Start"]), Convert.ToDateTime(form["End"]), form["Name"], form["Description"]);
-                sqlcontroller.UpdateSpottingTrip(spottingTrip);
+                List<int> AirportIDs = new List<int>();
+                if (form["AirportID"] != "")
+                {
+                    foreach (string AirportID in Convert.ToString(form["AirportID"]).Split(','))
+                    {
+                        AirportIDs.Add(Convert.ToInt32(AirportID));
+                    }
+                }
+                sqlcontroller.UpdateSpottingTrip(spottingTrip, AirportIDs);
             }
             catch (Exception e)
             {
-
+                app.Logger.LogError(e.Message);
             }
         }
 
@@ -142,7 +150,7 @@ namespace SpottersDB_BackEnd.Classes.API
             {
                 if(req.Form.Files.Count > 0)
                 {
-                    string BasePath = Program.Domain + "/Pic";
+                    string BasePath = app.Urls.ToList()[0] + "/Pic";
                     string URL = "";
                     string OldFileName = "";
                     
@@ -165,13 +173,13 @@ namespace SpottersDB_BackEnd.Classes.API
                     string oldFileName = form["PictureURL"];
                     File.Delete(FolderPath + "/" + oldFileName);
 
-                    SpottingPicture spottingPicture = new SpottingPicture(form["Name"], form["Description"], URL, OldFileName, Convert.ToInt32(form["SpottingTripID"]), Convert.ToInt32(form["AircraftID"]), Convert.ToInt32(form["AirportID"]));
+                    SpottingPicture spottingPicture = new SpottingPicture(Convert.ToInt32(form["ID"]), form["Name"], form["Description"], URL, OldFileName, Convert.ToInt32(form["SpottingTripAirport"]), Convert.ToInt32(form["AircraftID"]));
                     sqlcontroller.UpdateSpottingPicture(spottingPicture);
                 }
                 else
                 {
                     IFormCollection form = await req.ReadFormAsync();
-                    SpottingPicture spottingPicture = new SpottingPicture(Convert.ToInt32("ID"), form["Name"], form["Description"], form["PictureURL"], form["OriginalFileName"], Convert.ToInt32(form["SpottingTripID"]), Convert.ToInt32(form["AircraftID"]), Convert.ToInt32(form["AirportID"]));
+                    SpottingPicture spottingPicture = new SpottingPicture(Convert.ToInt32(form["ID"]), form["Name"], form["Description"], form["PictureURL"], form["OriginalFileName"], Convert.ToInt32(form["SpottingTripAirport"]), Convert.ToInt32(form["AircraftID"]));
                     sqlcontroller.UpdateSpottingPicture(spottingPicture);
                 }
             }

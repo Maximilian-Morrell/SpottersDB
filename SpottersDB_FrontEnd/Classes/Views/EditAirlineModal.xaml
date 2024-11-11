@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="SpottersDB_FrontEnd.Classes.Views.EditAirlineModal"
+             Title="EditAirlineModal">
+    <Grid MaximumHeightRequest="120" Padding="20" RowSpacing="10" VerticalOptions="StartAndExpand" x:Name="GridMain">
+        <Grid.RowDefinitions>
+            <RowDefinition></RowDefinition>
+            <RowDefinition></RowDefinition>
+            <RowDefinition></RowDefinition>
+            <RowDefinition></RowDefinition>
+            <RowDefinition></RowDefinition>
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition></ColumnDefinition>
+            <ColumnDefinition></ColumnDefinition>
+        </Grid.ColumnDefinitions>
+        <Label Grid.Row="0" Grid.Column="0" Text="ICAO Code:"></Label>
+        <Entry Grid.Row="0" Grid.Column="1" x:Name="AirlineICAO"></Entry>
+
+        <Label Grid.Row="1" Grid.Column="0" Text="IATA Code:"></Label>
+        <Entry Grid.Row="1" Grid.Column="1" x:Name="AirlineIATA"></Entry>
+
+        <Label Grid.Row="2" Grid.Column="0" Text="Name:"></Label>
+        <Entry Grid.Row="2" Grid.Column="1" x:Name="AirlineName"></Entry>
+
+        <Label Grid.Row="3" Grid.Column="0" Text="Country: "/>
+
+        <Button Grid.Row="4" Grid.ColumnSpan="2" Text="Submit" x:Name="Submit"></Button>
+    </Grid>
+</ContentPage>

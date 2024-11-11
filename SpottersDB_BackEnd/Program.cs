@@ -8,12 +8,11 @@ namespace SpottersDB_BackEnd
 {
     public class Program
     {
-        public static string Domain = "https://localhost:7090";
-
         public static void Main(string[] args)
         {
             var builder = WebApplication.CreateBuilder(args);
             var app = builder.Build();
+
 
             // Creating an object from the SQLController Class & tests the connection (Checks if DB exists)
             SQLController sqlcontroller = new SQLController();
@@ -32,11 +31,14 @@ namespace SpottersDB_BackEnd
             app.UseStaticFiles(StaticOptions);
 
 
+            
+
             app.MapGet("/", () => "Hello World!");
             // Fallback if route is not found
             app.MapFallback(() => Results.NotFound(StatusCodes.Status404NotFound + " - API Route Not Found"));
-
-            app.Run(Domain);
+            app.Urls.Clear();
+            app.Urls.Add("http://localhost:5032");
+            app.Run("http://localhost:5032");
         }
     }
 }

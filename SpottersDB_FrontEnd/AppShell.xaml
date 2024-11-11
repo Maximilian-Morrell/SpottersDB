@@ -3,12 +3,20 @@
     x:Class="SpottersDB_FrontEnd.AppShell"
     xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-    xmlns:local="clr-namespace:SpottersDB_FrontEnd"
-    Shell.FlyoutBehavior="Disabled">
+    xmlns:local="clr-namespace:SpottersDB_FrontEnd.Classes.Views">
 
-    <ShellContent
-        Title="Home"
-        ContentTemplate="{DataTemplate local:MainPage}"
-        Route="MainPage" />
+    <!--<FlyoutItem Title="Home">
+        <ShellContent 
+            Title="Edit Page"
+            ContentTemplate="{DataTemplate local:EditPage}"
+            />
+    </FlyoutItem>-->
+
+    <FlyoutItem Title="Edit">
+        <ShellContent 
+            Title="Edit Page"
+            ContentTemplate="{DataTemplate local:EditPage}"
+            />
+    </FlyoutItem>
 
 </Shell>

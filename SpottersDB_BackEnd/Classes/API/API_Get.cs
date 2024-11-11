@@ -16,8 +16,12 @@ namespace SpottersDB_BackEnd.Classes.API
         {
             // Get Countries Route
             app.MapGet("/Get/Countries", GET_Countries);
+            // Get Only Countries Route
+            app.MapGet("/Get/OnlyCountries", GET_OnlyCountries);
             // Get Country by ID Route
             app.MapGet("/Get/Country", (int ID) => GET_Country(ID));
+            // Get Regions Route
+            app.MapGet("/Get/Regions", GET_Regions);
 
             // Get Airports Route
             app.MapGet("/Get/Airports", GET_Airports);
@@ -53,11 +57,26 @@ namespace SpottersDB_BackEnd.Classes.API
             app.MapGet("/Get/SpottingPictures", GET_SpottingPictures);
             // Get SpottingPicture By ID Route
             app.MapGet("/Get/SpottingPicture", (int ID) => GET_SpottingPicture(ID));
+
+            // Get NewestImageFromCountry Route
+            app.MapGet("/Get/Newest/Country", (int ID) => GET_NewestImageFromCountry(ID));
+
+            //Get Airports from SpottingTrip Route
+            app.MapGet("/Get/Airports/SpottingTrip", (int ID) => GET_AirportsFromSpottingTrip(ID));
+
+            //Get SpottingTripLinkTable Route
+            app.MapGet("/Get/SpottingTripAirport/LinkID", (int SpottingTripID, int AirportID) => GET_LinkID(SpottingTripID, AirportID));
+            app.MapGet("/Get/SpottingTripAirport/SpottingTripAirport", (int LinkID) => GET_SpottingTripAirport(LinkID));
         }
 
         private List<Country> GET_Countries()
         {
             return sqlcontroller.GetCountries();
+        }
+
+        private List<Country> GET_OnlyCountries()
+        {
+            return sqlcontroller.GetCountries(true);
         }
 
         private Country GET_Country(int ID)
@@ -120,19 +139,44 @@ namespace SpottersDB_BackEnd.Classes.API
             return sqlcontroller.GetSpottingTrips();
         }
 
-        public SpottingTrip GET_SpottingTrip(int ID)
+        private SpottingTrip GET_SpottingTrip(int ID)
         {
             return sqlcontroller.GetSpottingTripByID(ID);
         }
 
-        public List<SpottingPicture> GET_SpottingPictures()
+        private List<SpottingPicture> GET_SpottingPictures()
         {
             return sqlcontroller.GetSpottingPictures();
         }
 
-        public SpottingPicture GET_SpottingPicture(int ID)
+        private SpottingPicture GET_SpottingPicture(int ID)
         {
             return sqlcontroller.GetSpottingPictureByID(ID);
+        }
+
+        private List<Country> GET_Regions()
+        {
+            return sqlcontroller.GetRegions();
+        } 
+
+        private string GET_NewestImageFromCountry(int ID)
+        {
+            return sqlcontroller.GetNewestImageFromCountry(ID);
+        }
+
+        private List<Airport> GET_AirportsFromSpottingTrip(int ID)
+        {
+            return sqlcontroller.GetAirportsFromSpottingTrip(ID);
+        }
+
+        private int GET_LinkID(int SpottingTripID, int AirportID)
+        {
+            return sqlcontroller.GetLinkID(SpottingTripID, AirportID);
+        }
+
+        private List<int> GET_SpottingTripAirport(int LinkID)
+        {
+            return sqlcontroller.GetSpottingTripAirportFromLinkID(LinkID);
         }
     }
 }

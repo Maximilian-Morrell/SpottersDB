@@ -126,22 +126,28 @@ namespace SpottersDB_BackEnd.Classes.API
         private async void Post_SpottingTrip(HttpRequest req)
         {
 
-            /// ToDo: Linking Table
             try
             {
                 IFormCollection form = await req.ReadFormAsync();
                 SpottingTrip spottingTrip = new SpottingTrip(Convert.ToDateTime(form["Start"]), Convert.ToDateTime(form["End"]), form["Name"], form["Description"]);
-                sqlcontroller.AddSpottingTrip(spottingTrip);
+                List<int> AirportIDs = new List<int>(); if (form["AirportID"] != "")
+                {
+                    foreach (string AirportID in Convert.ToString(form["AirportID"]).Split(','))
+                    {
+                        AirportIDs.Add(Convert.ToInt32(AirportID));
+                    }
+                }
+                sqlcontroller.AddSpottingTrip(spottingTrip, AirportIDs);
             }
             catch (Exception e)
             {
-
+                app.Logger.LogError(e.Message);
             }
         }
 
         private async void Post_SpottingPicture(HttpRequest req)
         {
-            string BasePath = Program.Domain + "/Pic";
+            string BasePath = app.Urls.ToList()[0] + "/Pic";
 
             try
             {
@@ -164,7 +170,7 @@ namespace SpottersDB_BackEnd.Classes.API
                     URL = BasePath + "/" + FileName;
                 }
                 IFormCollection form = await req.ReadFormAsync();
-                SpottingPicture spottingPicture = new SpottingPicture(form["Name"], form["Description"], URL, OldFileName, Convert.ToInt32(form["SpottingTripID"]), Convert.ToInt32(form["AircraftID"]), Convert.ToInt32(form["AirportID"]));
+                SpottingPicture spottingPicture = new SpottingPicture(form["Name"], form["Description"], URL, OldFileName, Convert.ToInt32(form["SpottingTripAirport"]), Convert.ToInt32(form["AircraftID"]));
                 sqlcontroller.AddSpottingPicture(spottingPicture);
             }
             catch (Exception e)

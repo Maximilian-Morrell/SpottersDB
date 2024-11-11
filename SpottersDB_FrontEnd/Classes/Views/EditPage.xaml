@@ -1,0 +1,100 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="SpottersDB_FrontEnd.Classes.Views.EditPage">
+
+    <ScrollView>
+        <VerticalStackLayout>
+            <!--Countries-->
+            <VerticalStackLayout Padding="20">
+                <Label Text="Countries/Regions"></Label>
+                <VerticalStackLayout Spacing="5">
+                    <Label Text="Countries"></Label>
+                    <ScrollView Orientation="Horizontal">
+                        <HorizontalStackLayout x:Name="CountryParent" Padding="25" Spacing="20">
+
+                        </HorizontalStackLayout>
+                    </ScrollView>
+                    <Label Text="Regions"></Label>
+                    <ScrollView Orientation="Horizontal">
+                        <HorizontalStackLayout x:Name="RegionParent" Padding="25" Spacing="20">
+
+                        </HorizontalStackLayout>
+                    </ScrollView>
+                </VerticalStackLayout>
+                <Button Text="Add a Country" HorizontalOptions="StartAndExpand" x:Name="AddCountry"></Button>
+            </VerticalStackLayout>
+            <!--Manufactorers-->
+            <VerticalStackLayout Padding="20">
+                <Label Text="Manufactorers"></Label>
+                <ScrollView Orientation="Horizontal">
+                    <HorizontalStackLayout x:Name="ManufactorerParent" Padding="25" Spacing="20">
+
+                    </HorizontalStackLayout>
+                </ScrollView>
+                <Button Text="Add a Manufactorer" HorizontalOptions="StartAndExpand" x:Name="AddManufactorer"></Button>
+            </VerticalStackLayout>
+            <!--AircraftType-->
+            <VerticalStackLayout Padding="20">
+                <Label Text="Aircraft Types"></Label>
+                <ScrollView Orientation="Horizontal">
+                    <HorizontalStackLayout x:Name="AircraftTypeParent" Padding="25" Spacing="20">
+
+                    </HorizontalStackLayout>
+                </ScrollView>
+                <Button Text="Add an AircraftType" HorizontalOptions="StartAndExpand" x:Name="AddAircraftType"></Button>
+            </VerticalStackLayout>
+            <!--Airline-->
+            <VerticalStackLayout Padding="20">
+                <Label Text="Airlines"></Label>
+                <ScrollView Orientation="Horizontal">
+                    <HorizontalStackLayout x:Name="AirlineParent" Padding="25" Spacing="20">
+
+                    </HorizontalStackLayout>
+                </ScrollView>
+                <Button Text="Add an Airline" HorizontalOptions="StartAndExpand" x:Name="AddAirline"></Button>
+            </VerticalStackLayout>
+            <!--Airport-->
+            <VerticalStackLayout Padding="20">
+                <Label Text="Airports"></Label>
+                <ScrollView Orientation="Horizontal">
+                    <HorizontalStackLayout x:Name="AirportParent" Padding="25" Spacing="20">
+
+                    </HorizontalStackLayout>
+                </ScrollView>
+                <Button Text="Add an Airport" HorizontalOptions="StartAndExpand" x:Name="AddAirport"></Button>
+            </VerticalStackLayout>
+            <!--Aircraft-->
+            <VerticalStackLayout Padding="20">
+                <Label Text="Aircrafts"></Label>
+                <ScrollView Orientation="Horizontal">
+                    <HorizontalStackLayout x:Name="AircraftParent" Padding="25" Spacing="20">
+
+                    </HorizontalStackLayout>
+                </ScrollView>
+                <Button Text="Add an Aircraft" HorizontalOptions="StartAndExpand" x:Name="AddAircraft"></Button>
+            </VerticalStackLayout>
+            <!--SpottingTrips-->
+            <VerticalStackLayout Padding="20">
+                <Label Text="Spottingtrips"></Label>
+                <ScrollView Orientation="Horizontal">
+                    <HorizontalStackLayout x:Name="SpottingTripParent" Padding="25" Spacing="20">
+
+                    </HorizontalStackLayout>
+                </ScrollView>
+                <Button Text="Add a Spottingtrip" HorizontalOptions="StartAndExpand" x:Name="AddSpottingTrip"></Button>
+            </VerticalStackLayout>
+            <!--Pictures-->
+            <VerticalStackLayout Padding="20">
+                <Label Text="SpottingPictures"></Label>
+                <ScrollView Orientation="Horizontal">
+                    <HorizontalStackLayout x:Name="SpottingPictureParent" Padding="25" Spacing="20">
+
+                    </HorizontalStackLayout>
+                </ScrollView>
+                <Button Text="Add a Picture" HorizontalOptions="StartAndExpand" x:Name="AddSpottingPicture"></Button>
+            </VerticalStackLayout>
+        </VerticalStackLayout>
+    </ScrollView>
+
+</ContentPage>

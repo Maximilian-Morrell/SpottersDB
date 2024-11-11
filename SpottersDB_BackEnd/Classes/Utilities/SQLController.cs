@@ -2,6 +2,7 @@
 using SpottersDB_BackEnd.Classes.Structure;
 using System.Data;
 using System.Data.Common;
+using System.Dynamic;
 
 namespace SpottersDB_BackEnd.Classes.Utilities
 {
@@ -18,6 +19,7 @@ namespace SpottersDB_BackEnd.Classes.Utilities
         // Checks if DB Exists
         public void ConnectToDB(string DatabaseName, WebApplication app)
         {
+
             cmd = new SqlCommand("", con);
             // JUST FOR DEBUGGING
             if (isDebugMode)
@@ -26,6 +28,7 @@ namespace SpottersDB_BackEnd.Classes.Utilities
                 cmd.CommandText = "DROP DATABASE " + DatabaseName;
                 cmd.ExecuteNonQuery();
                 isDebugMode = false;
+                con.Close();
             }
             try
             {
@@ -90,8 +93,12 @@ namespace SpottersDB_BackEnd.Classes.Utilities
                 cmd.CommandText = "CREATE TABLE SpottingTrips (SpottingTripID int NOT NULL PRIMARY KEY IDENTITY, SpottingTripStart datetime2(0), SpottingTripEnd datetime2(0), SpottingTripName text, SpottingTripDescription text);";
                 cmd.ExecuteNonQuery();
                 app.Logger.LogInformation("Created the Table SpottingTrips");
+                // Create SpottingTrip & Airport Link Table
+                cmd.CommandText = "CREATE TABLE SpottingTripAirports (LinkID int NOT NULL PRIMARY KEY IDENTITY, SpottingTripID int, AirportID int, CONSTRAINT [FK_SpottingTripAirport_SpottingTrip] FOREIGN KEY ([SpottingTripID]) REFERENCES [SpottingTrips](SpottingTripID), CONSTRAINT [FK_SpottingTripAirport_Airport] FOREIGN KEY ([AirportID]) REFERENCES [Airports](AirportID));";
+                cmd.ExecuteNonQuery();
+                app.Logger.LogInformation("Created the Link Table for SpottingTrips and Airports");
                 // Create SpottingPicture Table
-                cmd.CommandText = "CREATE TABLE SpottingPictures (SpottingPictureID int NOT NULL PRIMARY KEY IDENTITY, SpottingPictureName text, SpottingPictureDescription text, SpottingPictureURL text, SpottingPictureOriginalFileName text, SpottingPictureSpottingTripID int, SpottingPictureAircraftID int, SpottingPictureAirportID int, CONSTRAINT [FK_SpottingPicture_SpottingTrip] FOREIGN KEY ([SpottingPictureSpottingTripID]) REFERENCES [SpottingTrips](SpottingTripID), CONSTRAINT [FK_SpottingPicture_Aircraft] FOREIGN KEY ([SpottingPictureAircraftID]) REFERENCES [Aircrafts](AircraftID), CONSTRAINT [FK_SpottingPicture_Airport] FOREIGN KEY ([SpottingPictureAirportID]) REFERENCES [Airports](AirportID));";
+                cmd.CommandText = "CREATE TABLE SpottingPictures (SpottingPictureID int NOT NULL PRIMARY KEY IDENTITY, SpottingPictureName text, SpottingPictureDescription text, SpottingPictureURL text, SpottingPictureOriginalFileName text, SpottingTripAirportID int, SpottingPictureAircraftID int, CONSTRAINT [FK_SpottingPicture_SpottingTripAirport] FOREIGN KEY ([SpottingTripAirportID]) REFERENCES [SpottingTripAirports](LinkID) ON DELETE SET NULL, CONSTRAINT [FK_SpottingPicture_Aircraft] FOREIGN KEY ([SpottingPictureAircraftID]) REFERENCES [Aircrafts](AircraftID));";
                 cmd.ExecuteNonQuery();
                 app.Logger.LogInformation("Created the Table SpottingPictures");
                 con.Close();
@@ -101,12 +108,24 @@ namespace SpottersDB_BackEnd.Classes.Utilities
             {
                 app.Logger.LogError(e.Message);
             }
+
+            if (con.State == System.Data.ConnectionState.Open)
+            {
+                con.Close();
+            }
+
+            con.Close();
         }
 
         public void AddCountry(Country country)
         {
             try
             {
+                if (con.State == System.Data.ConnectionState.Open)
+                {
+                    con.Close();
+                }
+
                 con.Open();
                 cmd.CommandText = $"INSERT INTO Countries (CountryICAOCode, CountryName) VALUES ('{country.ICAO_Code}', '{country.Name}')";
                 cmd.ExecuteNonQuery();
@@ -118,6 +137,10 @@ namespace SpottersDB_BackEnd.Classes.Utilities
                 app.Logger.LogError(e.Message);
             }
 
+            if (con.State == System.Data.ConnectionState.Open)
+            {
+                con.Close();
+            }
             con.Close();
         }
 
@@ -134,6 +157,11 @@ namespace SpottersDB_BackEnd.Classes.Utilities
             catch (Exception e)
             {
                 app.Logger.LogError(e.Message);
+            }
+
+            if (con.State == System.Data.ConnectionState.Open)
+            {
+                con.Close();
             }
             con.Close();
         }
@@ -152,6 +180,11 @@ namespace SpottersDB_BackEnd.Classes.Utilities
             {
                 app.Logger.LogError(e.Message);
             }
+
+            if (con.State == System.Data.ConnectionState.Open)
+            {
+                con.Close();
+            }
             con.Close();
         }
 
@@ -168,6 +201,11 @@ namespace SpottersDB_BackEnd.Classes.Utilities
             catch (Exception e)
             {
                 app.Logger.LogError(e.Message);
+            }
+
+            if (con.State == System.Data.ConnectionState.Open)
+            {
+                con.Close();
             }
             con.Close();
         }
@@ -186,6 +224,12 @@ namespace SpottersDB_BackEnd.Classes.Utilities
             {
                 app.Logger.LogError(e.Message);
             }
+
+            if (con.State == System.Data.ConnectionState.Open)
+            {
+                con.Close();
+            }
+            con.Close();
         }
 
         public void AddAircraft(Aircraft aircraft)
@@ -202,22 +246,37 @@ namespace SpottersDB_BackEnd.Classes.Utilities
             {
                 app.Logger.LogError(e.Message);
             }
+
+            if (con.State == System.Data.ConnectionState.Open)
+            {
+                con.Close();
+            }
             con.Close();
         }
 
-        public void AddSpottingTrip(SpottingTrip spottingTrip)
+        public void AddSpottingTrip(SpottingTrip spottingTrip, List<int> AirportIDs)
         {
             try
             {
                 con.Open();
-                cmd.CommandText = $"INSERT INTO SpottingTrips (SpottingTripStart, SpottingTripEnd, SpottingTripName, SpottingTripDescription) VALUES ('{spottingTrip.Start.ToString("yyyy-MM-dd HH:mm:ss")}', '{spottingTrip.End.ToString("yyyy-MM-dd HH:mm:ss")}', '{spottingTrip.Name}', '{spottingTrip.Description}');";
-                cmd.ExecuteNonQuery();
+                cmd.CommandText = $"INSERT INTO SpottingTrips (SpottingTripStart, SpottingTripEnd, SpottingTripName, SpottingTripDescription) VALUES ('{spottingTrip.Start.ToString("yyyy-MM-dd HH:mm:ss")}', '{spottingTrip.End.ToString("yyyy-MM-dd HH:mm:ss")}', '{spottingTrip.Name}', '{spottingTrip.Description}'); SELECT SCOPE_IDENTITY()";
+                int ID = Convert.ToInt32(cmd.ExecuteScalar());
+                foreach(int AirportID in AirportIDs )
+                {
+                    cmd.CommandText = $"INSERT INTO SpottingTripAirports (SpottingTripID, AirportID) VALUES ('{ID}', '{AirportID}');";
+                    cmd.ExecuteNonQuery();
+                }
                 app.Logger.LogInformation("Saved a SpottingTrip Object", spottingTrip);
                 con.Close();
             }
             catch (Exception e)
             {
                 app.Logger.LogError(e.Message);
+            }
+
+            if (con.State == System.Data.ConnectionState.Open)
+            {
+                con.Close();
             }
             con.Close();
         }
@@ -227,7 +286,7 @@ namespace SpottersDB_BackEnd.Classes.Utilities
             try
             {
                 con.Open();
-                cmd.CommandText = $"INSERT INTO SpottingPictures (SpottingPictureName, SpottingPictureDescription, SpottingPictureURL, SpottingPictureOriginalFileName, SpottingPictureSpottingTripID, SpottingPictureAircraftID, SpottingPictureAirportID) VALUES ('{spottingPicture.Name}','{spottingPicture.Description}','{spottingPicture.PictureUrl}','{spottingPicture.OriginalFileName}','{spottingPicture.SpottingTripID}','{spottingPicture.AircraftID}','{spottingPicture.AirportID}');";
+                cmd.CommandText = $"INSERT INTO SpottingPictures (SpottingPictureName, SpottingPictureDescription, SpottingPictureURL, SpottingPictureOriginalFileName, SpottingTripAirportID, SpottingPictureAircraftID) VALUES ('{spottingPicture.Name}','{spottingPicture.Description}','{spottingPicture.PictureUrl}','{spottingPicture.OriginalFileName}','{spottingPicture.SpottingTripAirportID}','{spottingPicture.AircraftID}');";
                 cmd.ExecuteNonQuery();
                 app.Logger.LogInformation("Saved a SpottingPicture Object", spottingPicture);
                 con.Close();
@@ -235,6 +294,11 @@ namespace SpottersDB_BackEnd.Classes.Utilities
             catch (Exception e)
             {
                 app.Logger.LogError(e.Message);
+            }
+
+            if (con.State == System.Data.ConnectionState.Open)
+            {
+                con.Close();
             }
             con.Close();
         }
@@ -253,6 +317,11 @@ namespace SpottersDB_BackEnd.Classes.Utilities
             {
                 app.Logger.LogError(e.Message);
             }
+
+            if (con.State == System.Data.ConnectionState.Open)
+            {
+                con.Close();
+            }
             con.Close();
         }
 
@@ -269,6 +338,11 @@ namespace SpottersDB_BackEnd.Classes.Utilities
             catch (Exception e)
             {
                 app.Logger.LogError(e.Message);
+            }
+
+            if (con.State == System.Data.ConnectionState.Open)
+            {
+                con.Close();
             }
             con.Close();
         }
@@ -287,6 +361,11 @@ namespace SpottersDB_BackEnd.Classes.Utilities
             {
                 app.Logger.LogError(e.Message);
             }
+
+            if (con.State == System.Data.ConnectionState.Open)
+            {
+                con.Close();
+            }
             con.Close();
         }
 
@@ -303,6 +382,11 @@ namespace SpottersDB_BackEnd.Classes.Utilities
             catch (Exception e)
             {
                 app.Logger.LogError(e.Message);
+            }
+
+            if (con.State == System.Data.ConnectionState.Open)
+            {
+                con.Close();
             }
             con.Close();
         }
@@ -321,6 +405,11 @@ namespace SpottersDB_BackEnd.Classes.Utilities
             {
                 app.Logger.LogError(e.Message);
             }
+
+            if (con.State == System.Data.ConnectionState.Open)
+            {
+                con.Close();
+            }
             con.Close();
         }
 
@@ -338,22 +427,65 @@ namespace SpottersDB_BackEnd.Classes.Utilities
             {
                 app.Logger.LogError(e.Message);
             }
+
+            if (con.State == System.Data.ConnectionState.Open)
+            {
+                con.Close();
+            }
             con.Close();
         }
 
-        public void UpdateSpottingTrip(SpottingTrip spottingTrip)
+        public void UpdateSpottingTrip(SpottingTrip spottingTrip, List<int> AirportIDs)
         {
             try
             {
                 con.Open();
                 cmd.CommandText = $"UPDATE SpottingTrips SET SpottingTripStart = '{spottingTrip.Start.ToString("yyyy-MM-dd HH:mm:ss")}', SpottingTripEnd = '{spottingTrip.End.ToString("yyyy-MM-dd HH:mm:ss")}', SpottingTripName = '{spottingTrip.Name}', SpottingTripDescription = '{spottingTrip.Description}' WHERE SpottingTripID = {spottingTrip.ID}";
                 cmd.ExecuteNonQuery();
+                cmd.CommandText = $"SELECT AirportID FROM SpottingTripAirports WHERE SpottingTripID = {spottingTrip.ID}";
+                List<int> Airports2Delete = new List<int>();
+                reader = cmd.ExecuteReader();
+                while(reader.Read())
+                {
+                    int ID = Convert.ToInt32(reader[0]);
+                    if(AirportIDs.Contains(ID))
+                    {
+                        AirportIDs.Remove(ID);
+                    }
+                    else
+                    {
+                        Airports2Delete.Add(ID);
+                    }
+                }
+
+                con.Close();
+
+                foreach(int airport2delete in Airports2Delete)
+                {
+                    con.Open();
+                    cmd.CommandText = $"DELETE FROM SpottingTripAirports WHERE AirportID = {airport2delete} AND SpottingTripID = {spottingTrip.ID};";
+                    cmd.ExecuteNonQuery();
+                    con.Close();
+                }
+
+                foreach (int AirportID in AirportIDs)
+                {
+                    con.Open();
+                    cmd.CommandText = $"INSERT INTO SpottingTripAirports (SpottingTripID, AirportID) VALUES ('{spottingTrip.ID}', '{AirportID}');";
+                    cmd.ExecuteNonQuery();
+                    con.Close();
+                }
                 app.Logger.LogInformation("Updated a SpottingTrip Object");
                 con.Close();
             }
             catch (Exception e)
             {
                 app.Logger.LogError(e.Message);
+            }
+
+            if (con.State == System.Data.ConnectionState.Open)
+            {
+                con.Close();
             }
             con.Close();
         }
@@ -363,7 +495,7 @@ namespace SpottersDB_BackEnd.Classes.Utilities
             try
             {
                 con.Open();
-                cmd.CommandText = $"UPDATE SpottingPictures SET SpottingPictureName = '{spottingPicture.Name}', SpottingPictureDescription = '{spottingPicture.Description}', SpottingPictureURL = '{spottingPicture.PictureUrl}', SpottingPictureOriginalFileName = '{spottingPicture.OriginalFileName}', SpottingPictureSpottingTripID = {spottingPicture.SpottingTripID}, SpottingPictureAircraftID = {spottingPicture.AircraftID}, SpottingPictureAirportID = {spottingPicture.AirportID} WHERE SpottingPictureID = {spottingPicture.ID}";
+                cmd.CommandText = $"UPDATE SpottingPictures SET SpottingPictureName = '{spottingPicture.Name}', SpottingPictureDescription = '{spottingPicture.Description}', SpottingPictureURL = '{spottingPicture.PictureUrl}', SpottingPictureOriginalFileName = '{spottingPicture.OriginalFileName}', SpottingTripAirportID = {spottingPicture.SpottingTripAirportID}, SpottingPictureAircraftID = {spottingPicture.AircraftID} WHERE SpottingPictureID = {spottingPicture.ID}";
                 cmd.ExecuteNonQuery();
                 app.Logger.LogInformation("Updated a SpottingPicture Object");
                 con.Close();
@@ -372,7 +504,11 @@ namespace SpottersDB_BackEnd.Classes.Utilities
             {
                 app.Logger.LogError(e.Message);
             }
-            con.Close();
+
+            if (con.State == System.Data.ConnectionState.Open)
+            {
+                con.Close();
+            }
         }
 
         public List<Country> GetCountries()
@@ -395,6 +531,69 @@ namespace SpottersDB_BackEnd.Classes.Utilities
             {
                 app.Logger.LogInformation(e.Message);
             }
+
+            if (con.State == System.Data.ConnectionState.Open)
+            {
+                con.Close();
+            }
+            con.Close();
+            return Countries;
+        }
+
+        public List<Country> GetCountries(bool OnlyCountries)
+        {
+            List<Country> Countries = new List<Country>();
+            try
+            {
+                con.Open();
+                cmd.CommandText = $"SELECT * FROM Countries WHERE NOT CountryICAOCode = ''";
+                reader = cmd.ExecuteReader();
+                while (reader.Read())
+                {
+                    Country country = new Country(Convert.ToInt32(reader["CountryID"]), Convert.ToString(reader["CountryICAOCode"]), Convert.ToString(reader["CountryName"]));
+                    Countries.Add(country);
+                }
+                app.Logger.LogInformation("Read " + Countries.Count + " Country Objects");
+                con.Close();
+            }
+            catch (Exception e)
+            {
+                app.Logger.LogInformation(e.Message);
+            }
+
+            if (con.State == System.Data.ConnectionState.Open)
+            {
+                con.Close();
+            }
+            con.Close();
+            return Countries;
+        }
+
+        public List<Country> GetRegions()
+        {
+            List<Country> Countries = new List<Country>();
+            try
+            {
+                con.Open();
+                cmd.CommandText = "SELECT * FROM Countries WHERE CountryICAOCode = ''";
+                reader = cmd.ExecuteReader();
+                while (reader.Read())
+                {
+                    Country country = new Country(Convert.ToInt32(reader["CountryID"]), Convert.ToString(reader["CountryICAOCode"]), Convert.ToString(reader["CountryName"]));
+                    Countries.Add(country);
+                }
+                app.Logger.LogInformation("Read " + Countries.Count + " Country Objects");
+                con.Close();
+            }
+            catch (Exception e)
+            {
+                app.Logger.LogInformation(e.Message);
+            }
+
+            if (con.State == System.Data.ConnectionState.Open)
+            {
+                con.Close();
+            }
             con.Close();
             return Countries;
         }
@@ -416,6 +615,11 @@ namespace SpottersDB_BackEnd.Classes.Utilities
             catch (Exception e)
             {
                 app.Logger.LogInformation(e.Message);
+            }
+
+            if (con.State == System.Data.ConnectionState.Open)
+            {
+                con.Close();
             }
             con.Close();
             return country;
@@ -440,6 +644,11 @@ namespace SpottersDB_BackEnd.Classes.Utilities
             {
                 app.Logger.LogError(e.Message);
             }
+
+            if (con.State == System.Data.ConnectionState.Open)
+            {
+                con.Close();
+            }
             con.Close();
             return Airports;
         }
@@ -461,6 +670,11 @@ namespace SpottersDB_BackEnd.Classes.Utilities
             catch (Exception e)
             {
                 app.Logger.LogError(e.Message);
+            }
+
+            if (con.State == System.Data.ConnectionState.Open)
+            {
+                con.Close();
             }
             con.Close();
             return airport;
@@ -485,6 +699,11 @@ namespace SpottersDB_BackEnd.Classes.Utilities
             {
                 app.Logger.LogError(e.Message);
             }
+
+            if (con.State == System.Data.ConnectionState.Open)
+            {
+                con.Close();
+            }
             con.Close();
             return Airlines;
         }
@@ -506,6 +725,11 @@ namespace SpottersDB_BackEnd.Classes.Utilities
             catch (Exception e)
             {
                 app.Logger.LogError(e.Message);
+            }
+
+            if (con.State == System.Data.ConnectionState.Open)
+            {
+                con.Close();
             }
             con.Close();
             return airline;
@@ -530,6 +754,11 @@ namespace SpottersDB_BackEnd.Classes.Utilities
             {
                 app.Logger.LogError(e.Message);
             }
+
+            if (con.State == System.Data.ConnectionState.Open)
+            {
+                con.Close();
+            }
             con.Close();
             return AircraftTypes;
         }
@@ -551,6 +780,11 @@ namespace SpottersDB_BackEnd.Classes.Utilities
             catch (Exception e)
             {
                 app.Logger.LogError(e.Message);
+            }
+
+            if (con.State == System.Data.ConnectionState.Open)
+            {
+                con.Close();
             }
             con.Close();
             return aircraftType;
@@ -575,6 +809,11 @@ namespace SpottersDB_BackEnd.Classes.Utilities
             {
                 app.Logger.LogError(e.Message);
             }
+
+            if (con.State == System.Data.ConnectionState.Open)
+            {
+                con.Close();
+            }
             con.Close();
             return Manufactorers;
         }
@@ -596,6 +835,11 @@ namespace SpottersDB_BackEnd.Classes.Utilities
             catch (Exception e)
             {
                 app.Logger.LogError(e.Message);
+            }
+
+            if (con.State == System.Data.ConnectionState.Open)
+            {
+                con.Close();
             }
             con.Close();
             return manufactorer;
@@ -620,6 +864,11 @@ namespace SpottersDB_BackEnd.Classes.Utilities
             {
                 app.Logger.LogError(e.Message);
             }
+
+            if (con.State == System.Data.ConnectionState.Open)
+            {
+                con.Close();
+            }
             con.Close();
             return aircrafts;
         }
@@ -642,17 +891,23 @@ namespace SpottersDB_BackEnd.Classes.Utilities
             {
                 app.Logger.LogError(e.Message);
             }
+
+            if (con.State == System.Data.ConnectionState.Open)
+            {
+                con.Close();
+            }
             con.Close();
             return aircraft;
         }
 
         public List<SpottingTrip> GetSpottingTrips()
         {
+            Thread.Sleep(100);
             List<SpottingTrip> spottingTrips = new List<SpottingTrip>();
             try
             {
-                con.Open();
                 cmd.CommandText = "SELECT * FROM SpottingTrips";
+                con.Open();
                 reader = cmd.ExecuteReader();
                 while(reader.Read())
                 {
@@ -664,6 +919,11 @@ namespace SpottersDB_BackEnd.Classes.Utilities
             catch (Exception e)
             {
                 app.Logger.LogError(e.Message);
+            }
+
+            if (con.State == System.Data.ConnectionState.Open)
+            {
+                con.Close();
             }
             con.Close();
             return spottingTrips;
@@ -687,6 +947,11 @@ namespace SpottersDB_BackEnd.Classes.Utilities
             {
                 app.Logger.LogError(e.Message);
             }
+
+            if (con.State == System.Data.ConnectionState.Open)
+            {
+                con.Close();
+            }
             con.Close();
             return spottingTrip;
         }
@@ -697,11 +962,11 @@ namespace SpottersDB_BackEnd.Classes.Utilities
             try
             {
                 con.Open();
-                cmd.CommandText = "SELECT * FROM SpottingPictures";
+                cmd.CommandText = "SELECT * FROM SpottingPictures;";
                 reader = cmd.ExecuteReader();
                 while(reader.Read())
                 {
-                    SpottingPicture spottingPicture = new SpottingPicture(Convert.ToInt32(reader["SpottingPictureID"]), Convert.ToString(reader["SpottingPictureName"]), Convert.ToString(reader["SpottingPictureDescription"]), Convert.ToString(reader["SpottingPictureURL"]), Convert.ToString(reader["SpottingPictureOriginalFileName"]), Convert.ToInt32(reader["SpottingPictureSpottingTripID"]), Convert.ToInt32(reader["SpottingPictureAircraftID"]), Convert.ToInt32(reader["SpottingPictureAirportID"]));
+                    SpottingPicture spottingPicture = new SpottingPicture(Convert.ToInt32(reader["SpottingPictureID"]), Convert.ToString(reader["SpottingPictureName"]), Convert.ToString(reader["SpottingPictureDescription"]), Convert.ToString(reader["SpottingPictureURL"]), Convert.ToString(reader["SpottingPictureOriginalFileName"]), Convert.ToInt32(reader["SpottingTripAirportID"]), Convert.ToInt32(reader["SpottingPictureAircraftID"]));
                     spottingPictures.Add(spottingPicture);
                 }
                 con.Close();
@@ -709,6 +974,11 @@ namespace SpottersDB_BackEnd.Classes.Utilities
             catch (Exception e)
             {
                 app.Logger.LogError(e.Message);
+            }
+
+            if (con.State == System.Data.ConnectionState.Open)
+            {
+                con.Close();
             }
             con.Close();
             return spottingPictures;
@@ -724,7 +994,36 @@ namespace SpottersDB_BackEnd.Classes.Utilities
                 reader = cmd.ExecuteReader();
                 while(reader.Read())
                 {
-                    spottingPicture = new SpottingPicture(Convert.ToInt32(reader["SpottingPictureID"]), Convert.ToString(reader["SpottingPictureName"]), Convert.ToString(reader["SpottingPictureDescription"]), Convert.ToString(reader["SpottingPictureURL"]), Convert.ToString(reader["SpottingPictureOriginalFileName"]), Convert.ToInt32(reader["SpottingPictureSpottingTripID"]), Convert.ToInt32(reader["SpottingPictureAircraftID"]), Convert.ToInt32(reader["SpottingPictureAirportID"]));
+                    spottingPicture = new SpottingPicture(Convert.ToInt32(reader["SpottingPictureID"]), Convert.ToString(reader["SpottingPictureName"]), Convert.ToString(reader["SpottingPictureDescription"]), Convert.ToString(reader["SpottingPictureURL"]), Convert.ToString(reader["SpottingPictureOriginalFileName"]), Convert.ToInt32(reader["SpottingPictureSpottingTripID"]), Convert.ToInt32(reader["SpottingPictureAircraftID"]));
+                }
+                con.Close();
+            }
+            catch (Exception e)
+            {
+                app.Logger.LogError(e.Message);
+            }
+
+            if (con.State == System.Data.ConnectionState.Open)
+            {
+                con.Close();
+            }
+            con.Close();
+            return spottingPicture;
+        }
+
+        public string GetNewestImageFromCountry(int Country)
+        {
+            string newestImage = "";
+            try
+            {
+                con.Open();
+                cmd.CommandText = $"SELECT sp.SpottingPictureURL FROM Countries c JOIN Airports a ON c.CountryID = a.CountryID JOIN SpottingTripAirports sta ON a.AirportID = sta.AirportID JOIN SpottingPictures sp ON sp.SpottingTripAirportID = sta.LinkID WHERE c.CountryID = {Country};";
+                reader = cmd.ExecuteReader();
+                {
+                    while(reader.Read())
+                    {
+                        newestImage = Convert.ToString(reader["SpottingPictureURL"]);
+                    }
                 }
                 con.Close();
             }
@@ -733,7 +1032,74 @@ namespace SpottersDB_BackEnd.Classes.Utilities
                 app.Logger.LogError(e.Message);
             }
             con.Close();
-            return spottingPicture;
+            return newestImage;
+        }
+
+        public List<Airport> GetAirportsFromSpottingTrip(int ID)
+        {
+            List<Airport> airports = new List<Airport>();
+            try
+            {
+                con.Open();
+                cmd.CommandText = $"SELECT a.* FROM SpottingTripAirports sta JOIN Airports a ON sta.AirportID = a.AirportID WHERE sta.SpottingTripID = {ID};";
+                reader = cmd.ExecuteReader();
+                while (reader.Read())
+                {
+                    airports.Add(new Airport(Convert.ToInt32(reader["AirportID"]), Convert.ToString(reader["AirportICAOCode"]), Convert.ToString(reader["AirportIATACode"]), Convert.ToString(reader["AirportName"]), Convert.ToString(reader["AirportDescription"]), Convert.ToString(reader["AirportCity"]), Convert.ToInt32(reader["CountryID"])));
+                }
+                con.Close();
+            }
+            catch (Exception e)
+            {
+                app.Logger.LogError(e.Message);
+            }
+            con.Close();
+            return airports;
+        }
+
+        public int GetLinkID(int SpottingTripID, int AirportID)
+        {
+            int LinkID = -1;
+            try
+            {
+                con.Open();
+                cmd.CommandText = $"SELECT LinkID FROM SpottingTripAirports WHERE SpottingTripID = {SpottingTripID} AND AirportID = {AirportID}";
+                reader = cmd.ExecuteReader();
+                while (reader.Read())
+                {
+                    LinkID = Convert.ToInt32(reader[0]);
+                }
+                con.Close();
+            }
+            catch (Exception e)
+            {
+                app.Logger.LogError(e.Message);
+            }
+            con.Close();
+            return LinkID;
+        }
+
+        public List<int> GetSpottingTripAirportFromLinkID(int LinkID)
+        {
+            List<int> IDs = new List<int>();
+            try
+            {
+                con.Open();
+                cmd.CommandText = $"SELECT SpottingTripID, AirportID FROM SpottingTripAirports WHERE LinkID = {LinkID}";
+                reader = cmd.ExecuteReader();
+                while (reader.Read())
+                {
+                    IDs.Add(Convert.ToInt32(reader["SpottingTripID"]));
+                    IDs.Add(Convert.ToInt32(reader["AirportID"]));
+                }
+                con.Close();
+            }
+            catch (Exception e)
+            {
+                app.Logger.LogError(e.Message);
+            }
+            con.Close();
+            return IDs;
         }
     }
 }
