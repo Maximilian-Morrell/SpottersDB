@@ -32,7 +32,7 @@ namespace SpottersDB_FrontEnd.Classes.Structure
         {
             get
             {
-                return _Registration;
+                return _Registration ?? "";
             }
             set
             {
@@ -44,7 +44,7 @@ namespace SpottersDB_FrontEnd.Classes.Structure
         {
             get
             {
-                return _Description;
+                return _Description ?? "";
             }
             set
             {

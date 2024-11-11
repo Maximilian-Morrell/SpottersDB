@@ -39,7 +39,7 @@ public partial class EditSpottingPictureModal : ContentPage
     private async void SetUp()
     {
         SpottingPictureName.Text = spottingPicture.name;
-        spottingPicture.description = spottingPicture.description;
+        SpottingPictureDescription.Text = spottingPicture.description;
         PreviewImage.Source = new UriImageSource
         {
             Uri = new Uri(spottingPicture.pictureUrl)
@@ -75,13 +75,22 @@ public partial class EditSpottingPictureModal : ContentPage
 
         if (IsEditing)
         {
-            if(fileResult != null)
+            if (fileResult == null)
             {
+                spottingPicture.name = SpottingPictureName.Text;
+                spottingPicture.description = SpottingPictureDescription.Text;
+                spottingPicture.spottingTripAirportID = LinkID;
+                spottingPicture.aircraftID = Aircraft;
 
+                HTTP_Controller.UpdateSpottingPicture(spottingPicture);
             }
             else
             {
-
+                string FileName = spottingPicture.pictureUrl.Substring(spottingPicture.pictureUrl.LastIndexOf('/') +1);
+                int ID = spottingPicture.id;
+                spottingPicture = new SpottingPicture(ID, SpottingPictureName.Text, SpottingPictureDescription.Text, LinkID, Aircraft);
+                spottingPicture.pictureUrl = FileName;
+                HTTP_Controller.UpdateSpottingPicture(spottingPicture, fileResult);
             }
         }
         else
@@ -200,8 +209,16 @@ public partial class EditSpottingPictureModal : ContentPage
             GridMain.Children.Remove(AirportPicker);
         }
 
-        int SpottingTripID = SpottingTrips[SpottingTripPicker.SelectedIndex].id;
-        Airports = await HTTP_Controller.GetAirportsFromSpottingTrip(SpottingTripID);
+        if(IsEditing && AirportPicker == null)
+        {
+            List<int> IDs = await HTTP_Controller.GetSpottingTripAirport(spottingPicture.spottingTripAirportID);
+            Airports = await HTTP_Controller.GetAirportsFromSpottingTrip(IDs[0]);
+        }
+        else
+        {
+            int SpottingTripID = SpottingTrips[SpottingTripPicker.SelectedIndex].id;
+            Airports = await HTTP_Controller.GetAirportsFromSpottingTrip(SpottingTripID);
+        }
 
         AirportPicker = new Picker();
         AirportPicker.Title = "Select an Airport";

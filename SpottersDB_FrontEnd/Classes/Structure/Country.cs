@@ -28,18 +28,11 @@ namespace SpottersDB_FrontEnd.Classes.Structure
         {
             get
             {
-                return _CountryICAOCode;
+                return _CountryICAOCode ?? "";
             }
             set
             {
-                if(value == null)
-                {
-                    _CountryICAOCode = "";
-                }
-                else
-                {
-                    _CountryICAOCode = value;
-                }
+                _CountryICAOCode = value;
             }
         }
 
@@ -47,18 +40,11 @@ namespace SpottersDB_FrontEnd.Classes.Structure
         {
             get
             {
-                return _CountryName;
+                return _CountryName ?? "";
             }
             set
             {
-                if(value == null)
-                {
-                    _CountryName = "";
-                }
-                else
-                {
-                    _CountryName = value;
-                }
+                _CountryName = value;
             }
         }
 

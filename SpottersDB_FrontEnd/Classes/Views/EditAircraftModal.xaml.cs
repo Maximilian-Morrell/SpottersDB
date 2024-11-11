@@ -65,7 +65,7 @@ public partial class EditAircraftModal : ContentPage
         {
             GridMain.Children.Remove(TypePicker);
         }
-
+        Thread.Sleep(250);
         Types = await HTTP_Controller.GetAircraftTypes();
         TypePicker = new Picker();
         List<string> TypeNames = new List<string>();

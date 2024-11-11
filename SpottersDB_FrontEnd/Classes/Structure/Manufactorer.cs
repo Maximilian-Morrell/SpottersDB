@@ -29,7 +29,7 @@ namespace SpottersDB_FrontEnd.Classes.Structure
         {
             get
             {
-                return _Name;
+                return _Name ?? "";
             }
             set
             {

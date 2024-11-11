@@ -33,6 +33,8 @@
         <Label Grid.Row="4" Grid.Column="0" Text="Aircraft:"></Label>
         
         <Button Grid.Row="5" Grid.ColumnSpan="3" Text="Submit" x:Name="Submit" VerticalOptions="End"></Button>
-        <Image HeightRequest="500" VerticalOptions="Start" Grid.Row="6" Grid.Column="0" Grid.ColumnSpan="3" x:Name="PreviewImage"></Image>
+        <Frame CornerRadius="10" HeightRequest="500" Padding="0" Margin="0" VerticalOptions="Start" Grid.Row="6" Grid.Column="0" Grid.ColumnSpan="3" HorizontalOptions="Center">
+            <Image x:Name="PreviewImage"></Image>
+        </Frame>
     </Grid>
 </ContentPage>

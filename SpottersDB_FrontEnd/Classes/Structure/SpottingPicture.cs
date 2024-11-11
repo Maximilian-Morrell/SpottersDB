@@ -33,7 +33,7 @@ namespace SpottersDB_FrontEnd.Classes.Structure
         {
             get
             {
-                return _Name;
+                return _Name ?? "";
             }
             set
             {
@@ -45,7 +45,7 @@ namespace SpottersDB_FrontEnd.Classes.Structure
         {
             get
             {
-                return _Description;
+                return _Description ?? "";
             }
             set
             {
@@ -57,7 +57,7 @@ namespace SpottersDB_FrontEnd.Classes.Structure
         {
             get
             {
-                return _PictureUrl;
+                return _PictureUrl ?? "";
             }
             set
             {
@@ -65,11 +65,11 @@ namespace SpottersDB_FrontEnd.Classes.Structure
             }
         }
 
-        public string orginalFileName
+        public string originalFileName
         {
             get
             {
-                return _OriginalFileName;
+                return _OriginalFileName ?? "";
             }
             set
             {

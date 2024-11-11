@@ -33,7 +33,7 @@ namespace SpottersDB_FrontEnd.Classes.Structure
         {
             get
             {
-                return _ICAO_Code;
+                return _ICAO_Code ?? "";
             }
             set
             {
@@ -45,7 +45,7 @@ namespace SpottersDB_FrontEnd.Classes.Structure
         {
             get
             {
-                return _IATA_Code;
+                return _IATA_Code ?? "";
             }
             set
             {
@@ -57,7 +57,7 @@ namespace SpottersDB_FrontEnd.Classes.Structure
         {
             get
             {
-                return _Name;
+                return _Name ?? "";
             }
             set
             {
@@ -69,7 +69,7 @@ namespace SpottersDB_FrontEnd.Classes.Structure
         {
             get
             {
-                return _Description;
+                return _Description ?? "";
             }
             set
             {
@@ -81,7 +81,7 @@ namespace SpottersDB_FrontEnd.Classes.Structure
         {
             get
             {
-                return _City;
+                return _City ?? "";
             }
             set
             {

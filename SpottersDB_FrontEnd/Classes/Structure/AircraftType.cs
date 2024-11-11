@@ -32,7 +32,7 @@ namespace SpottersDB_FrontEnd.Classes.Structure
         {
             get
             {
-                return _ICAOCode;
+                return _ICAOCode ?? "";
             }
             set
             {
@@ -44,7 +44,7 @@ namespace SpottersDB_FrontEnd.Classes.Structure
         {
             get
             {
-                return _FullName;
+                return _FullName ?? "";
             }
             set
             {
@@ -56,7 +56,7 @@ namespace SpottersDB_FrontEnd.Classes.Structure
         {
             get
             {
-                return _Nickname;
+                return _Nickname ?? "";
             }
             set
             {

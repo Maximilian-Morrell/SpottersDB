@@ -721,7 +721,7 @@ namespace SpottersDB_FrontEnd.Classes.Utilities
             return SpottingTripAirport;
         }
 
-        public static async Task<HttpResponseMessage> UpdateSpottingTrip(SpottingPicture spottingPicture)
+        public static async Task<HttpResponseMessage> UpdateSpottingPicture(SpottingPicture spottingPicture)
         {
             Thread.Sleep(500);
             MultipartFormDataContent content = new MultipartFormDataContent();
@@ -730,9 +730,12 @@ namespace SpottersDB_FrontEnd.Classes.Utilities
             {
                 HttpClient client = GetHttpClient();
 
+                content.Add(new StringContent(spottingPicture.id.ToString()), "ID");
                 content.Add(new StringContent(spottingPicture.name), "Name");
                 content.Add(new StringContent(spottingPicture.description), "Description");
-                content.Add(new StringContent(spottingPicture.spottingTripAirportID.ToString()), "SpottinTripAirport");
+                content.Add(new StringContent(spottingPicture.pictureUrl), "PictureURL");
+                content.Add(new StringContent(spottingPicture.originalFileName), "OriginalFileName");
+                content.Add(new StringContent(spottingPicture.spottingTripAirportID.ToString()), "SpottingTripAirport");
                 content.Add(new StringContent(spottingPicture.spottingTripAirportID.ToString()), "AircraftID");
 
                 response = await client.PostAsync("/Patch/SpottingPicture", content);
@@ -745,7 +748,7 @@ namespace SpottersDB_FrontEnd.Classes.Utilities
             return response;
         }
 
-        public static async Task<HttpResponseMessage> UpdateSpottingTrip(SpottingPicture spottingPicture, FileResult file)
+        public static async Task<HttpResponseMessage> UpdateSpottingPicture(SpottingPicture spottingPicture, FileResult file)
         {
             Thread.Sleep(500);
             MultipartFormDataContent content = new MultipartFormDataContent();
@@ -754,9 +757,11 @@ namespace SpottersDB_FrontEnd.Classes.Utilities
             {
                 HttpClient client = GetHttpClient();
 
+                content.Add(new StringContent(spottingPicture.id.ToString()), "ID");
                 content.Add(new StringContent(spottingPicture.name), "Name");
                 content.Add(new StringContent(spottingPicture.description), "Description");
-                content.Add(new StringContent(spottingPicture.spottingTripAirportID.ToString()), "SpottinTripAirport");
+                content.Add(new StringContent(spottingPicture.pictureUrl), "PictureURL");
+                content.Add(new StringContent(spottingPicture.spottingTripAirportID.ToString()), "SpottingTripAirport");
                 content.Add(new StringContent(spottingPicture.spottingTripAirportID.ToString()), "AircraftID");
                 StreamContent Picture = new StreamContent(File.OpenRead(file.FullPath));
                 content.Add(Picture, "File", file.FileName);

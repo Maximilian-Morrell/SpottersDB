@@ -56,7 +56,7 @@ namespace SpottersDB_FrontEnd.Classes.Structure
         {
             get
             {
-                return _Name;
+                return _Name ?? "";
             }
             set
             {
@@ -68,7 +68,7 @@ namespace SpottersDB_FrontEnd.Classes.Structure
         {
             get
             {
-                return _Description;
+                return _Description ?? "";
             }
             set
             {
@@ -80,7 +80,7 @@ namespace SpottersDB_FrontEnd.Classes.Structure
         {
             get
             {
-                return _AirportIDs;
+                return _AirportIDs ?? "";
             }
             set
             {
