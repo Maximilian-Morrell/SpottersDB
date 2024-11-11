@@ -685,6 +685,7 @@ namespace SpottersDB_BackEnd.Classes.Utilities
             List<Airline> Airlines = new List<Airline>();
             try
             {
+                Thread.Sleep(250);
                 con.Open();
                 cmd.CommandText = $"SELECT * FROM Airlines";
                 reader = cmd.ExecuteReader();
