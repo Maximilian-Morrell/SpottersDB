@@ -3,12 +3,14 @@ using SpottersDB_BackEnd.Classes.Structure;
 using System.Data;
 using System.Data.Common;
 using System.Dynamic;
+using System.Runtime.InteropServices;
 
 namespace SpottersDB_BackEnd.Classes.Utilities
 {
     public class SQLController
     {
         // Instances for reuse
+        private static readonly SemaphoreSlim semaphore = new SemaphoreSlim(1,1);
         private SqlConnection con = new SqlConnection("server = (localdb)\\MSSQLLocalDB; integrated security = false;");
         private SqlCommand cmd = null;
         private SqlDataReader reader = null;
@@ -19,7 +21,7 @@ namespace SpottersDB_BackEnd.Classes.Utilities
         // Checks if DB Exists
         public void ConnectToDB(string DatabaseName, WebApplication app)
         {
-
+            semaphore.Wait();
             cmd = new SqlCommand("", con);
             // JUST FOR DEBUGGING
             if (isDebugMode)
@@ -47,11 +49,13 @@ namespace SpottersDB_BackEnd.Classes.Utilities
                 CreateDatabase(DatabaseName);
             }
             con.Close();
+            semaphore.Release();
         }
 
         // Creates the DB
         private void CreateDatabase(string DatabaseName)
         {
+            semaphore.Wait();
             try
             {
                 if (con.State == System.Data.ConnectionState.Open)
@@ -115,10 +119,12 @@ namespace SpottersDB_BackEnd.Classes.Utilities
             }
 
             con.Close();
+            semaphore.Release();
         }
 
         public void AddCountry(Country country)
         {
+            semaphore.Wait();
             try
             {
                 if (con.State == System.Data.ConnectionState.Open)
@@ -142,10 +148,12 @@ namespace SpottersDB_BackEnd.Classes.Utilities
                 con.Close();
             }
             con.Close();
+            semaphore.Release();
         }
 
         public void AddAirport(Airport airport)
         {
+            semaphore.Wait();
             try
             {
                 con.Open();
@@ -164,10 +172,12 @@ namespace SpottersDB_BackEnd.Classes.Utilities
                 con.Close();
             }
             con.Close();
+            semaphore.Release();
         }
 
         public void AddAirline(Airline airline)
         {
+            semaphore.Wait();
             try
             {
                 con.Open();
@@ -186,10 +196,12 @@ namespace SpottersDB_BackEnd.Classes.Utilities
                 con.Close();
             }
             con.Close();
+            semaphore.Release();
         }
 
         public void AddManufactorer(Manufactorer manufactorer)
         {
+            semaphore.Wait();
             try
             {
                 con.Open();
@@ -208,10 +220,12 @@ namespace SpottersDB_BackEnd.Classes.Utilities
                 con.Close();
             }
             con.Close();
+            semaphore.Release();
         }
 
         public void AddAircraftType(AircraftType aircraftType)
         {
+            semaphore.Wait();
             try
             {
                 con.Open();
@@ -230,10 +244,12 @@ namespace SpottersDB_BackEnd.Classes.Utilities
                 con.Close();
             }
             con.Close();
+            semaphore.Release();
         }
 
         public void AddAircraft(Aircraft aircraft)
         {
+            semaphore.Wait();
             try
             {
                 con.Open();
@@ -252,10 +268,12 @@ namespace SpottersDB_BackEnd.Classes.Utilities
                 con.Close();
             }
             con.Close();
+            semaphore.Release();
         }
 
         public void AddSpottingTrip(SpottingTrip spottingTrip, List<int> AirportIDs)
         {
+            semaphore.Wait();
             try
             {
                 con.Open();
@@ -279,10 +297,12 @@ namespace SpottersDB_BackEnd.Classes.Utilities
                 con.Close();
             }
             con.Close();
+            semaphore.Release();
         }
 
         public void AddSpottingPicture(SpottingPicture spottingPicture)
         {
+            semaphore.Wait();
             try
             {
                 con.Open();
@@ -301,10 +321,12 @@ namespace SpottersDB_BackEnd.Classes.Utilities
                 con.Close();
             }
             con.Close();
+            semaphore.Release();
         }
 
         public void UpdateCountry(Country country)
         {
+            semaphore.Wait();
             try
             {
                 con.Open();
@@ -323,10 +345,12 @@ namespace SpottersDB_BackEnd.Classes.Utilities
                 con.Close();
             }
             con.Close();
+            semaphore.Release();
         }
 
         public void UpdateAirport(Airport airport)
         {
+            semaphore.Wait();
             try
             {
                 con.Open();
@@ -345,10 +369,12 @@ namespace SpottersDB_BackEnd.Classes.Utilities
                 con.Close();
             }
             con.Close();
+            semaphore.Release();
         }
 
         public void UpdateAirline(Airline airline)
         {
+            semaphore.Wait();
             try
             {
                 con.Open();
@@ -361,16 +387,18 @@ namespace SpottersDB_BackEnd.Classes.Utilities
             {
                 app.Logger.LogError(e.Message);
             }
-
-            if (con.State == System.Data.ConnectionState.Open)
+            finally
             {
                 con.Close();
             }
+
             con.Close();
+            semaphore.Release();
         }
 
         public void UpdateAircraftType(AircraftType aircraftType)
         {
+            semaphore.Wait();
             try
             {
                 con.Open();
@@ -383,16 +411,18 @@ namespace SpottersDB_BackEnd.Classes.Utilities
             {
                 app.Logger.LogError(e.Message);
             }
-
-            if (con.State == System.Data.ConnectionState.Open)
+            finally
             {
                 con.Close();
             }
+
             con.Close();
+            semaphore.Release();
         }
 
         public void UpdateManufactorer(Manufactorer manufactorer)
         {
+            semaphore.Wait();
             try
             {
                 con.Open();
@@ -405,16 +435,18 @@ namespace SpottersDB_BackEnd.Classes.Utilities
             {
                 app.Logger.LogError(e.Message);
             }
-
-            if (con.State == System.Data.ConnectionState.Open)
+            finally
             {
                 con.Close();
             }
+
             con.Close();
+            semaphore.Release();
         }
 
         public void UpdateAircraft(Aircraft aircraft)
         {
+            semaphore.Wait();
             try
             {
                 con.Open();
@@ -427,16 +459,18 @@ namespace SpottersDB_BackEnd.Classes.Utilities
             {
                 app.Logger.LogError(e.Message);
             }
-
-            if (con.State == System.Data.ConnectionState.Open)
+            finally
             {
                 con.Close();
             }
+
             con.Close();
+            semaphore.Release();
         }
 
         public void UpdateSpottingTrip(SpottingTrip spottingTrip, List<int> AirportIDs)
         {
+            semaphore.Wait();
             try
             {
                 con.Open();
@@ -482,16 +516,18 @@ namespace SpottersDB_BackEnd.Classes.Utilities
             {
                 app.Logger.LogError(e.Message);
             }
-
-            if (con.State == System.Data.ConnectionState.Open)
+            finally
             {
                 con.Close();
             }
+
             con.Close();
+            semaphore.Release();
         }
 
         public void UpdateSpottingPicture(SpottingPicture spottingPicture)
         {
+            semaphore.Wait();
             try
             {
                 con.Open();
@@ -504,15 +540,18 @@ namespace SpottersDB_BackEnd.Classes.Utilities
             {
                 app.Logger.LogError(e.Message);
             }
-
-            if (con.State == System.Data.ConnectionState.Open)
+            finally
             {
                 con.Close();
             }
+
+            con.Close();
+            semaphore.Release();
         }
 
         public List<Country> GetCountries()
         {
+            semaphore.Wait();
             List<Country> Countries = new List<Country>();
             try
             {
@@ -531,17 +570,19 @@ namespace SpottersDB_BackEnd.Classes.Utilities
             {
                 app.Logger.LogInformation(e.Message);
             }
-
-            if (con.State == System.Data.ConnectionState.Open)
+            finally
             {
                 con.Close();
             }
+
             con.Close();
+            semaphore.Release();
             return Countries;
         }
 
         public List<Country> GetCountries(bool OnlyCountries)
         {
+            semaphore.Wait();
             List<Country> Countries = new List<Country>();
             try
             {
@@ -560,17 +601,19 @@ namespace SpottersDB_BackEnd.Classes.Utilities
             {
                 app.Logger.LogInformation(e.Message);
             }
-
-            if (con.State == System.Data.ConnectionState.Open)
+            finally
             {
                 con.Close();
             }
+
             con.Close();
+            semaphore.Release();
             return Countries;
         }
 
         public List<Country> GetRegions()
         {
+            semaphore.Wait();
             List<Country> Countries = new List<Country>();
             try
             {
@@ -589,17 +632,19 @@ namespace SpottersDB_BackEnd.Classes.Utilities
             {
                 app.Logger.LogInformation(e.Message);
             }
-
-            if (con.State == System.Data.ConnectionState.Open)
+            finally
             {
                 con.Close();
             }
+
             con.Close();
+            semaphore.Release();
             return Countries;
         }
 
         public Country GetCountryByID(int ID)
         {
+            semaphore.Wait();
             Country country = null;
             try
             {
@@ -616,17 +661,19 @@ namespace SpottersDB_BackEnd.Classes.Utilities
             {
                 app.Logger.LogInformation(e.Message);
             }
-
-            if (con.State == System.Data.ConnectionState.Open)
+            finally
             {
                 con.Close();
             }
+
             con.Close();
+            semaphore.Release();
             return country;
         }
 
         public List<Airport> GetAirports()
         {
+            semaphore.Wait();
             List<Airport> Airports = new List<Airport>();
             try
             {
@@ -644,17 +691,19 @@ namespace SpottersDB_BackEnd.Classes.Utilities
             {
                 app.Logger.LogError(e.Message);
             }
-
-            if (con.State == System.Data.ConnectionState.Open)
+            finally
             {
                 con.Close();
             }
+
             con.Close();
+            semaphore.Release();
             return Airports;
         }
 
         public Airport GetAirportByID(int ID)
         {
+            semaphore.Wait();
             Airport airport = null;
             try
             {
@@ -671,17 +720,19 @@ namespace SpottersDB_BackEnd.Classes.Utilities
             {
                 app.Logger.LogError(e.Message);
             }
-
-            if (con.State == System.Data.ConnectionState.Open)
+            finally
             {
                 con.Close();
             }
+
             con.Close();
+            semaphore.Release();
             return airport;
         }
 
         public List<Airline> GetAirlines()
         {
+            semaphore.Wait();
             List<Airline> Airlines = new List<Airline>();
             try
             {
@@ -700,17 +751,19 @@ namespace SpottersDB_BackEnd.Classes.Utilities
             {
                 app.Logger.LogError(e.Message);
             }
-
-            if (con.State == System.Data.ConnectionState.Open)
+            finally
             {
                 con.Close();
             }
+
             con.Close();
+            semaphore.Release();
             return Airlines;
         }
 
         public Airline GetAirlineByID(int ID)
         {
+            semaphore.Wait();
             Airline airline = null;
             try
             {
@@ -727,17 +780,19 @@ namespace SpottersDB_BackEnd.Classes.Utilities
             {
                 app.Logger.LogError(e.Message);
             }
-
-            if (con.State == System.Data.ConnectionState.Open)
+            finally
             {
                 con.Close();
             }
+
             con.Close();
+            semaphore.Release();
             return airline;
         }
 
         public List<AircraftType> GetAircraftTypes()
         {
+            semaphore.Wait();
             List<AircraftType> AircraftTypes = new List<AircraftType>();
             try
             {
@@ -755,17 +810,18 @@ namespace SpottersDB_BackEnd.Classes.Utilities
             {
                 app.Logger.LogError(e.Message);
             }
-
-            if (con.State == System.Data.ConnectionState.Open)
+            finally
             {
                 con.Close();
             }
             con.Close();
+            semaphore.Release();
             return AircraftTypes;
         }
 
         public AircraftType GetAircraftTypeByID(int ID)
         {
+            semaphore.Wait();
             AircraftType aircraftType = null;
             try
             {
@@ -782,17 +838,19 @@ namespace SpottersDB_BackEnd.Classes.Utilities
             {
                 app.Logger.LogError(e.Message);
             }
-
-            if (con.State == System.Data.ConnectionState.Open)
+            finally
             {
                 con.Close();
             }
+
             con.Close();
+            semaphore.Release();
             return aircraftType;
         }
 
         public List<Manufactorer> GetManufactorers()
         {
+            semaphore.Wait();
             List<Manufactorer> Manufactorers = new List<Manufactorer>();
             try
             {
@@ -810,17 +868,19 @@ namespace SpottersDB_BackEnd.Classes.Utilities
             {
                 app.Logger.LogError(e.Message);
             }
-
-            if (con.State == System.Data.ConnectionState.Open)
+            finally
             {
                 con.Close();
             }
+
             con.Close();
+            semaphore.Release();
             return Manufactorers;
         }
 
         public Manufactorer GetManufactorerByID(int id)
         {
+            semaphore.Wait();
             Manufactorer manufactorer = null;
             try
             {
@@ -837,17 +897,23 @@ namespace SpottersDB_BackEnd.Classes.Utilities
             {
                 app.Logger.LogError(e.Message);
             }
+            finally
+            {
+                con.Close();
+            }
 
             if (con.State == System.Data.ConnectionState.Open)
             {
                 con.Close();
             }
             con.Close();
+            semaphore.Release();
             return manufactorer;
         }
 
         public List<Aircraft> GetAircrafts()
         {
+            semaphore.Wait();
             List<Aircraft> aircrafts = new List<Aircraft>();
             try
             {
@@ -871,11 +937,13 @@ namespace SpottersDB_BackEnd.Classes.Utilities
                 con.Close();
             }
             con.Close();
+            semaphore.Release();
             return aircrafts;
         }
 
         public Aircraft GetAircraftByID(int id)
         {
+            semaphore.Wait();
             Aircraft aircraft = null;
             try
             {
@@ -898,12 +966,13 @@ namespace SpottersDB_BackEnd.Classes.Utilities
                 con.Close();
             }
             con.Close();
+            semaphore.Release();
             return aircraft;
         }
 
         public List<SpottingTrip> GetSpottingTrips()
         {
-            Thread.Sleep(100);
+            semaphore.Wait();
             List<SpottingTrip> spottingTrips = new List<SpottingTrip>();
             try
             {
@@ -927,11 +996,13 @@ namespace SpottersDB_BackEnd.Classes.Utilities
                 con.Close();
             }
             con.Close();
+            semaphore.Release();
             return spottingTrips;
         }
 
         public SpottingTrip GetSpottingTripByID(int id)
         {
+            semaphore.Wait();
             SpottingTrip spottingTrip = null;
             try
             {
@@ -954,11 +1025,13 @@ namespace SpottersDB_BackEnd.Classes.Utilities
                 con.Close();
             }
             con.Close();
+            semaphore.Release();
             return spottingTrip;
         }
 
         public List<SpottingPicture> GetSpottingPictures()
         {
+            semaphore.Wait();
             List<SpottingPicture> spottingPictures = new List<SpottingPicture>();
             try
             {
@@ -982,11 +1055,13 @@ namespace SpottersDB_BackEnd.Classes.Utilities
                 con.Close();
             }
             con.Close();
+            semaphore.Release();
             return spottingPictures;
         }
 
         public SpottingPicture GetSpottingPictureByID(int id)
         {
+            semaphore.Wait();
             SpottingPicture spottingPicture = null;
             try
             {
@@ -1009,11 +1084,13 @@ namespace SpottersDB_BackEnd.Classes.Utilities
                 con.Close();
             }
             con.Close();
+            semaphore.Release();
             return spottingPicture;
         }
 
         public string GetNewestImageFromCountry(int Country)
         {
+            semaphore.Wait();
             string newestImage = "";
             try
             {
@@ -1033,11 +1110,13 @@ namespace SpottersDB_BackEnd.Classes.Utilities
                 app.Logger.LogError(e.Message);
             }
             con.Close();
+            semaphore.Release();
             return newestImage;
         }
 
         public List<Airport> GetAirportsFromSpottingTrip(int ID)
         {
+            semaphore.Wait();
             List<Airport> airports = new List<Airport>();
             try
             {
@@ -1055,11 +1134,13 @@ namespace SpottersDB_BackEnd.Classes.Utilities
                 app.Logger.LogError(e.Message);
             }
             con.Close();
+            semaphore.Release();
             return airports;
         }
 
         public int GetLinkID(int SpottingTripID, int AirportID)
         {
+            semaphore.Wait();
             int LinkID = -1;
             try
             {
@@ -1077,11 +1158,13 @@ namespace SpottersDB_BackEnd.Classes.Utilities
                 app.Logger.LogError(e.Message);
             }
             con.Close();
+            semaphore.Release();
             return LinkID;
         }
 
         public List<int> GetSpottingTripAirportFromLinkID(int LinkID)
         {
+            semaphore.Wait();
             List<int> IDs = new List<int>();
             try
             {
@@ -1100,6 +1183,7 @@ namespace SpottersDB_BackEnd.Classes.Utilities
                 app.Logger.LogError(e.Message);
             }
             con.Close();
+            semaphore.Release();
             return IDs;
         }
     }
