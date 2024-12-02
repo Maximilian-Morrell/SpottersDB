@@ -4,7 +4,7 @@
              x:Class="SpottersDB_FrontEnd.Classes.Views.EditCountryModal"
              Title="EditCountryModal">
     
-    <Grid MaximumHeightRequest="120" Padding="20" RowSpacing="10" VerticalOptions="StartAndExpand">
+    <Grid MaximumHeightRequest="320" Padding="20" RowSpacing="10" VerticalOptions="StartAndExpand">
         <Grid.RowDefinitions>
             <RowDefinition></RowDefinition>
             <RowDefinition></RowDefinition>

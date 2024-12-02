@@ -1,4 +1,5 @@
-﻿using SpottersDB_FrontEnd.Classes.Views;
+﻿using Microsoft.Maui.Controls.Shapes;
+using SpottersDB_FrontEnd.Classes.Views;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,14 +11,14 @@ namespace SpottersDB_FrontEnd.Classes.UI_Elements.Cards
     internal class ImageItem
     {
 
-        public static Frame GetImageCardItem(string URL, string Info = "TBD")
+        public static Border GetImageCardItem(string URL, string Info = "TBD")
         {
-            Frame F = new Frame();
-            F.CornerRadius = 10;
-            F.Padding = 0;
-            F.Margin = 0;
-            F.IsClippedToBounds = true;
-            F.HasShadow = false;
+            Border b = new Border();
+            RoundRectangle rr = new RoundRectangle();
+            rr.CornerRadius = 10;
+            b.StrokeShape = rr;
+            b.Padding = 0;
+            b.Margin = 0;
 
             Image image = new Image();
             try
@@ -44,9 +45,9 @@ namespace SpottersDB_FrontEnd.Classes.UI_Elements.Cards
             grid.Children.Add(image);
             grid.Children.Add(boxView);
 
-            F.Content = grid;
-            F.ZIndex = -1;
-            return F;
+            b.Content = grid;
+            b.ZIndex = -1;
+            return b;
         }
     }
 }

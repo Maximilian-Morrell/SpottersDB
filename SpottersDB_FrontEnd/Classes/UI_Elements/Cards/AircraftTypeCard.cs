@@ -1,4 +1,5 @@
-﻿using SpottersDB_FrontEnd.Classes.Structure;
+﻿using Microsoft.Maui.Controls.Shapes;
+using SpottersDB_FrontEnd.Classes.Structure;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -12,13 +13,14 @@ namespace SpottersDB_FrontEnd.Classes.UI_Elements.Cards
         public delegate EventHandler EditClickHandler(AircraftType aircraftType);
         public event EditClickHandler EditClicked;
 
-        public async Task<Frame> Card(AircraftType aircraftType)
+        public async Task<Border> Card(AircraftType aircraftType)
         {
-            Frame f = new Frame();
-            f.CornerRadius = 10;
-            f.Padding = 10;
-            f.BackgroundColor = Color.FromRgb(128, 128, 128);
-            f.HasShadow = true;
+            Border b = new Border();
+            RoundRectangle rr = new RoundRectangle();
+            rr.CornerRadius = 10;
+            b.StrokeShape = rr;
+            b.Padding = 10;
+            b.BackgroundColor = Color.FromRgb(128, 128, 128);
 
             Grid parent = new Grid
             {
@@ -33,7 +35,7 @@ namespace SpottersDB_FrontEnd.Classes.UI_Elements.Cards
                 }
             };
 
-            f.Content = parent;
+            b.Content = parent;
             parent.MaximumWidthRequest = 500;
             parent.WidthRequest = 400;
             parent.MaximumHeightRequest = 300;
@@ -89,7 +91,7 @@ namespace SpottersDB_FrontEnd.Classes.UI_Elements.Cards
             editBtn.VerticalOptions = LayoutOptions.End;
             parent.Add(editBtn, 0, 4);
 
-            return f;
+            return b;
         }
 
         private void EditBtn_Clicked(object sender, EventArgs e)

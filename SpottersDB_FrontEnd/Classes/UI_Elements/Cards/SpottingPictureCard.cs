@@ -1,4 +1,5 @@
-﻿using SpottersDB_FrontEnd.Classes.Structure;
+﻿using Microsoft.Maui.Controls.Shapes;
+using SpottersDB_FrontEnd.Classes.Structure;
 using SpottersDB_FrontEnd.Classes.Utilities;
 using SpottersDB_FrontEnd.Classes.Views;
 using System;
@@ -14,13 +15,14 @@ namespace SpottersDB_FrontEnd.Classes.UI_Elements.Cards
         public delegate EventHandler EditClickHandler(SpottingPicture spottingPicture);
         public event EditClickHandler EditClicked;
 
-        public async Task<Frame> Card(SpottingPicture SpottingPicture)
+        public async Task<Border> Card(SpottingPicture SpottingPicture)
         {
-            Frame f = new Frame();
-            f.CornerRadius = 10;
-            f.Padding = 10;
-            f.BackgroundColor = Color.FromRgb(128, 128, 128);
-            f.HasShadow = true;
+            Border b = new Border();
+            RoundRectangle rr = new RoundRectangle();
+            rr.CornerRadius = 10;
+            b.StrokeShape = rr;
+            b.Padding = 10;
+            b.BackgroundColor = Color.FromRgb(128, 128, 128);
 
             Grid parent = new Grid
             {
@@ -35,7 +37,7 @@ namespace SpottersDB_FrontEnd.Classes.UI_Elements.Cards
                 }
             };
 
-            f.Content = parent;
+            b.Content = parent;
             parent.MaximumWidthRequest = 480;
             parent.WidthRequest = 480;
             parent.MaximumHeightRequest = 300;
@@ -60,10 +62,10 @@ namespace SpottersDB_FrontEnd.Classes.UI_Elements.Cards
             lblDescription.VerticalTextAlignment = TextAlignment.Center;
             parent.Add(lblDescription, 0, 1);
 
-            Frame imgF = ImageItem.GetImageCardItem(SpottingPicture.pictureUrl);
-            imgF.Scale = 1.2;
-            parent.SetRowSpan(imgF, 5);
-            parent.Children.Add(imgF);
+            Border imgB = ImageItem.GetImageCardItem(SpottingPicture.pictureUrl);
+            imgB.Scale = 1.2;
+            parent.SetRowSpan(imgB, 5);
+            parent.Children.Add(imgB);
 
             List<int> SpottingTripAirport = await HTTP_Controller.GetSpottingTripAirport(SpottingPicture.spottingTripAirportID);
             SpottingTrip spottingTrip = await HTTP_Controller.GetSpottingTrip(SpottingTripAirport[0]);
@@ -95,7 +97,7 @@ namespace SpottersDB_FrontEnd.Classes.UI_Elements.Cards
             editBtn.VerticalOptions = LayoutOptions.End;
             parent.Add(editBtn, 0, 4);
 
-            return f;
+            return b;
         }
 
 
