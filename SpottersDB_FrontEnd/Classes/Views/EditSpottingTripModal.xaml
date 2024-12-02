@@ -4,14 +4,14 @@
              x:Class="SpottersDB_FrontEnd.Classes.Views.EditSpottingTripModal"
              Title="EditSpottingTripModal">
 
-    <Grid MaximumHeightRequest="520" Padding="20" RowSpacing="10" VerticalOptions="StartAndExpand" x:Name="GridMain">
+    <Grid MaximumHeightRequest="1000" Padding="20" RowSpacing="10" VerticalOptions="StartAndExpand" x:Name="GridMain">
         <Grid.RowDefinitions>
             <RowDefinition></RowDefinition>
             <RowDefinition></RowDefinition>
             <RowDefinition></RowDefinition>
             <RowDefinition></RowDefinition>
             <RowDefinition></RowDefinition>
-            <RowDefinition></RowDefinition>
+            <RowDefinition Height="370"></RowDefinition>
             <RowDefinition></RowDefinition>
         </Grid.RowDefinitions>
         <Grid.ColumnDefinitions>
@@ -34,13 +34,13 @@
         <TimePicker Grid.Row="3" Grid.Column="2" x:Name="SpottingTripEndTime"></TimePicker>
 
         <Label Grid.Row="4" Grid.Column="0" Text="Spottingtrip Airports:"/>
-        <VerticalStackLayout Grid.Row="5" Grid.Column="0" Grid.ColumnSpan="3" x:Name="AirportPickerParent" HeightRequest="600">
-            <ScrollView Orientation="Horizontal" >
-                <HorizontalStackLayout x:Name="AirportParent">
 
-                </HorizontalStackLayout>
-            </ScrollView>
-        </VerticalStackLayout>
+        <ScrollView Grid.Row="5" Grid.Column="0" Grid.ColumnSpan="3" Orientation="Horizontal">
+            <HorizontalStackLayout x:Name="AirportParent">
+
+            </HorizontalStackLayout>
+        </ScrollView>
+
 
         <Button Grid.Row="6" Grid.ColumnSpan="3" Text="Submit" x:Name="Submit" VerticalOptions="End"></Button>
     </Grid>

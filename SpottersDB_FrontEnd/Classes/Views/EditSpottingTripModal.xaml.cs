@@ -66,7 +66,7 @@ public partial class EditSpottingTripModal : ContentPage
     {
         if (AirportPicker != null)
         {
-            AirportPickerParent.Children.Remove(AirportPicker);
+            GridMain.Remove(AirportPicker);
         }
 
         airports = await HTTP_Controller.GetAirports();
@@ -99,16 +99,11 @@ public partial class EditSpottingTripModal : ContentPage
 
         AirportPicker.Title = "Select an Airport";
 
-        if (IsEditing)
-        {
-          //  int ID = airports.FindIndex(c => c.id == manufactorer.region);
-          //  RegionPicker.SelectedIndex = ID;
-        }
-
         AirportPicker.SelectedIndexChanged += AirportPickerSelectionChange;
         AirportPicker.HorizontalOptions = LayoutOptions.End;
 
-        AirportPickerParent.Children.Add(AirportPicker);
+        GridMain.Add(AirportPicker, 1,4);
+        Grid.SetColumnSpan(AirportPicker, 2);
     }
 
     private void AirportPickerSelectionChange(object sender, EventArgs e)

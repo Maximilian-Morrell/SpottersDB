@@ -38,10 +38,12 @@ namespace SpottersDB_FrontEnd.Classes.UI_Elements.Cards
             };
 
             b.Content = parent;
-            parent.MaximumWidthRequest = 480;
-            parent.WidthRequest = 480;
-            parent.MaximumHeightRequest = 300;
-            parent.HeightRequest = 300;
+            int Width = 720;
+            int Height = 450;
+            parent.MaximumWidthRequest = Width;
+            parent.WidthRequest = Width;
+            parent.MaximumHeightRequest = Height;
+            parent.HeightRequest = Height;
             parent.Margin = 10;
 
             Label lblName = new Label();
