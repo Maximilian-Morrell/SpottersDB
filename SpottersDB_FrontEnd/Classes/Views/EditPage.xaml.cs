@@ -106,8 +106,8 @@ namespace SpottersDB_FrontEnd.Classes.Views
             {
                 ManufactorerCard man = new ManufactorerCard();
                 man.EditClicked += Manufactorer_EditClicked;
-                Frame f = await man.Card(manufactorer);
-                ManufactorerParent.Children.Add(f);
+                Border b = await man.Card(manufactorer);
+                ManufactorerParent.Children.Add(b);
             }
             LoadAircraftTypes();
         }
@@ -120,8 +120,8 @@ namespace SpottersDB_FrontEnd.Classes.Views
             {
                 AircraftTypeCard air = new AircraftTypeCard();
                 air.EditClicked += AircraftType_EditClicked;
-                Frame f = await air.Card(aircraftType);
-                AircraftTypeParent.Children.Add(f);
+                Border b = await air.Card(aircraftType);
+                AircraftTypeParent.Children.Add(b);
             }
             LoadAirlines();
         }
@@ -134,8 +134,8 @@ namespace SpottersDB_FrontEnd.Classes.Views
             {
                 AirlineCard air = new AirlineCard();
                 air.EditClicked += Airline_EditClicked;
-                Frame f = await air.Card(airline);
-                AirlineParent.Children.Add(f);
+                Border b = await air.Card(airline);
+                AirlineParent.Children.Add(b);
             }
             LoadAirports();
         }
@@ -148,8 +148,8 @@ namespace SpottersDB_FrontEnd.Classes.Views
             {
                 AirportCard airportCard = new AirportCard();
                 airportCard.EditClicked += AirportCard_EditClicked;
-                Frame f = await airportCard.Card(airport);
-                AirportParent.Children.Add(f);
+                Border b = await airportCard.Card(airport);
+                AirportParent.Children.Add(b);
             }
             LoadAircrafts();
         }
@@ -162,8 +162,8 @@ namespace SpottersDB_FrontEnd.Classes.Views
             {
                 AircraftCard aircraftCard = new AircraftCard();
                 aircraftCard.EditClicked += AircraftCard_EditClicked;
-                Frame f = await aircraftCard.Card(aircraft);
-                AircraftParent.Children.Add(f);
+                Border b = await aircraftCard.Card(aircraft);
+                AircraftParent.Children.Add(b);
             }
             LoadSpottingTrips();
         }
@@ -178,8 +178,8 @@ namespace SpottersDB_FrontEnd.Classes.Views
                 {
                     SpottingTripCard spottingTripCard = new SpottingTripCard();
                     spottingTripCard.EditClicked += SpottingTripCard_EditClicked;
-                    Frame f = await spottingTripCard.Card(spottingTrip);
-                    SpottingTripParent.Children.Add(f);
+                    Border b = await spottingTripCard.Card(spottingTrip);
+                    SpottingTripParent.Children.Add(b);
                 }
             }
             catch (Exception ex)
@@ -199,9 +199,9 @@ namespace SpottersDB_FrontEnd.Classes.Views
                 foreach(SpottingPicture spottingPicture in SpottingPictures)
                 {
                     SpottingPictureCard spottingPictureCard = new SpottingPictureCard();
-                    Frame f = await spottingPictureCard.Card(spottingPicture);
+                    Border b = await spottingPictureCard.Card(spottingPicture);
                     spottingPictureCard.EditClicked += SpottingPictureCard_EditClicked;
-                    SpottingPictureParent.Children.Add(f);
+                    SpottingPictureParent.Children.Add(b);
                 }
             }
             catch (Exception ex)

@@ -4,7 +4,7 @@
              x:Class="SpottersDB_FrontEnd.Classes.Views.EditSpottingPictureModal"
              Title="EditSpottingPictureModal">
     
-    <Grid MaximumHeightRequest="120" Padding="20" RowSpacing="10" VerticalOptions="StartAndExpand" x:Name="GridMain">
+    <Grid MaximumHeightRequest="520" Padding="20" RowSpacing="10" VerticalOptions="StartAndExpand" x:Name="GridMain">
         <Grid.RowDefinitions>
             <RowDefinition></RowDefinition>
             <RowDefinition></RowDefinition>

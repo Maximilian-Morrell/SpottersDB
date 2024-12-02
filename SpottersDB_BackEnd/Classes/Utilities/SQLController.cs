@@ -1,4 +1,4 @@
-﻿using Microsoft.Data.SqlClient;
+﻿using System.Data.SqlClient;
 using SpottersDB_BackEnd.Classes.Structure;
 using System.Data;
 using System.Data.Common;

@@ -135,13 +135,13 @@ public partial class EditSpottingTripModal : ContentPage
         SelectedAirports.Add(airports[AirportPicker.SelectedIndex]);
         AirportCard airportCard = new AirportCard();
         VerticalStackLayout Container = new VerticalStackLayout();
-        Frame f = await airportCard.Card(airports[AirportPicker.SelectedIndex]);
-        Container.Children.Add(f);
-        Button b = new Button();
-        b.Text = "Delete Airport from Trip";
-        b.CommandParameter = airports[AirportPicker.SelectedIndex];
-        b.Clicked += DeleteFromTripClicked;
+        Border b = await airportCard.Card(airports[AirportPicker.SelectedIndex]);
         Container.Children.Add(b);
+        Button btn = new Button();
+        btn.Text = "Delete Airport from Trip";
+        btn.CommandParameter = airports[AirportPicker.SelectedIndex];
+        btn.Clicked += DeleteFromTripClicked;
+        Container.Children.Add(btn);
         airportCard.EditClicked += AirportCard_EditClicked;
         AirportParent.Children.Add(Container);
         GetAllAirports();
@@ -169,13 +169,13 @@ public partial class EditSpottingTripModal : ContentPage
     {
         AirportCard airportCard = new AirportCard();
         VerticalStackLayout Container = new VerticalStackLayout();
-        Frame f = await airportCard.Card(airport);
-        Container.Children.Add(f);
-        Button b = new Button();
-        b.Text = "Delete Airport from Trip";
-        b.CommandParameter = airport;
-        b.Clicked += DeleteFromTripClicked;
+        Border b = await airportCard.Card(airport);
         Container.Children.Add(b);
+        Button btn = new Button();
+        btn.Text = "Delete Airport from Trip";
+        btn.CommandParameter = airport;
+        btn.Clicked += DeleteFromTripClicked;
+        Container.Children.Add(btn);
         airportCard.EditClicked += AirportCard_EditClicked;
         AirportParent.Children.Add(Container);
     }

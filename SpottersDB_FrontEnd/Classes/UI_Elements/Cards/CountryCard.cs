@@ -6,6 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using SpottersDB_FrontEnd.Classes.Utilities;
+using Microsoft.Maui.Controls.Shapes;
 
 namespace SpottersDB_FrontEnd.Classes.UI_Elements.Cards
 {
@@ -19,17 +20,18 @@ namespace SpottersDB_FrontEnd.Classes.UI_Elements.Cards
         public delegate EventHandler EditClickedHandler(Country country);
         public event EditClickedHandler EditClicked;
 
-        public Frame Card(Country country, string URL)
+        public Border Card(Country country, string URL)
         {
             
 
-            Frame f = new Frame();
-            f.CornerRadius = 10;
-            f.Padding = 10;
-            f.BackgroundColor = Color.FromRgb(128, 128, 128);
-            f.HasShadow = true;
-            f.Padding = 0;
-            f.Margin = 0;
+            Border b = new Border();
+            RoundRectangle rr = new RoundRectangle();
+            rr.CornerRadius = 10;
+            b.StrokeShape = rr;
+            b.Padding = 10;
+            b.BackgroundColor = Color.FromRgb(128, 128, 128);
+            b.Padding = 0;
+            b.Margin = 0;
 
             Grid parent = new Grid
             {
@@ -42,7 +44,7 @@ namespace SpottersDB_FrontEnd.Classes.UI_Elements.Cards
                 }
             };
 
-            f.Content = parent;
+            b.Content = parent;
             parent.MaximumWidthRequest = 500;
             parent.WidthRequest = 400;
             parent.MaximumHeightRequest = 250;
@@ -69,10 +71,10 @@ namespace SpottersDB_FrontEnd.Classes.UI_Elements.Cards
             }
             else
             {
-                Frame imgF = ImageItem.GetImageCardItem(URL);
-                imgF.Scale = 1.2;
-                parent.SetRowSpan(imgF, 3);
-                parent.Children.Add(imgF);
+                Border imgB = ImageItem.GetImageCardItem(URL);
+                imgB.Scale = 1.2;
+                parent.SetRowSpan(imgB, 3);
+                parent.Children.Add(imgB);
                 Label lblICAO = new Label();
                 lblICAO.Text = country.icaO_Code;
                 lblICAO.FontSize = 30;
@@ -89,7 +91,7 @@ namespace SpottersDB_FrontEnd.Classes.UI_Elements.Cards
 
             parent.Add(editBtn,0,2);
 
-            return f;
+            return b;
         }
 
         private void EditBtn_Clicked(object sender, EventArgs e)
