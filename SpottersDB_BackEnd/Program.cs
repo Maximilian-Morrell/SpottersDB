@@ -1,6 +1,5 @@
 using Microsoft.AspNetCore.Http.Features;
 using Microsoft.Extensions.FileProviders;
-using Microsoft.Identity.Client;
 using SpottersDB_BackEnd.Classes.API;
 using SpottersDB_BackEnd.Classes.Utilities;
 
