@@ -1,4 +1,4 @@
-﻿using System.Data.SqlClient;
+﻿using Microsoft.Data.SqlClient;
 using SpottersDB_BackEnd.Classes.Structure;
 using System.Data;
 using System.Data.Common;
@@ -32,24 +32,42 @@ namespace SpottersDB_BackEnd.Classes.Utilities
                 isDebugMode = false;
                 con.Close();
             }
+
             try
             {
                 // Access the WebApp for logger & stuff
                 this.app = app;
                 // Trys to connect to DB
                 con.Open();
-                con.ChangeDatabase(DatabaseName);
-                con.Close();
-                con.ConnectionString = "server = (localdb)\\MSSQLLocalDB; integrated security = false; database = " + DatabaseName;
+                cmd.CommandText = "SELECT name FROM sys.databases";
+                reader = cmd.ExecuteReader();
+                bool DatabaseExists = false;
+                while(reader.Read())
+                {
+                    if(!DatabaseExists)
+                    {
+                       DatabaseExists = reader.GetString(0) == DatabaseName;
+                    }
+                }
+                if(DatabaseExists)
+                {
+                    con.ChangeDatabase(DatabaseName);
+                    con.Close();
+                    con.ConnectionString = "server = (localdb)\\MSSQLLocalDB; integrated security = false; database = " + DatabaseName;
+                }
+                else
+                {
+                    con.Close();
+                    semaphore.Release();
+                    CreateDatabase(DatabaseName);
+
+                }
             }
             catch (Exception e)
             {
                 // Fails
                 // DB does not Exists
-                CreateDatabase(DatabaseName);
             }
-            con.Close();
-            semaphore.Release();
         }
 
         // Creates the DB
@@ -58,6 +76,11 @@ namespace SpottersDB_BackEnd.Classes.Utilities
             semaphore.Wait();
             try
             {
+                foreach(string f in Directory.GetFiles(Path.GetFullPath(Environment.CurrentDirectory) + "/Images"))
+                {
+                    File.Delete(f);
+                }
+
                 if (con.State == System.Data.ConnectionState.Open)
                 {
                     con.Close();
@@ -106,6 +129,7 @@ namespace SpottersDB_BackEnd.Classes.Utilities
                 cmd.ExecuteNonQuery();
                 app.Logger.LogInformation("Created the Table SpottingPictures");
                 con.Close();
+                semaphore.Release();
                 ConnectToDB(DatabaseName, app);
             }
             catch (Exception e)
@@ -118,8 +142,6 @@ namespace SpottersDB_BackEnd.Classes.Utilities
                 con.Close();
             }
 
-            con.Close();
-            semaphore.Release();
         }
 
         public void AddCountry(Country country)
