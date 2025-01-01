@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Formats.Asn1;
 using System.Linq;
 using System.Net;
+using System.Runtime.InteropServices;
 using System.Text;
 using System.Text.Json;
 using System.Text.Json.Serialization;
@@ -14,6 +15,7 @@ namespace SpottersDB_FrontEnd.Classes.Utilities
 {
     internal class HTTP_Controller
     {
+        #region Setup Stuff
         private static readonly Uri _URL = new Uri("http://localhost:5032/");
 
         private static HttpClient GetHttpClient()
@@ -33,82 +35,75 @@ namespace SpottersDB_FrontEnd.Classes.Utilities
             }
             return client;
         }
+        #endregion
 
-        public static async Task<List<Country>> GetCountries()
+        #region APICall Methods
+        private static async Task<string> APIGet(string URL)
         {
-            List<Country> countries = new List<Country>();
+            string ReturnString = "";
             try
             {
                 HttpClient client = GetHttpClient();
-                HttpResponseMessage respone = await client.GetAsync("/Get/Countries");
-                string content = await respone.Content.ReadAsStringAsync();
-                countries = JsonSerializer.Deserialize<List<Country>>(content);
+                HttpResponseMessage respone = await client.GetAsync(URL);
+                ReturnString = await respone.Content.ReadAsStringAsync();
             }
-            catch (Exception e)
+            catch (Exception)
             {
-                Window w = new Window(new ErrorBox(e.StackTrace, e.InnerException.Message));
-                Application.Current.OpenWindow(w);
+
             }
-            return countries;
+            return ReturnString;
+        }
+
+        private static async Task<bool> APIPost(string URL, Dictionary<string, string> ContentData)
+        {
+            HttpResponseMessage message = null;
+            string Content = null;
+            try
+            {
+                HttpClient client = GetHttpClient();
+                MultipartFormDataContent content = new MultipartFormDataContent();
+                foreach(string Key in ContentData.Keys.ToList())
+                {
+                    content.Add(new StringContent(ContentData[Key]), Key);
+                }
+                message = await client.PostAsync(URL, content);
+                Content = await message.Content.ReadAsStringAsync();
+            }
+            catch (Exception)
+            {
+
+            }
+
+            return Convert.ToBoolean(Content);
+        }
+        #endregion
+
+        #region Get/PATCH/POST Objects
+        public static async Task<List<Country>> GetCountries()
+        {
+            return JsonSerializer.Deserialize<List<Country>>(await APIGet("/Get/Countries")); ;
         }
 
         public static async Task<List<Country>> GetCountries(bool OnlyCountries)
         {
-            List<Country> countries = new List<Country>();
-            try
-            {
-                HttpClient client = GetHttpClient();
-                HttpResponseMessage respone = await client.GetAsync("/Get/OnlyCountries");
-                string content = await respone.Content.ReadAsStringAsync();
-                countries = JsonSerializer.Deserialize<List<Country>>(content);
-            }
-            catch (Exception e)
-            {
-                Window w = new Window(new ErrorBox(e.StackTrace, e.InnerException.Message));
-                Application.Current.OpenWindow(w);
-            }
-            return countries;
+            return JsonSerializer.Deserialize<List<Country>>(await APIGet("/Get/OnlyCountries"));
         }
 
         public static async Task<List<Country>> GetRegions()
         {
-            List<Country> countries = new List<Country>();
-            try
-            {
-                HttpClient client = GetHttpClient();
-                HttpResponseMessage respone = await client.GetAsync("/Get/Regions");
-                string content = await respone.Content.ReadAsStringAsync();
-                countries = JsonSerializer.Deserialize<List<Country>>(content);
-            }
-            catch (Exception e)
-            {
-                Window w = new Window(new ErrorBox(e.StackTrace, e.InnerException.Message));
-                Application.Current.OpenWindow(w);
-            }
-            return countries;
+            return JsonSerializer.Deserialize<List<Country>>(await APIGet("/Get/Regions"));
         }
 
-        public static async Task<HttpResponseMessage> EditCountry(Country country)
+        public static async Task<bool> EditCountry(Country country)
         {
-            MultipartFormDataContent content = new MultipartFormDataContent();
-            HttpResponseMessage response = null;
-            try
-            {
-                HttpClient client = GetHttpClient();
-
-                content.Add(new StringContent(country.id.ToString()), "ID");
-                content.Add(new StringContent(country.icaO_Code), "ICAO");
-                content.Add(new StringContent(country.name), "Name");
-
-                response = await client.PostAsync("/Patch/Country", content);
-            }
-            catch (Exception e)
-            {
-                Window w = new Window(new ErrorBox(e.StackTrace, e.InnerException.Message));
-                Application.Current.OpenWindow(w);
-            }
-            return response;
+            Dictionary<string, string> pairs = new Dictionary<string, string>();
+            pairs.Add("ID", country.id.ToString());
+            pairs.Add("ICAO", country.icaO_Code);
+            pairs.Add("Name", country.name);
+            return await APIPost("/Patch/Country", pairs);
         }
+
+        #endregion
 
         public static async Task<HttpResponseMessage> AddCountry(Country country)
         {

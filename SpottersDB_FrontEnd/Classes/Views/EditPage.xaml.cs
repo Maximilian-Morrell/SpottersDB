@@ -5,7 +5,8 @@ using SpottersDB_FrontEnd.Classes.Utilities;
 namespace SpottersDB_FrontEnd.Classes.Views
 {
     public partial class EditPage : ContentPage
-    {   
+    {
+
         public EditPage()
         {
             InitializeComponent();

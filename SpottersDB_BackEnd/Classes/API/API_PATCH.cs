@@ -38,18 +38,20 @@ namespace SpottersDB_BackEnd.Classes.API
             app.MapPost("/Patch/SpottingPicture", (HttpRequest req) => PATCH_SpottingPicture(req));
         }
 
-        private async void PATCH_Country(HttpRequest req)
+        private async Task<bool> PATCH_Country(HttpRequest req)
         {
+            bool IsSuccessfull = false;
             try
             {
                 IFormCollection form = await req.ReadFormAsync();
                 Country country = new Country(Convert.ToInt32(form["ID"]), form["ICAO"], form["Name"]);
-                sqlcontroller.UpdateCountry(country);
+                IsSuccessfull = sqlcontroller.UpdateCountry(country);
             }
             catch (Exception e)
             {
 
             }
+            return IsSuccessfull;
         }
 
         private async void PATCH_Airport(HttpRequest req)

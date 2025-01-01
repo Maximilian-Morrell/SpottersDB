@@ -15,7 +15,6 @@ namespace SpottersDB_BackEnd.Classes.Utilities
         private SqlConnection con = new SqlConnection("server = (localdb)\\MSSQLLocalDB; integrated security = false;");
         private SqlCommand cmd = null;
         List<Dictionary<string, object>> ReaderData;
-        //private SqlDataReader reader = null;
         private WebApplication app;
         // JUST FOR DEBUGGING
         private bool isDebugMode = false;
@@ -174,87 +173,93 @@ namespace SpottersDB_BackEnd.Classes.Utilities
         #endregion
 
         #region Add Objects
-        public void AddCountry(Country country)
+        public bool AddCountry(Country country)
         {
-            ExecuteCMD($"INSERT INTO Countries (CountryICAOCode, CountryName) VALUES ('{country.ICAO_Code}', '{country.Name}')", "Saved a Country Object");
+            return ExecuteCMD($"INSERT INTO Countries (CountryICAOCode, CountryName) VALUES ('{country.ICAO_Code}', '{country.Name}')", "Saved a Country Object");
         }
 
-        public void AddAirport(Airport airport)
+        public bool AddAirport(Airport airport)
         {
-            ExecuteCMD($"INSERT INTO Airports (AirportICAOCode, AirportIATACode, AirportName, AirportDescription, AirportCity, CountryID) VALUES ('{airport.ICAO_Code}', '{airport.IATA_Code}', '{airport.Name}', '{airport.Description}', '{airport.City}', '{airport.CountryID}')", "Saved an Airport Object");
+            return ExecuteCMD($"INSERT INTO Airports (AirportICAOCode, AirportIATACode, AirportName, AirportDescription, AirportCity, CountryID) VALUES ('{airport.ICAO_Code}', '{airport.IATA_Code}', '{airport.Name}', '{airport.Description}', '{airport.City}', '{airport.CountryID}')", "Saved an Airport Object");
         }
 
-        public void AddAirline(Airline airline)
+        public bool AddAirline(Airline airline)
         {
-            ExecuteCMD($"INSERT INTO Airlines (AirlineICAOCode, AirlineIATACode, AirlineName, AirlineRegion) VALUES ('{airline.ICAO}', '{airline.IATA}', '{airline.Name}', '{airline.Region}')", "Saved an Airline Object");
+           return ExecuteCMD($"INSERT INTO Airlines (AirlineICAOCode, AirlineIATACode, AirlineName, AirlineRegion) VALUES ('{airline.ICAO}', '{airline.IATA}', '{airline.Name}', '{airline.Region}')", "Saved an Airline Object");
         }
 
-        public void AddManufactorer(Manufactorer manufactorer)
+        public bool AddManufactorer(Manufactorer manufactorer)
         {
-            ExecuteCMD($"INSERT INTO Manufactorers (ManufactorerName, ManufactorerRegion) VALUES ('{manufactorer.Name}','{manufactorer.Region}')", "Saved a Manufactorer Object");
+           return ExecuteCMD($"INSERT INTO Manufactorers (ManufactorerName, ManufactorerRegion) VALUES ('{manufactorer.Name}','{manufactorer.Region}')", "Saved a Manufactorer Object");
         }
 
-        public void AddAircraftType(AircraftType aircraftType)
+        public bool AddAircraftType(AircraftType aircraftType)
         {
-            ExecuteCMD($"INSERT INTO AircraftTypes (AircraftTypeICAO, AircraftTypeName, AircraftTypeNickName, AircraftTypeManufactorerID) VALUES ('{aircraftType.ICAOCode}', '{aircraftType.FullName}', '{aircraftType.NickName}', '{aircraftType.ManufactorerID}')", "Saved an AircraftType Object");
+            return ExecuteCMD($"INSERT INTO AircraftTypes (AircraftTypeICAO, AircraftTypeName, AircraftTypeNickName, AircraftTypeManufactorerID) VALUES ('{aircraftType.ICAOCode}', '{aircraftType.FullName}', '{aircraftType.NickName}', '{aircraftType.ManufactorerID}')", "Saved an AircraftType Object");
         }
 
-        public void AddAircraft(Aircraft aircraft)
+        public bool AddAircraft(Aircraft aircraft)
         {
-            ExecuteCMD($"INSERT INTO Aircrafts (AircraftRegistration, AircraftDescription, AircraftTypeID, AircraftCountryID, AircraftAirlineID) VALUES('{aircraft.Registration}', '{aircraft.Description}', '{aircraft.TypeID}', '{aircraft.CountryID}', '{aircraft.AirlineID}')", "Saved an Aircraft Object");
+            return ExecuteCMD($"INSERT INTO Aircrafts (AircraftRegistration, AircraftDescription, AircraftTypeID, AircraftCountryID, AircraftAirlineID) VALUES('{aircraft.Registration}', '{aircraft.Description}', '{aircraft.TypeID}', '{aircraft.CountryID}', '{aircraft.AirlineID}')", "Saved an Aircraft Object");
         }
 
-        public void AddSpottingTrip(SpottingTrip spottingTrip, List<int> AirportIDs)
+        public bool AddSpottingTrip(SpottingTrip spottingTrip, List<int> AirportIDs)
         {
             Object obj = ExecuteCMDScalar($"INSERT INTO SpottingTrips (SpottingTripStart, SpottingTripEnd, SpottingTripName, SpottingTripDescription) VALUES ('{spottingTrip.Start.ToString("yyyy-MM-dd HH:mm:ss")}', '{spottingTrip.End.ToString("yyyy-MM-dd HH:mm:ss")}', '{spottingTrip.Name}', '{spottingTrip.Description}'); SELECT SCOPE_IDENTITY()", "Saved Spotting Trip");
             int ID = Convert.ToInt32(obj);
 
+            bool Successful = true;
             foreach(int AirportID in AirportIDs)
             {
-                ExecuteCMD($"INSERT INTO SpottingTripAirports (SpottingTripID, AirportID) VALUES ('{ID}', '{AirportID}')", "Saved an Link Item between Spottingtrip & Airport");
+                if(Successful)
+                {
+                    Successful = ExecuteCMD($"INSERT INTO SpottingTripAirports (SpottingTripID, AirportID) VALUES ('{ID}', '{AirportID}')", "Saved an Link Item between Spottingtrip & Airport");
+                }
             }
+            return Successful;
         }
 
-        public void AddSpottingPicture(SpottingPicture spottingPicture)
+        public bool AddSpottingPicture(SpottingPicture spottingPicture)
         {
-            ExecuteCMD($"INSERT INTO SpottingPictures (SpottingPictureName, SpottingPictureDescription, SpottingPictureURL, SpottingPictureOriginalFileName, SpottingTripAirportID, SpottingPictureAircraftID) VALUES ('{spottingPicture.Name}','{spottingPicture.Description}','{spottingPicture.PictureUrl}','{spottingPicture.OriginalFileName}','{spottingPicture.SpottingTripAirportID}','{spottingPicture.AircraftID}')", "Saved a SpottingPicture Object");
+            return ExecuteCMD($"INSERT INTO SpottingPictures (SpottingPictureName, SpottingPictureDescription, SpottingPictureURL, SpottingPictureOriginalFileName, SpottingTripAirportID, SpottingPictureAircraftID) VALUES ('{spottingPicture.Name}','{spottingPicture.Description}','{spottingPicture.PictureUrl}','{spottingPicture.OriginalFileName}','{spottingPicture.SpottingTripAirportID}','{spottingPicture.AircraftID}')", "Saved a SpottingPicture Object");
         }
         #endregion
 
         #region Update Objects
-        public void UpdateCountry(Country country)
+        public bool UpdateCountry(Country country)
         {
-            ExecuteCMD($"UPDATE Countries SET CountryICAOCode = '{country.ICAO_Code}', CountryName = '{country.Name}' WHERE CountryID = {country.ID}", "Updated Countries Object");
+            return ExecuteCMD($"UPDATE Countries SET CountryICAOCode = '{country.ICAO_Code}', CountryName = '{country.Name}' WHERE CountryID = {country.ID}", "Updated Countries Object");
         }
 
-        public void UpdateAirport(Airport airport)
+        public bool UpdateAirport(Airport airport)
         {
-            ExecuteCMD($"UPDATE Airports SET AirportICAOCode = '{airport.ICAO_Code}', AirportIATACode = '{airport.IATA_Code}', AirportName = '{airport.Name}', AirportDescription = '{airport.Description}', AirportCity = '{airport.City}', CountryID = {airport.CountryID} WHERE AirportID = {airport.ID}", "Updated Airport Object");
+            return ExecuteCMD($"UPDATE Airports SET AirportICAOCode = '{airport.ICAO_Code}', AirportIATACode = '{airport.IATA_Code}', AirportName = '{airport.Name}', AirportDescription = '{airport.Description}', AirportCity = '{airport.City}', CountryID = {airport.CountryID} WHERE AirportID = {airport.ID}", "Updated Airport Object");
         }
 
-        public void UpdateAirline(Airline airline)
+        public bool UpdateAirline(Airline airline)
         {
-            ExecuteCMD($"UPDATE Airlines SET AirlineICAOCode = '{airline.ICAO}', AirlineIATACode = '{airline.IATA}', AirlineName = '{airline.Name}', AirlineRegion = {airline.Region} WHERE AirlineID = {airline.ID}", "Updated Airline Object");
+            return ExecuteCMD($"UPDATE Airlines SET AirlineICAOCode = '{airline.ICAO}', AirlineIATACode = '{airline.IATA}', AirlineName = '{airline.Name}', AirlineRegion = {airline.Region} WHERE AirlineID = {airline.ID}", "Updated Airline Object");
         }
 
-        public void UpdateAircraftType(AircraftType aircraftType)
+        public bool UpdateAircraftType(AircraftType aircraftType)
         {
-            ExecuteCMD($"UPDATE AircraftTypes SET AircraftTypeICAO = '{aircraftType.ICAOCode}', AircraftTypeName = '{aircraftType.FullName}', AircraftTypeNickName = '{aircraftType.NickName}', AircraftTypeManufactorerID = {aircraftType.ManufactorerID} WHERE AircraftTypeID = {aircraftType.ID}", "Updated AircraftType Object");
+           return ExecuteCMD($"UPDATE AircraftTypes SET AircraftTypeICAO = '{aircraftType.ICAOCode}', AircraftTypeName = '{aircraftType.FullName}', AircraftTypeNickName = '{aircraftType.NickName}', AircraftTypeManufactorerID = {aircraftType.ManufactorerID} WHERE AircraftTypeID = {aircraftType.ID}", "Updated AircraftType Object");
         }
 
-        public void UpdateManufactorer(Manufactorer manufactorer)
+        public bool UpdateManufactorer(Manufactorer manufactorer)
         {
-            ExecuteCMD($"UPDATE Manufactorers SET ManufactorerName = '{manufactorer.Name}', ManufactorerRegion = {manufactorer.Region} WHERE ManufactorerID = {manufactorer.ID}", "Updated a Manufactorer Object");
+            return ExecuteCMD($"UPDATE Manufactorers SET ManufactorerName = '{manufactorer.Name}', ManufactorerRegion = {manufactorer.Region} WHERE ManufactorerID = {manufactorer.ID}", "Updated a Manufactorer Object");
         }
 
-        public void UpdateAircraft(Aircraft aircraft)
+        public bool UpdateAircraft(Aircraft aircraft)
         {
-            ExecuteCMD($"UPDATE Aircrafts SET AircraftRegistration = '{aircraft.Registration}', AircraftDescription = '{aircraft.Description}', AircraftTypeID = {aircraft.TypeID}, AircraftCountryID = {aircraft.CountryID}, AircraftAirlineID = {aircraft.AirlineID} WHERE AircraftID = {aircraft.ID}", "Updated an Aircraft Object");
+            return ExecuteCMD($"UPDATE Aircrafts SET AircraftRegistration = '{aircraft.Registration}', AircraftDescription = '{aircraft.Description}', AircraftTypeID = {aircraft.TypeID}, AircraftCountryID = {aircraft.CountryID}, AircraftAirlineID = {aircraft.AirlineID} WHERE AircraftID = {aircraft.ID}", "Updated an Aircraft Object");
         }
 
-        public void UpdateSpottingTrip(SpottingTrip spottingTrip, List<int> AirportIDs)
+        public bool UpdateSpottingTrip(SpottingTrip spottingTrip, List<int> AirportIDs)
         {
-            ExecuteCMD($"UPDATE SpottingTrips SET SpottingTripStart = '{spottingTrip.Start.ToString("yyyy-MM-dd HH:mm:ss")}', SpottingTripEnd = '{spottingTrip.End.ToString("yyyy-MM-dd HH:mm:ss")}', SpottingTripName = '{spottingTrip.Name}', SpottingTripDescription = '{spottingTrip.Description}' WHERE SpottingTripID = {spottingTrip.ID}", "Updating the SpottingTrip Object");
+            bool IsSuccessfull = true;
+            IsSuccessfull = ExecuteCMD($"UPDATE SpottingTrips SET SpottingTripStart = '{spottingTrip.Start.ToString("yyyy-MM-dd HH:mm:ss")}', SpottingTripEnd = '{spottingTrip.End.ToString("yyyy-MM-dd HH:mm:ss")}', SpottingTripName = '{spottingTrip.Name}', SpottingTripDescription = '{spottingTrip.Description}' WHERE SpottingTripID = {spottingTrip.ID}", "Updating the SpottingTrip Object");
 
             ReaderData = ExecuteReadCMD($"SELECT AirportID FROM SpottingTripAirports WHERE SpottingTripID = {spottingTrip.ID}", "Getting all AirportIDs from a SpottingTrip");
             List<int> Airports2Delete = new List<int>();
@@ -273,18 +278,26 @@ namespace SpottersDB_BackEnd.Classes.Utilities
 
             foreach(int airport2delete in Airports2Delete)
             {
-                ExecuteCMD($"DELETE FROM SpottingTripAirports WHERE AirportID = {airport2delete} AND SpottingTripID = {spottingTrip.ID}", "Delete Airports from SpottingTrip");
+                if(IsSuccessfull)
+                {
+                    IsSuccessfull = ExecuteCMD($"DELETE FROM SpottingTripAirports WHERE AirportID = {airport2delete} AND SpottingTripID = {spottingTrip.ID}", "Delete Airports from SpottingTrip");
+                }
+                
             }
 
             foreach(int AirportID in AirportIDs)
             {
-                ExecuteCMD($"INSERT INTO SpottingTripAirports (SpottingTripID, AirportID) VALUES ('{spottingTrip.ID}', '{AirportID}')", "Add Airports to SpottingTrip");
+                if(IsSuccessfull)
+                {
+                  IsSuccessfull = ExecuteCMD($"INSERT INTO SpottingTripAirports (SpottingTripID, AirportID) VALUES ('{spottingTrip.ID}', '{AirportID}')", "Add Airports to SpottingTrip");
+                }
             }
+            return IsSuccessfull;
         }
 
-        public void UpdateSpottingPicture(SpottingPicture spottingPicture)
+        public bool UpdateSpottingPicture(SpottingPicture spottingPicture)
         {
-            ExecuteCMD($"UPDATE SpottingPictures SET SpottingPictureName = '{spottingPicture.Name}', SpottingPictureDescription = '{spottingPicture.Description}', SpottingPictureURL = '{spottingPicture.PictureUrl}', SpottingPictureOriginalFileName = '{spottingPicture.OriginalFileName}', SpottingTripAirportID = {spottingPicture.SpottingTripAirportID}, SpottingPictureAircraftID = {spottingPicture.AircraftID} WHERE SpottingPictureID = {spottingPicture.ID}", "Updated a SpottingPicture Object");
+            return ExecuteCMD($"UPDATE SpottingPictures SET SpottingPictureName = '{spottingPicture.Name}', SpottingPictureDescription = '{spottingPicture.Description}', SpottingPictureURL = '{spottingPicture.PictureUrl}', SpottingPictureOriginalFileName = '{spottingPicture.OriginalFileName}', SpottingTripAirportID = {spottingPicture.SpottingTripAirportID}, SpottingPictureAircraftID = {spottingPicture.AircraftID} WHERE SpottingPictureID = {spottingPicture.ID}", "Updated a SpottingPicture Object");
         }
         #endregion
 
