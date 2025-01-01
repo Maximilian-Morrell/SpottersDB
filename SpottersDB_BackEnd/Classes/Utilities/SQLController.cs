@@ -49,25 +49,30 @@ namespace SpottersDB_BackEnd.Classes.Utilities
                        DatabaseExists = reader.GetString(0) == DatabaseName;
                     }
                 }
+
+                reader.Close();
+
                 if(DatabaseExists)
                 {
                     con.ChangeDatabase(DatabaseName);
                     con.Close();
                     con.ConnectionString = "server = (localdb)\\MSSQLLocalDB; integrated security = false; database = " + DatabaseName;
+                    semaphore.Release();
                 }
                 else
                 {
                     con.Close();
                     semaphore.Release();
                     CreateDatabase(DatabaseName);
-
                 }
             }
             catch (Exception e)
             {
+                app.Logger.LogError(e.Message);
                 // Fails
                 // DB does not Exists
             }
+
         }
 
         // Creates the DB
@@ -129,7 +134,6 @@ namespace SpottersDB_BackEnd.Classes.Utilities
                 cmd.ExecuteNonQuery();
                 app.Logger.LogInformation("Created the Table SpottingPictures");
                 con.Close();
-                semaphore.Release();
                 ConnectToDB(DatabaseName, app);
             }
             catch (Exception e)
@@ -141,6 +145,7 @@ namespace SpottersDB_BackEnd.Classes.Utilities
             {
                 con.Close();
             }
+            semaphore.Release();
 
         }
 
@@ -1207,6 +1212,26 @@ namespace SpottersDB_BackEnd.Classes.Utilities
             con.Close();
             semaphore.Release();
             return IDs;
+        }
+
+        public bool DeleteCountryByID(int CountryID)
+        {
+            semaphore.Wait();
+            int successInt = 0;
+            try
+            {
+                con.Open();
+                cmd.CommandText = $"DELETE FROM Countries WHERE CountryID = {CountryID}";
+                successInt = cmd.ExecuteNonQuery();
+                con.Close();
+            }
+            catch (Exception e)
+            {
+                app.Logger.LogError(e.Message);
+                con.Close();
+            }
+            semaphore.Release();
+            return successInt >= 1;
         }
     }
 }

@@ -38,7 +38,7 @@ namespace SpottersDB_FrontEnd.Classes.UI_Elements.Cards
 
             b.Content = parent;
             parent.MaximumWidthRequest = 500;
-            parent.WidthRequest = 400;
+            parent.WidthRequest = 500;
             parent.MaximumHeightRequest = 250;
             parent.HeightRequest = 250;
             parent.Margin = 10;

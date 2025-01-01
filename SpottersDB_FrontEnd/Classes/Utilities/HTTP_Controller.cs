@@ -820,5 +820,25 @@ namespace SpottersDB_FrontEnd.Classes.Utilities
             return spottingPictures;
         }
 
+        public static async Task<bool> DeleteCountry(Country c)
+        {
+            HttpResponseMessage message = null;
+            string Content = null;
+            try
+            {
+                HttpClient client = GetHttpClient();
+                MultipartFormDataContent content = new MultipartFormDataContent();
+                content.Add(new StringContent(c.id.ToString()), "ID");
+                message = await client.PostAsync("/Delete/Country", content);
+                Content = await message.Content.ReadAsStringAsync();
+            }
+            catch (Exception e)
+            {
+                Window w = new Window(new ErrorBox(e.StackTrace, e.InnerException.Message));
+                Application.Current.OpenWindow(w);
+            }
+
+            return Convert.ToBoolean(Content);
+        }
     }
 }

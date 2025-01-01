@@ -37,6 +37,9 @@ namespace SpottersDB_BackEnd.Classes.API
 
             // Post SpottingPicture Route
             app.MapPost("/Post/SpottingPicture", (HttpRequest req) => Post_SpottingPicture(req));
+
+            // Post Delete Country Route
+            app.MapPost("/Delete/Country", (HttpRequest req) => Delete_Country(req));
         }
 
         private async void Post_Country(HttpRequest req)
@@ -177,6 +180,23 @@ namespace SpottersDB_BackEnd.Classes.API
             {
                 app.Logger.LogError(e.Message);
             }
+        }
+
+        private async Task<bool> Delete_Country(HttpRequest req)
+        {
+            bool Success = false;
+            try
+            {
+                IFormCollection form = await req.ReadFormAsync();
+                Success = sqlcontroller.DeleteCountryByID(Convert.ToInt32(form["ID"]));
+            }
+            catch (Exception e)
+            {
+                app.Logger.LogError(e.Message);
+                throw;
+            }
+
+            return Success;
         }
     }
 }

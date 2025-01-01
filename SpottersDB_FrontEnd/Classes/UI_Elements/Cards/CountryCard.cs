@@ -19,6 +19,8 @@ namespace SpottersDB_FrontEnd.Classes.UI_Elements.Cards
 
         public delegate EventHandler EditClickedHandler(Country country);
         public event EditClickedHandler EditClicked;
+        public delegate EventHandler DeleteClickedHandler(Country country);
+        public event DeleteClickedHandler DeleteClicked;
 
         public Border Card(Country country, string URL)
         {
@@ -39,7 +41,7 @@ namespace SpottersDB_FrontEnd.Classes.UI_Elements.Cards
                 {
                     new RowDefinition{Height = new GridLength(2, GridUnitType.Star)},
                     new RowDefinition(),
-                   // new RowDefinition(), - for the delete Button
+                    new RowDefinition(),
                     new RowDefinition()
                 }
             };
@@ -82,16 +84,30 @@ namespace SpottersDB_FrontEnd.Classes.UI_Elements.Cards
                 parent.Add(lblICAO, 0, 1);
             }
 
+
+            Button deleteBtn = new Button();
+            deleteBtn.Text = "Delete";
+            deleteBtn.CommandParameter = country;
+            deleteBtn.Clicked += DeleteBtn_Clicked;
+            deleteBtn.VerticalOptions = LayoutOptions.End;
+            parent.Add(deleteBtn, 0, 2);
+
             Button editBtn = new Button();
             editBtn.Text = "Edit";
             editBtn.CommandParameter = country;
             editBtn.Clicked += EditBtn_Clicked;
             editBtn.VerticalOptions = LayoutOptions.End;
-           // editBtn.HorizontalOptions = LayoutOptions.Center;
-
-            parent.Add(editBtn,0,2);
+            // editBtn.HorizontalOptions = LayoutOptions.Center;
+            parent.Add(editBtn, 0, 3);
 
             return b;
+        }
+
+        private void DeleteBtn_Clicked(object? sender, EventArgs e)
+        {
+            Button b = sender as Button;
+            DeleteClickedHandler handler = DeleteClicked;
+            handler(b.CommandParameter as Country);
         }
 
         private void EditBtn_Clicked(object sender, EventArgs e)

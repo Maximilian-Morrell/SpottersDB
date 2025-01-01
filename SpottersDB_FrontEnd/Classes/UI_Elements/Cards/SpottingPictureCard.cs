@@ -28,7 +28,7 @@ namespace SpottersDB_FrontEnd.Classes.UI_Elements.Cards
             {
                 RowDefinitions =
                 {
-                    new RowDefinition(),
+                    new RowDefinition(new GridLength(2, GridUnitType.Star)),
                     new RowDefinition(),
                     new RowDefinition(),
                     new RowDefinition(),

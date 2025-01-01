@@ -83,6 +83,7 @@ namespace SpottersDB_FrontEnd.Classes.Views
             {
                 CountryCard countryCard = new CountryCard();
                 countryCard.EditClicked += CountryCard_EditClicked;
+                countryCard.DeleteClicked += CountryCard_DeleteClicked;
                 if(country.icaO_Code == "")
                 {
                     RegionParent.Children.Add(countryCard.Card(country, ""));
@@ -95,6 +96,28 @@ namespace SpottersDB_FrontEnd.Classes.Views
             }
 
             LoadManufactorers();
+        }
+
+        private EventHandler CountryCard_DeleteClicked(Country country)
+        {
+            DeleteCountry(country);
+            return null;
+        }
+
+        private async void DeleteCountry(Country country)
+        {
+            string action = await DisplayActionSheet("Delete " + country.name + "?", "Cancle", "Delete");
+            if(action == "Delete")
+            {
+                if (await HTTP_Controller.DeleteCountry(country))
+                {
+                    LoadEverything();
+                }
+                else
+                {
+                    await DisplayAlert("Error", "Deletion failed. The deleted country is probably still referenced somewhere", "OK");
+                }
+            }
         }
 
         private async void LoadManufactorers()
