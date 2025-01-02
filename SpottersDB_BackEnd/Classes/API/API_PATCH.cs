@@ -144,7 +144,7 @@ namespace SpottersDB_BackEnd.Classes.API
                 List<int> AirportIDs = new List<int>();
                 if (form["AirportID"] != "")
                 {
-                    foreach (string AirportID in Convert.ToString(form["AirportID"]).Split(','))
+                    foreach (string AirportID in Convert.ToString(form["AirportIDs"]).Split(','))
                     {
                         AirportIDs.Add(Convert.ToInt32(AirportID));
                     }

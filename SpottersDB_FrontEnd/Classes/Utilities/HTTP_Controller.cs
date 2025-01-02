@@ -304,7 +304,7 @@ namespace SpottersDB_FrontEnd.Classes.Utilities
             pairs.Add("Description", spottingTrip.description);
             pairs.Add("Start", spottingTrip.start.ToString());
             pairs.Add("End", spottingTrip.end.ToString());
-            pairs.Add("AirportID", spottingTrip.AirportIDs.ToString());
+            pairs.Add("AirportIDs", spottingTrip.AirportIDs.ToString());
             return await APIPost("/Post/SpottingTrip", pairs);
         }
 
@@ -316,7 +316,7 @@ namespace SpottersDB_FrontEnd.Classes.Utilities
             pairs.Add("Description", spottingTrip.description);
             pairs.Add("Start", spottingTrip.start.ToString());
             pairs.Add("End", spottingTrip.end.ToString());
-            pairs.Add("AirportID", spottingTrip.AirportIDs.ToString());
+            pairs.Add("AirportIDs", spottingTrip.AirportIDs.ToString());
             return await APIPost("/Patch/SpottingTrip", pairs);
         }
 

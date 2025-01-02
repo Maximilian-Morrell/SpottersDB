@@ -562,7 +562,15 @@ namespace SpottersDB_BackEnd.Classes.Utilities
             return ExecuteCMD($"DELETE FROM Countries WHERE CountryID = {CountryID}", $"Deleting Country with ID {CountryID}");
         }
 
+        public bool DeleteAirportByID(int AirportID)
+        {
+            return ExecuteCMD($"DELETE FROM Airports WHERE AirportID = {AirportID}", $"Deleting Airport with ID {AirportID}");
+        }
 
+        public bool DeleteAirlineByID(int AirlineID)
+        {
+            return ExecuteCMD($"DELETE FROM Arilines WHERE AirlineID = {AirlineID}", $"Deleting Airline with ID {AirlineID}");
+        }
 
         #endregion
     }
