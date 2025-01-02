@@ -138,8 +138,8 @@ public partial class EditSpottingPictureModal : ContentPage
 
         if (IsEditing)
         {
-            List<int> ID = await HTTP_Controller.GetSpottingTripAirport(spottingPicture.spottingTripAirportID);
-            int PickerID = SpottingTrips.FindIndex(s => s.id == ID[0]);
+            Dictionary<string, int> ID = await HTTP_Controller.GetSpottingTripAirport(spottingPicture.spottingTripAirportID);
+            int PickerID = SpottingTrips.FindIndex(s => s.id == ID["SpottingTrip"]);
             SpottingTripPicker.SelectedIndex = PickerID;
         }
 
@@ -211,8 +211,8 @@ public partial class EditSpottingPictureModal : ContentPage
 
         if(IsEditing && AirportPicker == null)
         {
-            List<int> IDs = await HTTP_Controller.GetSpottingTripAirport(spottingPicture.spottingTripAirportID);
-            Airports = await HTTP_Controller.GetAirportsFromSpottingTrip(IDs[0]);
+            Dictionary<string, int> IDs = await HTTP_Controller.GetSpottingTripAirport(spottingPicture.spottingTripAirportID);
+            Airports = await HTTP_Controller.GetAirportsFromSpottingTrip(IDs["Airport"]);
         }
         else
         {
@@ -239,8 +239,8 @@ public partial class EditSpottingPictureModal : ContentPage
 
         if (IsEditing)
         {
-            List<int> ID = await HTTP_Controller.GetSpottingTripAirport(spottingPicture.spottingTripAirportID);
-            int PickerID = Airports.FindIndex(s => s.id == ID[1]);
+            Dictionary<string, int> ID = await HTTP_Controller.GetSpottingTripAirport(spottingPicture.spottingTripAirportID);
+            int PickerID = Airports.FindIndex(s => s.id == ID["Airport"]);
             AirportPicker.SelectedIndex = PickerID;
         }
 

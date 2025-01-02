@@ -38,23 +38,31 @@ namespace SpottersDB_FrontEnd.Classes.Utilities
         #endregion
 
         #region APICall Methods
-        private static async Task<string> APIGet(string URL)
+        private static async Task<Object> APIGet(string URL, Type ObjType)
         {
-            string ReturnString = "";
+            Object test = null;
             try
             {
                 HttpClient client = GetHttpClient();
                 HttpResponseMessage respone = await client.GetAsync(URL);
-                ReturnString = await respone.Content.ReadAsStringAsync();
+                string contentString = await respone.Content.ReadAsStringAsync();
+                if(ObjType != typeof(string))
+                {
+                    test = JsonSerializer.Deserialize(contentString, ObjType);
+                }
+                else
+                {
+                    test = contentString;
+                }
             }
             catch (Exception)
             {
 
             }
-            return ReturnString;
+            return test;
         }
 
-        private static async Task<bool> APIPost(string URL, Dictionary<string, string> ContentData)
+        private static async Task<bool> APIPost(string URL, Dictionary<string, string> ContentData, FileResult file = null)
         {
             HttpResponseMessage message = null;
             string Content = null;
@@ -65,6 +73,11 @@ namespace SpottersDB_FrontEnd.Classes.Utilities
                 foreach(string Key in ContentData.Keys.ToList())
                 {
                     content.Add(new StringContent(ContentData[Key]), Key);
+                }
+                if(file != null)
+                {
+                    StreamContent Picture = new StreamContent(File.OpenRead(file.FullPath));
+                    content.Add(Picture, "File", file.FileName);
                 }
                 message = await client.PostAsync(URL, content);
                 Content = await message.Content.ReadAsStringAsync();
@@ -81,17 +94,17 @@ namespace SpottersDB_FrontEnd.Classes.Utilities
         #region Get/PATCH/POST Objects
         public static async Task<List<Country>> GetCountries()
         {
-            return JsonSerializer.Deserialize<List<Country>>(await APIGet("/Get/Countries")); ;
+            return (List<Country>) await APIGet("/Get/Countries", new List<Country>().GetType());
         }
 
         public static async Task<List<Country>> GetCountries(bool OnlyCountries)
         {
-            return JsonSerializer.Deserialize<List<Country>>(await APIGet("/Get/OnlyCountries"));
+            return (List<Country>) await APIGet("/Get/OnlyCountries", new List<Country>().GetType());
         }
 
         public static async Task<List<Country>> GetRegions()
         {
-            return JsonSerializer.Deserialize<List<Country>>(await APIGet("/Get/Regions"));
+            return (List<Country>) await APIGet("/Get/Regions", new List<Country>().GetType());
         }
 
         public static async Task<bool> EditCountry(Country country)
@@ -103,737 +116,281 @@ namespace SpottersDB_FrontEnd.Classes.Utilities
             return await APIPost("/Patch/Country", pairs);
         }
 
-        #endregion
 
-        public static async Task<HttpResponseMessage> AddCountry(Country country)
+        public static async Task<bool> AddCountry(Country country)
         {
-            MultipartFormDataContent content = new MultipartFormDataContent();
-            HttpResponseMessage response = null;
-            try
-            {
-                HttpClient client = GetHttpClient();
-
-                content.Add(new StringContent(country.icaO_Code), "ICAO");
-                content.Add(new StringContent(country.name), "Name");
-
-                response = await client.PostAsync("/Post/Country", content);
-            }
-            catch (Exception e)
-            {
-                Window w = new Window(new ErrorBox(e.StackTrace, e.InnerException.Message));
-                Application.Current.OpenWindow(w);
-            }
-            return response;
+            Dictionary<string, string> pairs = new Dictionary<string, string>();
+            pairs.Add("ICAO", country.icaO_Code);
+            pairs.Add("Name", country.name);
+            return await APIPost("/Post/Country", pairs);
         }
 
         public static async Task<Country> GetCountryByID(int ID)
         {
-            Country country = null;
-            try
-            {
-                HttpClient client = GetHttpClient();
-                HttpResponseMessage response = await client.GetAsync("/Get/Country?ID=" +  ID);
-                string content = await response.Content.ReadAsStringAsync();
-                country = JsonSerializer.Deserialize<Country>(content);
-            }
-            catch (Exception e)
-            {
-                Window w = new Window(new ErrorBox(e.StackTrace, e.InnerException.Message));
-                Application.Current.OpenWindow(w);
-            }
-            return country;
+            return (Country) await APIGet("/Get/Country?ID=" + ID, new Country().GetType());
         }
 
         public static async Task<List<Manufactorer>> GetManufactorers()
         {
-            List<Manufactorer> manufactorers = new List<Manufactorer>();
-            try
-            {
-                HttpClient client = GetHttpClient();
-                HttpResponseMessage response = await client.GetAsync("/Get/Manufactorers");
-                string content = await response.Content.ReadAsStringAsync();
-                manufactorers = JsonSerializer.Deserialize<List<Manufactorer>>(content);
-            }
-            catch (Exception e)
-            {
-                Window w = new Window(new ErrorBox(e.StackTrace, e.InnerException.Message));
-                Application.Current.OpenWindow(w);
-            }
-            return manufactorers;
+            return (List<Manufactorer>) await APIGet("/Get/Manufactorers", new List<Manufactorer>().GetType());
         }
 
-        public static async Task<HttpResponseMessage> UpdateManufactorer(Manufactorer manufactorer)
+        public static async Task<bool> UpdateManufactorer(Manufactorer manufactorer)
         {
-            MultipartFormDataContent content = new MultipartFormDataContent();
-            HttpResponseMessage response = null;
-            try
-            {
-                HttpClient client = GetHttpClient();
-                content.Add(new StringContent(manufactorer.id.ToString()), "ID");
-                content.Add(new StringContent(manufactorer.name), "Name");
-                content.Add(new StringContent(manufactorer.region.ToString()), "Region");
-
-                response = await client.PostAsync("/Patch/Manufactorer", content);
-            }
-            catch (Exception e)
-            {
-                Window w = new Window(new ErrorBox(e.StackTrace, e.InnerException.Message));
-                Application.Current.OpenWindow(w);
-            }
-            return response;
+            Dictionary<string, string> pairs = new Dictionary<string, string>();
+            pairs.Add("ID", manufactorer.id.ToString());
+            pairs.Add("Name", manufactorer.name);
+            pairs.Add("Region", manufactorer.region.ToString());
+            return await APIPost("/Patch/Manufactorer", pairs);
         }
 
-        public static async Task<HttpResponseMessage> AddNewManufactorer(Manufactorer manufactorer)
+        public static async Task<bool> AddNewManufactorer(Manufactorer manufactorer)
         {
-            MultipartFormDataContent content = new MultipartFormDataContent();
-            HttpResponseMessage response = null;
-            try
-            {
-                HttpClient client = GetHttpClient();
-
-                content.Add(new StringContent(manufactorer.name), "Name");
-                content.Add(new StringContent(manufactorer.region.ToString()), "Region");
-
-                response = await client.PostAsync("/Post/Manufactorer", content);
-            }
-            catch (Exception e)
-            {
-                Window w = new Window(new ErrorBox(e.StackTrace, e.InnerException.Message));
-                Application.Current.OpenWindow(w);
-            }
-            return response;
+            Dictionary<string, string> pairs = new Dictionary<string, string>();
+            pairs.Add("Name", manufactorer.name);
+            pairs.Add("Region", manufactorer.region.ToString());
+            return await APIPost("/Post/Manufactorer", pairs);
         }
 
         public static async Task<string> GetNewestPhotoFromCountry(int CountryID)
         {
-            string URL = "";
-            try
-            {
-                HttpClient client = GetHttpClient();
-                HttpResponseMessage response = await client.GetAsync("/Get/Newest/Country?ID=" + CountryID);
-                URL = await response.Content.ReadAsStringAsync();
-            }
-            catch (Exception e)
-            {
-                Window w = new Window(new ErrorBox(e.StackTrace, e.InnerException.Message));
-                Application.Current.OpenWindow(w);
-            }
-            return URL;
+            return (string) await APIGet("/Get/Newest/Country?ID=" + CountryID, typeof(string));
         }
 
-        public static async Task<HttpResponseMessage> AddNewAircraftType(AircraftType aircraftType)
+        public static async Task<bool> AddNewAircraftType(AircraftType aircraftType)
         {
-            MultipartFormDataContent content = new MultipartFormDataContent();
-            HttpResponseMessage response = null;
-            try
-            {
-                HttpClient client = GetHttpClient();
-
-                content.Add(new StringContent(aircraftType.icaoCode), "ICAO");
-                content.Add(new StringContent(aircraftType.fullName), "FullName");
-                content.Add(new StringContent(aircraftType.nickName), "NickName");
-                content.Add(new StringContent(aircraftType.manufactorerID.ToString()), "ManufactorerID");
-
-                response = await client.PostAsync("/Post/AircraftType", content);
-            }
-            catch (Exception e)
-            {
-                Window w = new Window(new ErrorBox(e.StackTrace, e.InnerException.Message));
-                Application.Current.OpenWindow(w);
-            }
-            return response;
+            Dictionary<string, string> pairs = new Dictionary<string, string>();
+            pairs.Add("ICAO", aircraftType.icaoCode);
+            pairs.Add("FullName", aircraftType.fullName);
+            pairs.Add("NickName", aircraftType.nickName);
+            pairs.Add("ManufactorerID", aircraftType.manufactorerID.ToString());
+            return await APIPost("/Post/AircraftType", pairs);
         }
 
         public static async Task<Manufactorer> GetManufactorerByID(int ID)
         {
-            Manufactorer manufactorer = null;
-            try
-            {
-                HttpClient client = GetHttpClient();
-                HttpResponseMessage response = await client.GetAsync("/Get/Manufactorer?ID=" + ID);
-                string content = await response.Content.ReadAsStringAsync();
-                manufactorer = JsonSerializer.Deserialize<Manufactorer>(content);
-            }
-            catch (Exception e)
-            {
-                Window w = new Window(new ErrorBox(e.StackTrace, e.InnerException.Message));
-                Application.Current.OpenWindow(w);
-            }
-            return manufactorer;
+            return (Manufactorer) await APIGet("/Get/Manufactorer?ID=" + ID, new Manufactorer().GetType());
         }
 
         public static async Task<Airline> GetAirlineByID(int ID)
         {
-            Airline airline = null;
-            try
-            {
-                HttpClient client = GetHttpClient();
-                HttpResponseMessage response = await client.GetAsync("/Get/Airline?ID=" + ID);
-                string content = await response.Content.ReadAsStringAsync();
-                airline = JsonSerializer.Deserialize<Airline>(content);
-            }
-            catch (Exception e)
-            {
-                Window w = new Window(new ErrorBox(e.StackTrace, e.InnerException.Message));
-                Application.Current.OpenWindow(w);
-            }
-            return airline;
+            return (Airline) await APIGet("/Get/Airline?ID=" + ID, new Airline().GetType());
         }
 
         public static async Task<AircraftType> GetAircraftTypeByID(int ID)
         {
-            AircraftType type = null;
-            try
-            {
-                HttpClient client = GetHttpClient();
-                HttpResponseMessage response = await client.GetAsync("/Get/AircraftType?ID=" + ID);
-                string content = await response.Content.ReadAsStringAsync();
-                type = JsonSerializer.Deserialize<AircraftType>(content);
-            }
-            catch (Exception e)
-            {
-                Window w = new Window(new ErrorBox(e.StackTrace, e.InnerException.Message));
-                Application.Current.OpenWindow(w);
-            }
-            return type;
+            return (AircraftType) await APIGet("/Get/AircraftType?ID=" + ID, new AircraftType().GetType());
         }
 
         public static async Task<List<AircraftType>> GetAircraftTypes()
         {
-            List<AircraftType> aircraftTypes = new List<AircraftType>();
-            try
-            {
-                HttpClient client = GetHttpClient();
-                HttpResponseMessage response = await client.GetAsync("/Get/AircraftTypes");
-                string content = await response.Content.ReadAsStringAsync();
-                aircraftTypes = JsonSerializer.Deserialize<List<AircraftType>>(content);
-            }
-            catch (Exception e)
-            {
-                Window w = new Window(new ErrorBox(e.StackTrace, e.InnerException.Message));
-                Application.Current.OpenWindow(w);
-            }
-            return aircraftTypes;
+            return (List<AircraftType>) await APIGet("/Get/AircraftTypes", new List<AircraftType>().GetType());
         }
 
-        public static async Task<HttpResponseMessage> UpdateAircraftType(AircraftType aircraftType)
+        public static async Task<bool> UpdateAircraftType(AircraftType aircraftType)
         {
-            MultipartFormDataContent content = new MultipartFormDataContent();
-            HttpResponseMessage response = null;
-            try
-            {
-                HttpClient client = GetHttpClient();
-                content.Add(new StringContent(aircraftType.id.ToString()), "ID");
-                content.Add(new StringContent(aircraftType.icaoCode), "ICAO");
-                content.Add(new StringContent(aircraftType.fullName), "FullName");
-                content.Add(new StringContent(aircraftType.nickName), "NickName");
-                content.Add(new StringContent(aircraftType.manufactorerID.ToString()), "ManufactorerID");
-
-                response = await client.PostAsync("/Patch/AircraftType", content);
-            }
-            catch (Exception e)
-            {
-                Window w = new Window(new ErrorBox(e.StackTrace, e.InnerException.Message));
-                Application.Current.OpenWindow(w);
-            }
-            return response;
+            Dictionary<string, string> pairs = new Dictionary<string, string>();
+            pairs.Add("ID", aircraftType.id.ToString());
+            pairs.Add("ICAO", aircraftType.icaoCode);
+            pairs.Add("Fullname", aircraftType.fullName);
+            pairs.Add("NickName", aircraftType.nickName);
+            pairs.Add("ManufactorerID", aircraftType.id.ToString());
+            return await APIPost("/Patch/AircraftType", pairs);
         }
 
-        public static async Task<HttpResponseMessage> AddNewAirline(Airline airline)
+        public static async Task<bool> AddNewAirline(Airline airline)
         {
-            MultipartFormDataContent content = new MultipartFormDataContent();
-            HttpResponseMessage response = null;
-            try
-            {
-                HttpClient client = GetHttpClient();
-
-                content.Add(new StringContent(airline.icao), "ICAO");
-                content.Add(new StringContent(airline.iata), "IATA");
-                content.Add(new StringContent(airline.name), "Name");
-                content.Add(new StringContent(airline.region.ToString()), "Region");
-
-                response = await client.PostAsync("/Post/Airline", content);
-            }
-            catch (Exception e)
-            {
-                Window w = new Window(new ErrorBox(e.StackTrace, e.InnerException.Message));
-                Application.Current.OpenWindow(w);
-            }
-            return response;
+            Dictionary<string, string> pairs = new Dictionary<string, string>();
+            pairs.Add("ICAO", airline.icao);
+            pairs.Add("IATA", airline.iata);
+            pairs.Add("Name", airline.name);
+            pairs.Add("Region", airline.region.ToString());
+            return await APIPost("/Post/Airline", pairs);
         }
 
-        public static async Task<HttpResponseMessage> UpdateAirline(Airline airline)
+        public static async Task<bool> UpdateAirline(Airline airline)
         {
-            MultipartFormDataContent content = new MultipartFormDataContent();
-            HttpResponseMessage response = null;
-            try
-            {
-                HttpClient client = GetHttpClient();
-                content.Add(new StringContent(airline.id.ToString()), "ID");
-                content.Add(new StringContent(airline.icao), "ICAO");
-                content.Add(new StringContent(airline.iata), "IATA");
-                content.Add(new StringContent(airline.name), "Name");
-                content.Add(new StringContent(airline.region.ToString()), "Region");
-
-                response = await client.PostAsync("/Patch/Airline", content);
-            }
-            catch (Exception e)
-            {
-                Window w = new Window(new ErrorBox(e.StackTrace, e.InnerException.Message));
-                Application.Current.OpenWindow(w);
-            }
-            return response;
+            Dictionary<string, string> pairs = new Dictionary<string, string>();
+            pairs.Add("ID", airline.id.ToString());
+            pairs.Add("ICAO", airline.icao);
+            pairs.Add("IATA", airline.iata);
+            pairs.Add("Name", airline.name);
+            pairs.Add("Region", airline.region.ToString());
+            return await APIPost("/Patch/Airline", pairs);
         }
 
         public static async Task<List<Airline>> GetAirlines()
         {
-            List<Airline> airlines = new List<Airline>();
-            try
-            {
-                HttpClient client = GetHttpClient();
-                HttpResponseMessage respone = await client.GetAsync("/Get/Airlines");
-                string content = await respone.Content.ReadAsStringAsync();
-                airlines = JsonSerializer.Deserialize<List<Airline>>(content);
-            }
-            catch (Exception e)
-            {
-                Window w = new Window(new ErrorBox(e.StackTrace, e.InnerException.Message));
-                Application.Current.OpenWindow(w);
-            }
-            return airlines;
+            return (List<Airline>) await APIGet("/Get/Airlines", new List<Airline>().GetType());
         }
 
-        public static async Task<HttpResponseMessage> AddAirport(Airport airport)
+        public static async Task<bool> AddAirport(Airport airport)
         {
-            MultipartFormDataContent content = new MultipartFormDataContent();
-            HttpResponseMessage response = null;
-            try
-            {
-                HttpClient client = GetHttpClient();
-                content.Add(new StringContent(airport.icaO_Code), "ICAO");
-                content.Add(new StringContent(airport.iatA_Code), "IATA");
-                content.Add(new StringContent(airport.name), "Name");
-                content.Add(new StringContent(airport.description), "Description");
-                content.Add(new StringContent(airport.city), "City");
-                content.Add(new StringContent(airport.countryID.ToString()), "Country");
-
-                response = await client.PostAsync("/Post/Airport", content);
-            }
-            catch (Exception e)
-            {
-                Window w = new Window(new ErrorBox(e.StackTrace, e.InnerException.Message));
-                Application.Current.OpenWindow(w);
-            }
-
-            return response;
+            Dictionary<string, string> pairs = new Dictionary<string, string>();
+            pairs.Add("ICAO", airport.icaO_Code);
+            pairs.Add("IATA", airport.iatA_Code);
+            pairs.Add("Name", airport.name);
+            pairs.Add("Description", airport.description);
+            pairs.Add("City", airport.city);
+            pairs.Add("Country", airport.countryID.ToString());
+            return await APIPost("/Post/Airport", pairs);
         }
 
-        public static async Task<HttpResponseMessage> UpdateAirport(Airport airport)
+        public static async Task<bool> UpdateAirport(Airport airport)
         {
-            MultipartFormDataContent content = new MultipartFormDataContent();
-            HttpResponseMessage response = null;
-            try
-            {
-                HttpClient client = GetHttpClient();
-                content.Add(new StringContent(airport.id.ToString()), "ID");
-                content.Add(new StringContent(airport.icaO_Code), "ICAO");
-                content.Add(new StringContent(airport.iatA_Code), "IATA");
-                content.Add(new StringContent(airport.name), "Name");
-                content.Add(new StringContent(airport.description), "Description");
-                content.Add(new StringContent(airport.city), "City");
-                content.Add(new StringContent(airport.countryID.ToString()), "Country");
-
-                response = await client.PostAsync("/Patch/Airport", content);
-            }
-            catch (Exception e)
-            {
-                Window w = new Window(new ErrorBox(e.StackTrace, e.InnerException.Message));
-                Application.Current.OpenWindow(w);
-            }
-
-            return response;
+            Dictionary<string, string> pairs = new Dictionary<string, string>();
+            pairs.Add("ID", airport.id.ToString());
+            pairs.Add("ICAO", airport.icaO_Code);
+            pairs.Add("IATA", airport.iatA_Code);
+            pairs.Add("Name", airport.name);
+            pairs.Add("Description", airport.description);
+            pairs.Add("City", airport.city);
+            pairs.Add("Country", airport.countryID.ToString());
+            return await APIPost("/Patch/Airport", pairs);
         }
 
         public static async Task<List<Airport>> GetAirports()
         {
-            List<Airport> airports = new List<Airport>();
-            try
-            {
-                HttpClient client = GetHttpClient();
-                HttpResponseMessage respone = await client.GetAsync("/Get/Airports");
-                string content = await respone.Content.ReadAsStringAsync();
-                airports = JsonSerializer.Deserialize<List<Airport>>(content);
-            }
-            catch (Exception e)
-            {
-                Window w = new Window(new ErrorBox(e.StackTrace, e.InnerException.Message));
-                Application.Current.OpenWindow(w);
-            }
-            return airports;
+            return (List<Airport>) await APIGet("/Get/Airports", new List<Airport>().GetType());
         }
 
         public static async Task<Airport> GetAirport(int ID)
         {
-            Airport airport = null;
-            try
-            {
-                HttpClient client = GetHttpClient();
-                HttpResponseMessage respone = await client.GetAsync("/Get/Airport?ID=" + ID);
-                string content = await respone.Content.ReadAsStringAsync();
-                airport = JsonSerializer.Deserialize<Airport>(content);
-            }
-            catch (Exception e)
-            {
-                Window w = new Window(new ErrorBox(e.StackTrace, e.InnerException.Message));
-                Application.Current.OpenWindow(w);
-            }
-            return airport;
+            return (Airport) await APIGet("/Get/Airport?ID=" + ID, new Airport().GetType());
         }
 
-        public static async Task<HttpResponseMessage> AddNewAircraft(Aircraft aircraft)
+        public static async Task<bool> AddNewAircraft(Aircraft aircraft)
         {
-            MultipartFormDataContent content = new MultipartFormDataContent();
-            HttpResponseMessage response = null;
-            try
-            {
-                HttpClient client = GetHttpClient();
-
-                content.Add(new StringContent(aircraft.registration), "Registration");
-                content.Add(new StringContent(aircraft.description), "Description");
-                content.Add(new StringContent(aircraft.typeID.ToString()), "TypeID");
-                content.Add(new StringContent(aircraft.countryID.ToString()), "CountryID");
-                content.Add(new StringContent(aircraft.airlineID.ToString()), "AirlineID");
-
-                response = await client.PostAsync("/Post/Aircraft", content);
-            }
-            catch (Exception e)
-            {
-                Window w = new Window(new ErrorBox(e.StackTrace, e.InnerException.Message));
-                Application.Current.OpenWindow(w);
-            }
-            return response;
+            Dictionary<string, string> pairs = new Dictionary<string, string>();
+            pairs.Add("Registration", aircraft.registration);
+            pairs.Add("Description", aircraft.description);
+            pairs.Add("TypeID", aircraft.typeID.ToString());
+            pairs.Add("CountryID", aircraft.countryID.ToString());
+            pairs.Add("AirlineID", aircraft.airlineID.ToString());
+            return await APIPost("/Post/Aircraft", pairs);
         }
 
-        public static async Task<HttpResponseMessage> UpdateAircraft(Aircraft aircraft)
+        public static async Task<bool> UpdateAircraft(Aircraft aircraft)
         {
-            MultipartFormDataContent content = new MultipartFormDataContent();
-            HttpResponseMessage response = null;
-            try
-            {
-                HttpClient client = GetHttpClient();
-
-                content.Add(new StringContent(aircraft.id.ToString()), "ID");
-                content.Add(new StringContent(aircraft.registration), "Registration");
-                content.Add(new StringContent(aircraft.description), "Description");
-                content.Add(new StringContent(aircraft.typeID.ToString()), "TypeID");
-                content.Add(new StringContent(aircraft.countryID.ToString()), "CountryID");
-                content.Add(new StringContent(aircraft.airlineID.ToString()), "AirlineID");
-
-                response = await client.PostAsync("/Patch/Aircraft", content);
-            }
-            catch (Exception e)
-            {
-                Window w = new Window(new ErrorBox(e.StackTrace, e.InnerException.Message));
-                Application.Current.OpenWindow(w);
-            }
-            return response;
+            Dictionary<string, string> pairs = new Dictionary<string, string>();
+            pairs.Add("ID", aircraft.id.ToString());
+            pairs.Add("Registration", aircraft.registration);
+            pairs.Add("Description", aircraft.description);
+            pairs.Add("TypeID", aircraft.typeID.ToString());
+            pairs.Add("CountryID", aircraft.countryID.ToString());
+            pairs.Add("AirlineID", aircraft.airlineID.ToString());
+            return await APIPost("/Patch/Aircraft", pairs);
         }
 
         public static async Task<List<Aircraft>> GetAircrafts()
         {
-            List<Aircraft> aircrafts = new List<Aircraft>();
-            try
-            {
-                HttpClient client = GetHttpClient();
-                HttpResponseMessage respone = await client.GetAsync("/Get/Aircrafts");
-                string content = await respone.Content.ReadAsStringAsync();
-                aircrafts = JsonSerializer.Deserialize<List<Aircraft>>(content);
-            }
-            catch (Exception e)
-            {
-                Window w = new Window(new ErrorBox(e.StackTrace, e.InnerException.Message));
-                Application.Current.OpenWindow(w);
-            }
-            return aircrafts;
+            return (List<Aircraft>) await APIGet("/Get/Aircrafts", new List<Aircraft>().GetType());
         }
 
         public static async Task<Aircraft> GetAircraft(int ID)
         {
-            Aircraft aircraft = null;
-            try
-            {
-                HttpClient client = GetHttpClient();
-                HttpResponseMessage respone = await client.GetAsync("/Get/Aircraft?ID="+ ID);
-                string content = await respone.Content.ReadAsStringAsync();
-                aircraft = JsonSerializer.Deserialize<Aircraft>(content);
-            }
-            catch (Exception e)
-            {
-                Window w = new Window(new ErrorBox(e.StackTrace, e.InnerException.Message));
-                Application.Current.OpenWindow(w);
-            }
-            return aircraft;
+            return (Aircraft) await APIGet("/Get/Aircraft?ID=" + ID, new Aircraft().GetType());
         }
 
         public static async Task<List<Airport>> GetAirportsFromSpottingTrip(int ID)
         {
-            List<Airport> airports = new List<Airport>();
-            try
-            {
-                HttpClient client = GetHttpClient();
-                HttpResponseMessage respone = await client.GetAsync("/Get/Airports/SpottingTrip?ID="+ ID);
-                string content = await respone.Content.ReadAsStringAsync();
-                airports = JsonSerializer.Deserialize<List<Airport>>(content);
-            }
-            catch (Exception e)
-            {
-                Window w = new Window(new ErrorBox(e.StackTrace, e.InnerException.Message));
-                Application.Current.OpenWindow(w);
-            }
-            return airports;
+            return (List<Airport>) await APIGet("/Get/Airports/SpottingTrip?ID=" + ID, new List<Airport>().GetType());
         }
 
-        public static async Task<HttpResponseMessage> AddNewSpottingTrip(SpottingTrip spottingTrip)
+        public static async Task<bool> AddNewSpottingTrip(SpottingTrip spottingTrip)
         {
-            Thread.Sleep(500);
-            MultipartFormDataContent content = new MultipartFormDataContent();
-            HttpResponseMessage response = null;
-            try
-            {
-                HttpClient client = GetHttpClient();
-
-                content.Add(new StringContent(spottingTrip.name), "Name");
-                content.Add(new StringContent(spottingTrip.description), "Description");
-                content.Add(new StringContent(spottingTrip.start.ToString()), "Start");
-                content.Add(new StringContent(spottingTrip.end.ToString()), "End");
-                content.Add(new StringContent(spottingTrip.AirportIDs), "AirportID");
-
-                response = await client.PostAsync("/Post/SpottingTrip", content);
-            }
-            catch (Exception e)
-            {
-                Window w = new Window(new ErrorBox(e.StackTrace, e.InnerException.Message));
-                Application.Current.OpenWindow(w);
-            }
-            return response;
+            Dictionary<string, string> pairs = new Dictionary<string, string>();
+            pairs.Add("Name", spottingTrip.name);
+            pairs.Add("Description", spottingTrip.description);
+            pairs.Add("Start", spottingTrip.start.ToString());
+            pairs.Add("End", spottingTrip.end.ToString());
+            pairs.Add("AirportID", spottingTrip.AirportIDs.ToString());
+            return await APIPost("/Post/SpottingTrip", pairs);
         }
 
-        public static async Task<HttpResponseMessage> UpdateSpottingTrip(SpottingTrip spottingTrip)
+        public static async Task<bool> UpdateSpottingTrip(SpottingTrip spottingTrip)
         {
-            Thread.Sleep(500);
-            MultipartFormDataContent content = new MultipartFormDataContent();
-            HttpResponseMessage response = null;
-            try
-            {
-                HttpClient client = GetHttpClient();
-
-                content.Add(new StringContent(spottingTrip.id.ToString()), "ID");
-                content.Add(new StringContent(spottingTrip.name), "Name");
-                content.Add(new StringContent(spottingTrip.description), "Description");
-                content.Add(new StringContent(spottingTrip.start.ToString()), "Start");
-                content.Add(new StringContent(spottingTrip.end.ToString()), "End");
-                content.Add(new StringContent(spottingTrip.AirportIDs), "AirportID");
-
-                response = await client.PostAsync("/Patch/SpottingTrip", content);
-            }
-            catch (Exception e)
-            {
-                Window w = new Window(new ErrorBox(e.StackTrace, e.InnerException.Message));
-                Application.Current.OpenWindow(w);
-            }
-            return response;
+            Dictionary<string, string> pairs = new Dictionary<string, string>();
+            pairs.Add("ID", spottingTrip.id.ToString());
+            pairs.Add("Name", spottingTrip.name);
+            pairs.Add("Description", spottingTrip.description);
+            pairs.Add("Start", spottingTrip.start.ToString());
+            pairs.Add("End", spottingTrip.end.ToString());
+            pairs.Add("AirportID", spottingTrip.AirportIDs.ToString());
+            return await APIPost("/Patch/SpottingTrip", pairs);
         }
 
         public static async Task<List<SpottingTrip>> GetSpottingTrips()
         {
-            List<SpottingTrip> spottingTrips = new List<SpottingTrip>();
-            try
-            {
-                HttpClient client = GetHttpClient();
-                HttpResponseMessage respone = await client.GetAsync("/Get/SpottingTrips");
-                string content = await respone.Content.ReadAsStringAsync();
-                spottingTrips = JsonSerializer.Deserialize<List<SpottingTrip>>(content);
-            }
-            catch (Exception e)
-            {
-                Window w = new Window(new ErrorBox(e.StackTrace, e.InnerException.Message));
-                Application.Current.OpenWindow(w);
-            }
-            return spottingTrips;
+            return (List<SpottingTrip>) await APIGet("/Get/SpottingTrips", new List<SpottingTrip>().GetType());
         }
 
         public static async Task<SpottingTrip> GetSpottingTrip(int ID)
         {
-            SpottingTrip spottingTrip = null;
-            try
-            {
-                HttpClient client = GetHttpClient();
-                HttpResponseMessage respone = await client.GetAsync("/Get/SpottingTrip?ID=" + ID);
-                string content = await respone.Content.ReadAsStringAsync();
-                spottingTrip = JsonSerializer.Deserialize<SpottingTrip>(content);
-            }
-            catch (Exception e)
-            {
-                Window w = new Window(new ErrorBox(e.StackTrace, e.InnerException.Message));
-                Application.Current.OpenWindow(w);
-            }
-            return spottingTrip;
+            return (SpottingTrip) await APIGet("/Get/SpottingTrip?ID=" + ID, new SpottingTrip().GetType());
         }
 
         public static async Task<int> GetLinkID(int SpottingTripID, int AirportID)
         {
-            int LinkID = -1;
-            try
-            {
-                HttpClient client = GetHttpClient();
-                HttpResponseMessage respone = await client.GetAsync($"/Get/SpottingTripAirport/LinkID?SpottingTripID={SpottingTripID}&AirportID={AirportID}");
-                string content = await respone.Content.ReadAsStringAsync();
-                LinkID = JsonSerializer.Deserialize<int>(content);
-            }
-            catch (Exception e)
-            {
-                Window w = new Window(new ErrorBox(e.StackTrace, e.InnerException.Message));
-                Application.Current.OpenWindow(w);
-            }
-            return LinkID;
+            return (int) await APIGet($"/Get/SpottingTripAirport/LinkID?SpottingTripID={SpottingTripID}&AirportID={AirportID}", typeof(int));
         }
 
-        public static async Task<List<int>> GetSpottingTripAirport(int LinkID)
+        public static async Task<Dictionary<string, int>> GetSpottingTripAirport(int LinkID)
         {
-            List<int> SpottingTripAirport = new List<int>();
-            try
-            {
-                HttpClient client = GetHttpClient();
-                HttpResponseMessage respone = await client.GetAsync($"/Get/SpottingTripAirport/SpottingTripAirport?LinkID={LinkID}");
-                string content = await respone.Content.ReadAsStringAsync();
-                SpottingTripAirport = JsonSerializer.Deserialize<List<int>>(content);
-            }
-            catch (Exception e)
-            {
-                Window w = new Window(new ErrorBox(e.StackTrace, e.InnerException.Message));
-                Application.Current.OpenWindow(w);
-            }
-            return SpottingTripAirport;
+            return (Dictionary<string, int>) await APIGet($"/Get/SpottingTripAirport/SpottingTripAirport?LinkID={LinkID}", new Dictionary<string, int>().GetType());
         }
 
-        public static async Task<HttpResponseMessage> UpdateSpottingPicture(SpottingPicture spottingPicture)
+        public static async Task<bool> UpdateSpottingPicture(SpottingPicture spottingPicture)
         {
-            Thread.Sleep(500);
-            MultipartFormDataContent content = new MultipartFormDataContent();
-            HttpResponseMessage response = null;
-            try
-            {
-                HttpClient client = GetHttpClient();
-
-                content.Add(new StringContent(spottingPicture.id.ToString()), "ID");
-                content.Add(new StringContent(spottingPicture.name), "Name");
-                content.Add(new StringContent(spottingPicture.description), "Description");
-                content.Add(new StringContent(spottingPicture.pictureUrl), "PictureURL");
-                content.Add(new StringContent(spottingPicture.originalFileName), "OriginalFileName");
-                content.Add(new StringContent(spottingPicture.spottingTripAirportID.ToString()), "SpottingTripAirport");
-                content.Add(new StringContent(spottingPicture.spottingTripAirportID.ToString()), "AircraftID");
-
-                response = await client.PostAsync("/Patch/SpottingPicture", content);
-            }
-            catch (Exception e)
-            {
-                Window w = new Window(new ErrorBox(e.StackTrace, e.InnerException.Message));
-                Application.Current.OpenWindow(w);
-            }
-            return response;
+            Dictionary<string, string> pairs = new Dictionary<string, string>();
+            pairs.Add("ID", spottingPicture.id.ToString());
+            pairs.Add("Name", spottingPicture.name);
+            pairs.Add("Description", spottingPicture.description);
+            pairs.Add("PictureURL", spottingPicture.pictureUrl);
+            pairs.Add("OriginalFileName", spottingPicture.originalFileName);
+            pairs.Add("SpottingTripAirport", spottingPicture.spottingTripAirportID.ToString());
+            pairs.Add("AircraftID", spottingPicture.aircraftID.ToString());
+            return await APIPost("/Patch/SpottingPicture", pairs);
         }
 
-        public static async Task<HttpResponseMessage> UpdateSpottingPicture(SpottingPicture spottingPicture, FileResult file)
+        public static async Task<bool> UpdateSpottingPicture(SpottingPicture spottingPicture, FileResult file)
         {
-            Thread.Sleep(500);
-            MultipartFormDataContent content = new MultipartFormDataContent();
-            HttpResponseMessage response = null;
-            try
-            {
-                HttpClient client = GetHttpClient();
-
-                content.Add(new StringContent(spottingPicture.id.ToString()), "ID");
-                content.Add(new StringContent(spottingPicture.name), "Name");
-                content.Add(new StringContent(spottingPicture.description), "Description");
-                content.Add(new StringContent(spottingPicture.pictureUrl), "PictureURL");
-                content.Add(new StringContent(spottingPicture.spottingTripAirportID.ToString()), "SpottingTripAirport");
-                content.Add(new StringContent(spottingPicture.spottingTripAirportID.ToString()), "AircraftID");
-                StreamContent Picture = new StreamContent(File.OpenRead(file.FullPath));
-                content.Add(Picture, "File", file.FileName);
-
-                response = await client.PostAsync("/Patch/SpottingPicture", content);
-            }
-            catch (Exception e)
-            {
-                Window w = new Window(new ErrorBox(e.StackTrace, e.InnerException.Message));
-                Application.Current.OpenWindow(w);
-            }
-            return response;
+            Dictionary<string, string> pairs = new Dictionary<string, string>();
+            pairs.Add("ID", spottingPicture.id.ToString());
+            pairs.Add("Name", spottingPicture.name);
+            pairs.Add("Description", spottingPicture.description);
+            pairs.Add("PictureURL", spottingPicture.pictureUrl);
+            pairs.Add("OriginalFileName", spottingPicture.originalFileName);
+            pairs.Add("SpottingTripAirport", spottingPicture.spottingTripAirportID.ToString());
+            pairs.Add("AircraftID", spottingPicture.aircraftID.ToString());
+            return await APIPost("/Patch/SpottingPicture", pairs, file);
         }
 
-        public static async Task<HttpResponseMessage> AddNewSpottingPicture(SpottingPicture spottingPicture, FileResult file)
+        public static async Task<bool> AddNewSpottingPicture(SpottingPicture spottingPicture, FileResult file)
         {
-            Thread.Sleep(500);
-            MultipartFormDataContent content = new MultipartFormDataContent();
-            HttpResponseMessage response = null;
-            try
-            {
-                HttpClient client = GetHttpClient();
-
-                content.Add(new StringContent(spottingPicture.name), "Name");
-                content.Add(new StringContent(spottingPicture.description), "Description");
-                content.Add(new StringContent(spottingPicture.spottingTripAirportID.ToString()), "SpottingTripAirport");
-                content.Add(new StringContent(spottingPicture.aircraftID.ToString()), "AircraftID");
-                StreamContent Picture = new StreamContent(File.OpenRead(file.FullPath));
-                content.Add(Picture, "File", file.FileName);
-
-                response = await client.PostAsync("/Post/SpottingPicture", content);
-            }
-            catch (Exception e)
-            {
-                Window w = new Window(new ErrorBox(e.StackTrace, e.InnerException.Message));
-                Application.Current.OpenWindow(w);
-            }
-            return response;
+            Dictionary<string, string> pairs = new Dictionary<string, string>();
+            pairs.Add("Name", spottingPicture.name);
+            pairs.Add("Description", spottingPicture.description);
+            pairs.Add("SpottingTripAirport", spottingPicture.spottingTripAirportID.ToString());
+            pairs.Add("AircraftID", spottingPicture.aircraftID.ToString());
+            return await APIPost("/Post/SpottingPicture", pairs, file);
         }
 
         public static async Task<List<SpottingPicture>> GetSpottingPictures()
         {
-            List<SpottingPicture> spottingPictures = new List<SpottingPicture>();
-            try
-            {
-                HttpClient client = GetHttpClient();
-                HttpResponseMessage respone = await client.GetAsync("/Get/SpottingPictures");
-                string content = await respone.Content.ReadAsStringAsync();
-                spottingPictures = JsonSerializer.Deserialize<List<SpottingPicture>>(content);
-            }
-            catch (Exception e)
-            {
-                Window w = new Window(new ErrorBox(e.StackTrace, e.InnerException.Message));
-                Application.Current.OpenWindow(w);
-            }
-            return spottingPictures;
+            return (List<SpottingPicture>) await APIGet("/Get/SpottingPictures", new List<SpottingPicture>().GetType());
         }
+        #endregion
 
+        #region Delete
         public static async Task<bool> DeleteCountry(Country c)
         {
-            HttpResponseMessage message = null;
-            string Content = null;
-            try
-            {
-                HttpClient client = GetHttpClient();
-                MultipartFormDataContent content = new MultipartFormDataContent();
-                content.Add(new StringContent(c.id.ToString()), "ID");
-                message = await client.PostAsync("/Delete/Country", content);
-                Content = await message.Content.ReadAsStringAsync();
-            }
-            catch (Exception e)
-            {
-                Window w = new Window(new ErrorBox(e.StackTrace, e.InnerException.Message));
-                Application.Current.OpenWindow(w);
-            }
-
-            return Convert.ToBoolean(Content);
+            Dictionary<string, string> pairs = new Dictionary<string, string>();
+            pairs.Add("ID", c.name);
+            return await APIPost("/Delete/Country", pairs);
         }
+
+
+        #endregion
     }
 }

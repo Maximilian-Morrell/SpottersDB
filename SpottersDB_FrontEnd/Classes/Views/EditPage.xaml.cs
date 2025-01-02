@@ -80,19 +80,22 @@ namespace SpottersDB_FrontEnd.Classes.Views
             RegionParent.Children.Clear();
 
             List<Country> countries = await HTTP_Controller.GetCountries();
-            foreach(Country country in countries)
+            if(countries != null)
             {
-                CountryCard countryCard = new CountryCard();
-                countryCard.EditClicked += CountryCard_EditClicked;
-                countryCard.DeleteClicked += CountryCard_DeleteClicked;
-                if(country.icaO_Code == "")
+                foreach (Country country in countries)
                 {
-                    RegionParent.Children.Add(countryCard.Card(country, ""));
-                }
-                else
-                {
-                    string URL = await HTTP_Controller.GetNewestPhotoFromCountry(country.id);
-                    CountryParent.Children.Add(countryCard.Card(country, URL));
+                    CountryCard countryCard = new CountryCard();
+                    countryCard.EditClicked += CountryCard_EditClicked;
+                    countryCard.DeleteClicked += CountryCard_DeleteClicked;
+                    if (country.icaO_Code == "")
+                    {
+                        RegionParent.Children.Add(countryCard.Card(country, ""));
+                    }
+                    else
+                    {
+                        string URL = await HTTP_Controller.GetNewestPhotoFromCountry(country.id);
+                        CountryParent.Children.Add(countryCard.Card(country, URL));
+                    }
                 }
             }
 
@@ -126,12 +129,15 @@ namespace SpottersDB_FrontEnd.Classes.Views
             ManufactorerParent.Children.Clear();
 
             List<Manufactorer> manufactorers = await HTTP_Controller.GetManufactorers();
-            foreach(Manufactorer manufactorer in manufactorers)
+            if(manufactorers != null)
             {
-                ManufactorerCard man = new ManufactorerCard();
-                man.EditClicked += Manufactorer_EditClicked;
-                Border b = await man.Card(manufactorer);
-                ManufactorerParent.Children.Add(b);
+                foreach (Manufactorer manufactorer in manufactorers)
+                {
+                    ManufactorerCard man = new ManufactorerCard();
+                    man.EditClicked += Manufactorer_EditClicked;
+                    Border b = await man.Card(manufactorer);
+                    ManufactorerParent.Children.Add(b);
+                }
             }
             LoadAircraftTypes();
         }
@@ -140,12 +146,15 @@ namespace SpottersDB_FrontEnd.Classes.Views
         {
             AircraftTypeParent.Children.Clear();
             List<AircraftType> aircraftTypes = await HTTP_Controller.GetAircraftTypes();
-            foreach(AircraftType aircraftType in aircraftTypes)
+            if(aircraftTypes != null)
             {
-                AircraftTypeCard air = new AircraftTypeCard();
-                air.EditClicked += AircraftType_EditClicked;
-                Border b = await air.Card(aircraftType);
-                AircraftTypeParent.Children.Add(b);
+                foreach (AircraftType aircraftType in aircraftTypes)
+                {
+                    AircraftTypeCard air = new AircraftTypeCard();
+                    air.EditClicked += AircraftType_EditClicked;
+                    Border b = await air.Card(aircraftType);
+                    AircraftTypeParent.Children.Add(b);
+                }
             }
             LoadAirlines();
         }
@@ -154,12 +163,15 @@ namespace SpottersDB_FrontEnd.Classes.Views
         {
             AirlineParent.Children.Clear();
             List<Airline> airlines = await HTTP_Controller.GetAirlines();
-            foreach(Airline airline in airlines)
+            if(airlines != null)
             {
-                AirlineCard air = new AirlineCard();
-                air.EditClicked += Airline_EditClicked;
-                Border b = await air.Card(airline);
-                AirlineParent.Children.Add(b);
+                foreach (Airline airline in airlines)
+                {
+                    AirlineCard air = new AirlineCard();
+                    air.EditClicked += Airline_EditClicked;
+                    Border b = await air.Card(airline);
+                    AirlineParent.Children.Add(b);
+                }
             }
             LoadAirports();
         }
@@ -182,22 +194,25 @@ namespace SpottersDB_FrontEnd.Classes.Views
         {
             AircraftParent.Children.Clear();
             List<Aircraft> aircrafts = await HTTP_Controller.GetAircrafts();
-            foreach(Aircraft aircraft in aircrafts)
+            if( aircrafts != null )
             {
-                AircraftCard aircraftCard = new AircraftCard();
-                aircraftCard.EditClicked += AircraftCard_EditClicked;
-                Border b = await aircraftCard.Card(aircraft);
-                AircraftParent.Children.Add(b);
+                foreach (Aircraft aircraft in aircrafts)
+                {
+                    AircraftCard aircraftCard = new AircraftCard();
+                    aircraftCard.EditClicked += AircraftCard_EditClicked;
+                    Border b = await aircraftCard.Card(aircraft);
+                    AircraftParent.Children.Add(b);
+                }
             }
             LoadSpottingTrips();
         }
 
         private async void LoadSpottingTrips()
         {
-            try
+            SpottingTripParent.Children.Clear();
+            List<SpottingTrip> spottingTrips = await HTTP_Controller.GetSpottingTrips();
+            if( spottingTrips != null )
             {
-                SpottingTripParent.Children.Clear();
-                List<SpottingTrip> spottingTrips = await HTTP_Controller.GetSpottingTrips();
                 foreach (SpottingTrip spottingTrip in spottingTrips)
                 {
                     SpottingTripCard spottingTripCard = new SpottingTripCard();
@@ -206,32 +221,23 @@ namespace SpottersDB_FrontEnd.Classes.Views
                     SpottingTripParent.Children.Add(b);
                 }
             }
-            catch (Exception ex)
-            {
-                Window w = new Window(new ErrorBox(ex.StackTrace, ex.InnerException.Message));
-                Application.Current.OpenWindow(w);
-            }
+
             LoadSpottingPictures();
         }
 
         private async void LoadSpottingPictures()
         {
-            try
+            SpottingPictureParent.Children.Clear();
+            List<SpottingPicture> SpottingPictures = await HTTP_Controller.GetSpottingPictures();
+            if(SpottingPictures != null)
             {
-                SpottingPictureParent.Children.Clear();
-                List<SpottingPicture> SpottingPictures = await HTTP_Controller.GetSpottingPictures();
-                foreach(SpottingPicture spottingPicture in SpottingPictures)
+                foreach (SpottingPicture spottingPicture in SpottingPictures)
                 {
                     SpottingPictureCard spottingPictureCard = new SpottingPictureCard();
                     Border b = await spottingPictureCard.Card(spottingPicture);
                     spottingPictureCard.EditClicked += SpottingPictureCard_EditClicked;
                     SpottingPictureParent.Children.Add(b);
                 }
-            }
-            catch (Exception ex)
-            {
-                Window w = new Window(new ErrorBox(ex.StackTrace, ex.InnerException.Message));
-                Application.Current.OpenWindow(w);
             }
         }
 

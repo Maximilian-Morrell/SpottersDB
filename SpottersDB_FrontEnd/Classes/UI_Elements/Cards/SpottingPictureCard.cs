@@ -69,9 +69,9 @@ namespace SpottersDB_FrontEnd.Classes.UI_Elements.Cards
             parent.SetRowSpan(imgB, 5);
             parent.Children.Add(imgB);
 
-            List<int> SpottingTripAirport = await HTTP_Controller.GetSpottingTripAirport(SpottingPicture.spottingTripAirportID);
-            SpottingTrip spottingTrip = await HTTP_Controller.GetSpottingTrip(SpottingTripAirport[0]);
-            Airport airport = await HTTP_Controller.GetAirport(SpottingTripAirport[1]);
+            Dictionary<string, int> SpottingTripAirport = await HTTP_Controller.GetSpottingTripAirport(SpottingPicture.spottingTripAirportID);
+            SpottingTrip spottingTrip = await HTTP_Controller.GetSpottingTrip(SpottingTripAirport["SpottingTrip"]);
+            Airport airport = await HTTP_Controller.GetAirport(SpottingTripAirport["Airport"]);
             
             Label lblAirportList = new Label();
             lblAirportList.Text = spottingTrip.name + " - " + airport.icaO_Code;

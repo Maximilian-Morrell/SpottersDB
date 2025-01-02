@@ -106,6 +106,11 @@ namespace SpottersDB_BackEnd.Classes.Utilities
             {
                 ExecuteCMD($"DROP DATABASE {DatabaseName}", "DEBUG: Dropping the DB");
                 isDebugMode = false;
+                // Delete any images that are for some reason in the Image Directory
+                foreach (string f in Directory.GetFiles(Path.GetFullPath(Environment.CurrentDirectory) + "/Images"))
+                {
+                    File.Delete(f);
+                }
             }
 
 
@@ -133,11 +138,6 @@ namespace SpottersDB_BackEnd.Classes.Utilities
         // Creates the DB
         private void CreateDatabase(string DatabaseName)
         {
-            // Delete any images that are for some reason in the Image Directory
-            foreach (string f in Directory.GetFiles(Path.GetFullPath(Environment.CurrentDirectory) + "/Images"))
-            {
-                File.Delete(f);
-            }
 
             // Creates the DB
             ExecuteCMD("CREATE DATABASE " + DatabaseName, "Created the Database: " + DatabaseName);

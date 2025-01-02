@@ -84,21 +84,21 @@ namespace SpottersDB_FrontEnd.Classes.UI_Elements.Cards
                 parent.Add(lblICAO, 0, 1);
             }
 
-
-            Button deleteBtn = new Button();
-            deleteBtn.Text = "Delete";
-            deleteBtn.CommandParameter = country;
-            deleteBtn.Clicked += DeleteBtn_Clicked;
-            deleteBtn.VerticalOptions = LayoutOptions.End;
-            parent.Add(deleteBtn, 0, 2);
-
             Button editBtn = new Button();
             editBtn.Text = "Edit";
             editBtn.CommandParameter = country;
             editBtn.Clicked += EditBtn_Clicked;
             editBtn.VerticalOptions = LayoutOptions.End;
             // editBtn.HorizontalOptions = LayoutOptions.Center;
-            parent.Add(editBtn, 0, 3);
+            parent.Add(editBtn, 0, 2);
+
+            Button deleteBtn = new Button();
+            deleteBtn.Text = "Delete";
+            deleteBtn.CommandParameter = country;
+            deleteBtn.Clicked += DeleteBtn_Clicked;
+            deleteBtn.VerticalOptions = LayoutOptions.End;
+            parent.Add(deleteBtn, 0, 3);
+
 
             return b;
         }

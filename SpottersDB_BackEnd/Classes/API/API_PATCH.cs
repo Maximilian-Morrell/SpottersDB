@@ -47,85 +47,96 @@ namespace SpottersDB_BackEnd.Classes.API
                 Country country = new Country(Convert.ToInt32(form["ID"]), form["ICAO"], form["Name"]);
                 IsSuccessfull = sqlcontroller.UpdateCountry(country);
             }
-            catch (Exception e)
+            catch (Exception)
             {
 
             }
             return IsSuccessfull;
         }
 
-        private async void PATCH_Airport(HttpRequest req)
+        private async Task<bool> PATCH_Airport(HttpRequest req)
         {
+            bool IsSuccessfull = false;
             try
             {
                 IFormCollection form = await req.ReadFormAsync();
                 Airport airport = new Airport(Convert.ToInt32(form["ID"]), form["ICAO"], form["IATA"], form["Name"], form["Description"], form["City"], Convert.ToInt32(form["Country"]));
-                sqlcontroller.UpdateAirport(airport);
+                IsSuccessfull = sqlcontroller.UpdateAirport(airport);
             }
-            catch (Exception e)
+            catch (Exception)
             {
 
             }
+            return IsSuccessfull;
         }
 
-        private async void PATCH_Airline(HttpRequest req)
+        private async Task<bool> PATCH_Airline(HttpRequest req)
         {
+            bool IsSuccessfull = false;
             try
             {
                 IFormCollection form = await req.ReadFormAsync();
                 Airline airline = new Airline(Convert.ToInt32(form["ID"]), form["ICAO"], form["IATA"], form["Name"], Convert.ToInt32(form["Region"]));
-                sqlcontroller.UpdateAirline(airline);
+                IsSuccessfull = sqlcontroller.UpdateAirline(airline);
             }
-            catch (Exception e)
+            catch (Exception)
             {
                 
             }
+            return IsSuccessfull;
         }
 
-        private async void PATCH_AircraftType(HttpRequest req)
+        private async Task<bool> PATCH_AircraftType(HttpRequest req)
         {
+            bool IsSuccessfull = false;
             try
             {
                 IFormCollection form = await req.ReadFormAsync();
                 AircraftType aircraftType = new AircraftType(Convert.ToInt32(form["ID"]), form["ICAO"], form["FullName"], form["NickName"], Convert.ToInt32(form["ManufactorerID"]));
-                sqlcontroller.UpdateAircraftType(aircraftType);
+                IsSuccessfull = sqlcontroller.UpdateAircraftType(aircraftType);
             }
-            catch (Exception e)
+            catch (Exception)
             {
 
             }
+            return IsSuccessfull;
         }
 
-        private async void PATCH_Manufactorer(HttpRequest req)
+        private async Task<bool> PATCH_Manufactorer(HttpRequest req)
         {
+            bool IsSuccessfull = false;
             try
             {
                 IFormCollection form = await req.ReadFormAsync();
                 Manufactorer manufactorer = new Manufactorer(Convert.ToInt32(form["ID"]), form["Name"], Convert.ToInt32(form["Region"]));
-                sqlcontroller.UpdateManufactorer(manufactorer);
+                IsSuccessfull = sqlcontroller.UpdateManufactorer(manufactorer);
             }
-            catch (Exception e)
+            catch (Exception)
             {
 
             }
+            return IsSuccessfull;
         }
 
-        private async void PATCH_Aircraft(HttpRequest req)
+        private async Task<bool> PATCH_Aircraft(HttpRequest req)
         {
+            bool IsSuccessfull = false;
             try
             {
                 IFormCollection form = await req.ReadFormAsync();
                 Aircraft aircraft = new Aircraft(Convert.ToInt32(form["ID"]), form["Registration"], form["Description"], Convert.ToInt32(form["TypeID"]), Convert.ToInt32(form["CountryID"]), Convert.ToInt32(form["AirlineID"]));
-                sqlcontroller .UpdateAircraft(aircraft);
+                IsSuccessfull = sqlcontroller .UpdateAircraft(aircraft);
             }
-            catch (Exception e)
+            catch (Exception)
             {
 
             }
+            return IsSuccessfull;
         }
 
-        private async void PATCH_SpottingTrip(HttpRequest req)
+        private async Task<bool> PATCH_SpottingTrip(HttpRequest req)
         {
+            bool IsSuccessfull = false;
             try
             {
                 IFormCollection form = await req.ReadFormAsync();
@@ -138,16 +149,18 @@ namespace SpottersDB_BackEnd.Classes.API
                         AirportIDs.Add(Convert.ToInt32(AirportID));
                     }
                 }
-                sqlcontroller.UpdateSpottingTrip(spottingTrip, AirportIDs);
+                IsSuccessfull = sqlcontroller.UpdateSpottingTrip(spottingTrip, AirportIDs);
             }
-            catch (Exception e)
+            catch (Exception)
             {
-                app.Logger.LogError(e.Message);
+
             }
+            return IsSuccessfull;
         }
 
-        private async void PATCH_SpottingPicture(HttpRequest req)
+        private async Task<bool> PATCH_SpottingPicture(HttpRequest req)
         {
+            bool IsSuccessfull = false;
             try
             {
                 if(req.Form.Files.Count > 0)
@@ -185,10 +198,11 @@ namespace SpottersDB_BackEnd.Classes.API
                     sqlcontroller.UpdateSpottingPicture(spottingPicture);
                 }
             }
-            catch (Exception e)
+            catch (Exception)
             {
-                app.Logger.LogError(e.Message);
+
             }
+            return IsSuccessfull;
         }
     }
 }
