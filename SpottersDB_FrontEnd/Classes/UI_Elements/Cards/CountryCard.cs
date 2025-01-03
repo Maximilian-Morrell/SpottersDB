@@ -66,10 +66,10 @@ namespace SpottersDB_FrontEnd.Classes.UI_Elements.Cards
 
             if (country.icaO_Code == "")
             {
-                Grid.SetRowSpan(lblName, 3);
+                Grid.SetRowSpan(lblName, 2);
                 lblName.FontSize = 55;
-                parent.MaximumHeightRequest = 200;
-                parent.HeightRequest = 200;
+                parent.MaximumHeightRequest = 250;
+                parent.HeightRequest = 250;
             }
             else
             {

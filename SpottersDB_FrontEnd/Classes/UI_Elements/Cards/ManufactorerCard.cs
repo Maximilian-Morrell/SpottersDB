@@ -12,6 +12,8 @@ namespace SpottersDB_FrontEnd.Classes.UI_Elements.Cards
     {
         public delegate EventHandler EditClickHandler(Manufactorer manufactorer);
         public event EditClickHandler EditClicked;
+        public delegate EventHandler DeleteClickedHandler(Manufactorer manufactorer);
+        public event DeleteClickedHandler DeleteClicked;
 
         public async Task<Border> Card(Manufactorer manufactorer)
         {
@@ -28,7 +30,7 @@ namespace SpottersDB_FrontEnd.Classes.UI_Elements.Cards
                 {
                     new RowDefinition(),
                     new RowDefinition(),
-                   // new RowDefinition(), - for the delete Button
+                    new RowDefinition(),
                     new RowDefinition()
                 }
             };
@@ -66,7 +68,21 @@ namespace SpottersDB_FrontEnd.Classes.UI_Elements.Cards
             editBtn.VerticalOptions = LayoutOptions.End;
             parent.Add(editBtn, 0, 2);
 
+            Button deleteBtn = new Button();
+            deleteBtn.Text = "Delete";
+            deleteBtn.CommandParameter = manufactorer;
+            deleteBtn.Clicked += DeleteBtn_Clicked; ;
+            deleteBtn.VerticalOptions = LayoutOptions.End;
+            parent.Add(deleteBtn, 0, 3);
+
             return b;
+        }
+
+        private void DeleteBtn_Clicked(object? sender, EventArgs e)
+        {
+            Button b = sender as Button;
+            DeleteClickedHandler handler = DeleteClicked;
+            handler(b.CommandParameter as Manufactorer);
         }
 
         private void EditBtn_Clicked(object sender, EventArgs e)

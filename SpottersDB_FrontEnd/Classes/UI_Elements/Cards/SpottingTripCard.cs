@@ -15,6 +15,9 @@ namespace SpottersDB_FrontEnd.Classes.UI_Elements.Cards
     {
         public delegate EventHandler EditClickHandler(SpottingTrip spottingTrip, List<Airport> SelectedAirport);
         public event EditClickHandler EditClicked;
+        public delegate EventHandler DeleteClickedHandler(SpottingTrip spottingtrip);
+        public event DeleteClickedHandler DeleteClicked;
+
 
         public async Task<Border> Card(SpottingTrip spottingTrip)
         {
@@ -33,7 +36,7 @@ namespace SpottersDB_FrontEnd.Classes.UI_Elements.Cards
                     new RowDefinition(),
                     new RowDefinition(),
                     new RowDefinition(),
-                   // new RowDefinition(), - for the delete Button
+                    new RowDefinition(),
                     new RowDefinition()
                 }
             };
@@ -110,9 +113,22 @@ namespace SpottersDB_FrontEnd.Classes.UI_Elements.Cards
             editBtn.VerticalOptions = LayoutOptions.End;
             parent.Add(editBtn, 0, 4);
 
+            Button deleteBtn = new Button();
+            deleteBtn.Text = "Delete";
+            deleteBtn.CommandParameter = spottingTrip;
+            deleteBtn.Clicked += DeleteBtn_Clicked; ;
+            deleteBtn.VerticalOptions = LayoutOptions.End;
+            parent.Add(deleteBtn, 0, 5);
+
             return b;
         }
 
+        private void DeleteBtn_Clicked(object? sender, EventArgs e)
+        {
+            Button b = sender as Button;
+            DeleteClickedHandler handler = DeleteClicked;
+            handler(b.CommandParameter as SpottingTrip);
+        }
 
         private async void EditBtn_Clicked(object sender, EventArgs e)
         {

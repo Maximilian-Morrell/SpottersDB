@@ -505,7 +505,7 @@ namespace SpottersDB_BackEnd.Classes.Utilities
             ReaderData = ExecuteReadCMD($"SELECT * FROM SpottingPictures WHERE SpottingPictureID = {id}", $"Reading SpottingPicture with ID {id}");
             foreach(Dictionary<string, object> Data in ReaderData)
             {
-                spottingPicture = new SpottingPicture(Convert.ToInt32(Data["SpottingPictureID"]), Convert.ToString(Data["SpottingPictureName"]), Convert.ToString(Data["SpottingPictureDescription"]), Convert.ToString(Data["SpottingPictureURL"]), Convert.ToString(Data["SpottingPictureOriginalFileName"]), Convert.ToInt32(Data["SpottingPictureSpottingTripID"]), Convert.ToInt32(Data["SpottingPictureAircraftID"]));
+                spottingPicture = new SpottingPicture(Convert.ToInt32(Data["SpottingPictureID"]), Convert.ToString(Data["SpottingPictureName"]), Convert.ToString(Data["SpottingPictureDescription"]), Convert.ToString(Data["SpottingPictureURL"]), Convert.ToString(Data["SpottingPictureOriginalFileName"]), Convert.ToInt32(Data["SpottingTripAirportID"]), Convert.ToInt32(Data["SpottingPictureAircraftID"]));
             }
             return spottingPicture;
         }

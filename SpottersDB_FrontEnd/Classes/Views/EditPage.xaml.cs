@@ -124,6 +124,118 @@ namespace SpottersDB_FrontEnd.Classes.Views
             }
         }
 
+        private async void DeleteAirline(Airline airline)
+        {
+            string action = await DisplayActionSheet("Delete " + airline.name + "?", "Cancle", "Delete");
+            if (action == "Delete")
+            {
+                if (await HTTP_Controller.DeleteAirline(airline))
+                {
+                    LoadEverything();
+                }
+                else
+                {
+                    await DisplayAlert("Error", "Deletion failed. The deleted country is probably still referenced somewhere", "OK");
+                }
+            }
+        }
+
+        private async void DeleteAirport(Airport airport)
+        {
+            string action = await DisplayActionSheet("Delete " + airport.name + "?", "Cancle", "Delete");
+            if (action == "Delete")
+            {
+                if (await HTTP_Controller.DeleteAirport(airport))
+                {
+                    LoadEverything();
+                }
+                else
+                {
+                    await DisplayAlert("Error", "Deletion failed. The deleted country is probably still referenced somewhere", "OK");
+                }
+            }
+        }
+
+        private async void DeleteAircraftType(AircraftType aircraftType)
+        {
+            string action = await DisplayActionSheet("Delete " + aircraftType.fullName + "?", "Cancle", "Delete");
+            if (action == "Delete")
+            {
+                if (await HTTP_Controller.DeleteAircraftType(aircraftType))
+                {
+                    LoadEverything();
+                }
+                else
+                {
+                    await DisplayAlert("Error", "Deletion failed. The deleted country is probably still referenced somewhere", "OK");
+                }
+            }
+        }
+
+        private async void DeleteManufactorer(Manufactorer manufactorer)
+        {
+            string action = await DisplayActionSheet("Delete " + manufactorer.name + "?", "Cancle", "Delete");
+            if (action == "Delete")
+            {
+                if (await HTTP_Controller.DeleteManufactorer(manufactorer))
+                {
+                    LoadEverything();
+                }
+                else
+                {
+                    await DisplayAlert("Error", "Deletion failed. The deleted country is probably still referenced somewhere", "OK");
+                }
+            }
+        }
+
+        private async void DeleteAircraft(Aircraft aircraft)
+        {
+            string action = await DisplayActionSheet("Delete " + aircraft.registration + "?", "Cancle", "Delete");
+            if (action == "Delete")
+            {
+                if (await HTTP_Controller.DeleteAircraft(aircraft))
+                {
+                    LoadEverything();
+                }
+                else
+                {
+                    await DisplayAlert("Error", "Deletion failed. The deleted country is probably still referenced somewhere", "OK");
+                }
+            }
+        }
+
+        private async void DeleteSpottingPicture(SpottingPicture spottingPicture)
+        {
+            string action = await DisplayActionSheet("Delete " + spottingPicture.name + "?", "Cancle", "Delete");
+            if (action == "Delete")
+            {
+                if (await HTTP_Controller.DeleteSpottingPicture(spottingPicture))
+                {
+                    LoadEverything();
+                }
+                else
+                {
+                    await DisplayAlert("Error", "Deletion failed. The deleted country is probably still referenced somewhere", "OK");
+                }
+            }
+        }
+
+        private async void DeleteSpottingTrip(SpottingTrip spottingTrip)
+        {
+            string action = await DisplayActionSheet("Delete " + spottingTrip.name + "?", "Cancle", "Delete");
+            if (action == "Delete")
+            {
+                if (await HTTP_Controller.DeleteSpottingTrip(spottingTrip))
+                {
+                    LoadEverything();
+                }
+                else
+                {
+                    await DisplayAlert("Error", "Deletion failed. The deleted country is probably still referenced somewhere", "OK");
+                }
+            }
+        }
+
         private async void LoadManufactorers()
         {
             ManufactorerParent.Children.Clear();
@@ -135,11 +247,18 @@ namespace SpottersDB_FrontEnd.Classes.Views
                 {
                     ManufactorerCard man = new ManufactorerCard();
                     man.EditClicked += Manufactorer_EditClicked;
+                    man.DeleteClicked += Man_DeleteClicked;
                     Border b = await man.Card(manufactorer);
                     ManufactorerParent.Children.Add(b);
                 }
             }
             LoadAircraftTypes();
+        }
+
+        private EventHandler Man_DeleteClicked(Manufactorer manufactorer)
+        {
+            DeleteManufactorer(manufactorer);
+            return null;
         }
 
         private async void LoadAircraftTypes()
@@ -152,11 +271,18 @@ namespace SpottersDB_FrontEnd.Classes.Views
                 {
                     AircraftTypeCard air = new AircraftTypeCard();
                     air.EditClicked += AircraftType_EditClicked;
+                    air.DeleteClicked += AircraftType_Deleteclicked;
                     Border b = await air.Card(aircraftType);
                     AircraftTypeParent.Children.Add(b);
                 }
             }
             LoadAirlines();
+        }
+
+        private EventHandler AircraftType_Deleteclicked(AircraftType aircraftType)
+        {
+            DeleteAircraftType(aircraftType);
+            return null;
         }
 
         private async void LoadAirlines()
@@ -169,11 +295,18 @@ namespace SpottersDB_FrontEnd.Classes.Views
                 {
                     AirlineCard air = new AirlineCard();
                     air.EditClicked += Airline_EditClicked;
+                    air.DeleteClicked += Airline_DeleteClicked;
                     Border b = await air.Card(airline);
                     AirlineParent.Children.Add(b);
                 }
             }
             LoadAirports();
+        }
+
+        private EventHandler Airline_DeleteClicked(Airline airline)
+        {
+            DeleteAirline(airline);
+            return null;
         }
 
         private async void LoadAirports()
@@ -184,10 +317,17 @@ namespace SpottersDB_FrontEnd.Classes.Views
             {
                 AirportCard airportCard = new AirportCard();
                 airportCard.EditClicked += AirportCard_EditClicked;
+                airportCard.DeleteClicked += AirportCard_DeleteClicked;
                 Border b = await airportCard.Card(airport);
                 AirportParent.Children.Add(b);
             }
             LoadAircrafts();
+        }
+
+        private EventHandler AirportCard_DeleteClicked(Airport airport)
+        {
+            DeleteAirport(airport);
+            return null;
         }
 
         private async void LoadAircrafts()
@@ -200,11 +340,18 @@ namespace SpottersDB_FrontEnd.Classes.Views
                 {
                     AircraftCard aircraftCard = new AircraftCard();
                     aircraftCard.EditClicked += AircraftCard_EditClicked;
+                    aircraftCard.DeleteClicked += AircraftCard_DeleteClicked;
                     Border b = await aircraftCard.Card(aircraft);
                     AircraftParent.Children.Add(b);
                 }
             }
             LoadSpottingTrips();
+        }
+
+        private EventHandler AircraftCard_DeleteClicked(Aircraft aircraft)
+        {
+            DeleteAircraft(aircraft);
+            return null;
         }
 
         private async void LoadSpottingTrips()
@@ -217,12 +364,19 @@ namespace SpottersDB_FrontEnd.Classes.Views
                 {
                     SpottingTripCard spottingTripCard = new SpottingTripCard();
                     spottingTripCard.EditClicked += SpottingTripCard_EditClicked;
+                    spottingTripCard.DeleteClicked += SpottingTripCard_DeleteClicked;
                     Border b = await spottingTripCard.Card(spottingTrip);
                     SpottingTripParent.Children.Add(b);
                 }
             }
 
             LoadSpottingPictures();
+        }
+
+        private EventHandler SpottingTripCard_DeleteClicked(SpottingTrip spottingtrip)
+        {
+            DeleteSpottingTrip(spottingtrip);
+            return null;
         }
 
         private async void LoadSpottingPictures()
@@ -236,9 +390,16 @@ namespace SpottersDB_FrontEnd.Classes.Views
                     SpottingPictureCard spottingPictureCard = new SpottingPictureCard();
                     Border b = await spottingPictureCard.Card(spottingPicture);
                     spottingPictureCard.EditClicked += SpottingPictureCard_EditClicked;
+                    spottingPictureCard.DeleteClicked += SpottingPictureCard_DeleteClicked;
                     SpottingPictureParent.Children.Add(b);
                 }
             }
+        }
+
+        private EventHandler SpottingPictureCard_DeleteClicked(SpottingPicture spottingPicture)
+        {
+            DeleteSpottingPicture(spottingPicture);
+            return null;
         }
 
         private EventHandler SpottingPictureCard_EditClicked(SpottingPicture spottingPicture)

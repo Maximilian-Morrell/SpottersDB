@@ -390,6 +390,54 @@ namespace SpottersDB_FrontEnd.Classes.Utilities
             return await APIPost("/Delete/Country", pairs);
         }
 
+        public static async Task<bool> DeleteAirport(Airport a)
+        {
+            Dictionary<string, string> pairs = new Dictionary<string, string>();
+            pairs.Add("ID", a.id.ToString());
+            return await APIPost("/Delete/Airport", pairs);
+        }
+
+        public static async Task<bool> DeleteAirline(Airline a)
+        {
+            Dictionary<string, string> pairs = new Dictionary<string, string>();
+            pairs.Add("ID", a.id.ToString());
+            return await APIPost("/Delete/Airline", pairs);
+        }
+
+        public static async Task<bool> DeleteAircraftType(AircraftType a)
+        {
+            Dictionary<string, string> pairs = new Dictionary<string, string>();
+            pairs.Add("ID", a.id.ToString());
+            return await APIPost("/Delete/AircraftType", pairs);
+        }
+
+        public static async Task<bool> DeleteManufactorer(Manufactorer m)
+        {
+            Dictionary<string, string> pairs = new Dictionary<string, string>();
+            pairs.Add("ID", m.id.ToString());
+            return await APIPost("/Delete/Manufactorer", pairs);
+        }
+
+        public static async Task<bool> DeleteAircraft(Aircraft a)
+        {
+            Dictionary<string, string> pairs = new Dictionary<string, string>();
+            pairs.Add("ID", a.id.ToString());
+            return await APIPost("/Delete/Aircraft", pairs);
+        }
+
+        public static async Task<bool> DeleteSpottingTrip(SpottingTrip t)
+        {
+            Dictionary<string, string> pairs = new Dictionary<string, string>();
+            pairs.Add("ID", t.id.ToString());
+            return await APIPost("/Delete/SpottingTrip", pairs);
+        }
+
+        public static async Task<bool> DeleteSpottingPicture(SpottingPicture s)
+        {
+            Dictionary<string, string> pairs = new Dictionary<string, string>();
+            pairs.Add("ID", s.id.ToString());
+            return await APIPost("/Delete/SpottingPicture", pairs);
+        }
 
         #endregion
     }

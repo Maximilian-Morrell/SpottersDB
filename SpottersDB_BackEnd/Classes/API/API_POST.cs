@@ -38,8 +38,29 @@ namespace SpottersDB_BackEnd.Classes.API
             // Post SpottingPicture Route
             app.MapPost("/Post/SpottingPicture", (HttpRequest req) => Post_SpottingPicture(req));
 
-            // Post Delete Country Route
+            // Delete Country Route
             app.MapPost("/Delete/Country", (HttpRequest req) => Delete_Country(req));
+
+            // Delete Airport Route
+            app.MapPost("/Delete/Airport", (HttpRequest req) => Delete_Airport(req));
+
+            // Delete Airline Route
+            app.MapPost("/Delete/Airline", (HttpRequest req) => Delete_Airline(req));
+
+            // Delete AircraftType Route
+            app.MapPost("/Delete/AircraftType", (HttpRequest req) => Delete_AircraftType(req));
+
+            // Delete Manufactorer Route
+            app.MapPost("/Delete/Manufactorer", (HttpRequest req) => Delete_Manufactorer(req));
+
+            // Delete Aircraft Route
+            app.MapPost("/Delete/Aircraft", (HttpRequest req) => Delete_Aircraft(req));
+
+            // Delete SpottingTrip Route
+            app.MapPost("/Delete/SpottingTrip", (HttpRequest req) => Delete_SpottingTrip(req));
+
+            // Delete SpottingPicture Route
+            app.MapPost("/Delete/SpottingPicture", (HttpRequest req) => Delete_SpottingPicture(req));
         }
 
         private async Task<bool> Post_Country(HttpRequest req)
@@ -319,12 +340,13 @@ namespace SpottersDB_BackEnd.Classes.API
                 if(Success)
                 {
                     string FolderPath = Path.GetFullPath(Environment.CurrentDirectory) + "/Images";
-                    File.Delete(FolderPath + "/" + pic.PictureUrl);
+                    string filepath = pic.PictureUrl.Substring(pic.PictureUrl.LastIndexOf("/"));
+                    File.Delete(FolderPath + filepath);
                 }
             }
-            catch (Exception)
+            catch (Exception e)
             {
-
+                app.Logger.LogError(e.Message);
             }
 
             return Success;
