@@ -386,7 +386,7 @@ namespace SpottersDB_FrontEnd.Classes.Utilities
         public static async Task<bool> DeleteCountry(Country c)
         {
             Dictionary<string, string> pairs = new Dictionary<string, string>();
-            pairs.Add("ID", c.name);
+            pairs.Add("ID", c.id.ToString());
             return await APIPost("/Delete/Country", pairs);
         }
 

@@ -204,10 +204,127 @@ namespace SpottersDB_BackEnd.Classes.API
                 IFormCollection form = await req.ReadFormAsync();
                 Success = sqlcontroller.DeleteCountryByID(Convert.ToInt32(form["ID"]));
             }
-            catch (Exception e)
+            catch (Exception)
             {
-                app.Logger.LogError(e.Message);
-                throw;
+
+            }
+
+            return Success;
+        }
+
+        private async Task<bool> Delete_Airport(HttpRequest req)
+        {
+            bool Success = false;
+            try
+            {
+                IFormCollection form = await req.ReadFormAsync();
+                Success = sqlcontroller.DeleteAirportByID(Convert.ToInt32(form["ID"]));
+            }
+            catch (Exception)
+            {
+
+            }
+
+            return Success;
+        }
+
+        private async Task<bool> Delete_Airline(HttpRequest req)
+        {
+            bool Success = false;
+            try
+            {
+                IFormCollection form = await req.ReadFormAsync();
+                Success = sqlcontroller.DeleteAirlineByID(Convert.ToInt32(form["ID"]));
+            }
+            catch (Exception)
+            {
+
+            }
+
+            return Success;
+        }
+
+        private async Task<bool> Delete_AircraftType(HttpRequest req)
+        {
+            bool Success = false;
+            try
+            {
+                IFormCollection form = await req.ReadFormAsync();
+                Success = sqlcontroller.DeleteAircraftTypeByID(Convert.ToInt32(form["ID"]));
+            }
+            catch (Exception)
+            {
+
+            }
+
+            return Success;
+        }
+
+        private async Task<bool> Delete_Manufactorer(HttpRequest req)
+        {
+            bool Success = false;
+            try
+            {
+                IFormCollection form = await req.ReadFormAsync();
+                Success = sqlcontroller.DeleteManufactorerByID(Convert.ToInt32(form["ID"]));
+            }
+            catch (Exception)
+            {
+
+            }
+
+            return Success;
+        }
+
+        private async Task<bool> Delete_Aircraft(HttpRequest req)
+        {
+            bool Success = false;
+            try
+            {
+                IFormCollection form = await req.ReadFormAsync();
+                Success = sqlcontroller.DeleteAircraftByID(Convert.ToInt32(form["ID"]));
+            }
+            catch (Exception)
+            {
+
+            }
+
+            return Success;
+        }
+
+        private async Task<bool> Delete_SpottingTrip(HttpRequest req)
+        {
+            bool Success = false;
+            try
+            {
+                IFormCollection form = await req.ReadFormAsync();
+                Success = sqlcontroller.DeleteSpottingTripByID(Convert.ToInt32(form["ID"]));
+            }
+            catch (Exception)
+            {
+
+            }
+
+            return Success;
+        }
+
+        private async Task<bool> Delete_SpottingPicture(HttpRequest req)
+        {
+            bool Success = false;
+            try
+            {
+                IFormCollection form = await req.ReadFormAsync();
+                SpottingPicture pic = sqlcontroller.GetSpottingPictureByID(Convert.ToInt32(form["ID"]));
+                Success = sqlcontroller.DeleteSpottingPictureByID(Convert.ToInt32(form["ID"]));
+                if(Success)
+                {
+                    string FolderPath = Path.GetFullPath(Environment.CurrentDirectory) + "/Images";
+                    File.Delete(FolderPath + "/" + pic.PictureUrl);
+                }
+            }
+            catch (Exception)
+            {
+
             }
 
             return Success;

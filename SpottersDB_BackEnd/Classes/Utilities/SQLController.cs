@@ -554,6 +554,7 @@ namespace SpottersDB_BackEnd.Classes.Utilities
             }
             return IDs;
         }
+
         #endregion
 
         #region Delete Objects
@@ -569,9 +570,34 @@ namespace SpottersDB_BackEnd.Classes.Utilities
 
         public bool DeleteAirlineByID(int AirlineID)
         {
-            return ExecuteCMD($"DELETE FROM Arilines WHERE AirlineID = {AirlineID}", $"Deleting Airline with ID {AirlineID}");
+            return ExecuteCMD($"DELETE FROM Airlines WHERE AirlineID = {AirlineID}", $"Deleting Airline with ID {AirlineID}");
         }
 
+        public bool DeleteAircraftTypeByID(int AircraftTypeID)
+        {
+            return ExecuteCMD($"DELETE FROM AircraftTypes WHERE AircraftTypeID = {AircraftTypeID}", $"Deleting AircraftType with ID {AircraftTypeID}");
+        }
+
+        public bool DeleteManufactorerByID(int ManufactorerID)
+        {
+            return ExecuteCMD($"DELETE FROM Manufactorers WHERE ManufactorerID = {ManufactorerID}", $"Deleting Manufactorer with ID {ManufactorerID}");
+        }
+
+        public bool DeleteAircraftByID(int AircraftID)
+        {
+            return ExecuteCMD($"DELETE FROM Aircrafts WHERE AircraftID = {AircraftID}", $"Deleting Aircraft with ID {AircraftID}");
+        }
+
+        public bool DeleteSpottingTripByID(int SpottingTripID)
+        {
+            ExecuteCMD($"DELETE FROM SpottingTripAirports WHERE SpottingTripID = {SpottingTripID}", $"Deleting all SpottingTripAirportLinks from SpottingTrip with ID {SpottingTripID}");
+            return ExecuteCMD($"DELETE FROM SpottingTrips WHERE SpottingTripID = {SpottingTripID}", $"Deleting SpottingTrip with ID {SpottingTripID}");
+        }
+
+        public bool DeleteSpottingPictureByID(int SpottingPictureID)
+        {
+            return ExecuteCMD($"DELETE FROM SpottingPictures WHERE SpottingPictureID = {SpottingPictureID}", $"Deleting SpottingPicture with ID {SpottingPictureID}");
+        }
         #endregion
     }
 }

@@ -189,13 +189,13 @@ namespace SpottersDB_BackEnd.Classes.API
                     File.Delete(FolderPath + "/" + oldFileName);
 
                     SpottingPicture spottingPicture = new SpottingPicture(Convert.ToInt32(form["ID"]), form["Name"], form["Description"], URL, OldFileName, Convert.ToInt32(form["SpottingTripAirport"]), Convert.ToInt32(form["AircraftID"]));
-                    sqlcontroller.UpdateSpottingPicture(spottingPicture);
+                    IsSuccessfull = sqlcontroller.UpdateSpottingPicture(spottingPicture);
                 }
                 else
                 {
                     IFormCollection form = await req.ReadFormAsync();
                     SpottingPicture spottingPicture = new SpottingPicture(Convert.ToInt32(form["ID"]), form["Name"], form["Description"], form["PictureURL"], form["OriginalFileName"], Convert.ToInt32(form["SpottingTripAirport"]), Convert.ToInt32(form["AircraftID"]));
-                    sqlcontroller.UpdateSpottingPicture(spottingPicture);
+                    IsSuccessfull = sqlcontroller.UpdateSpottingPicture(spottingPicture);
                 }
             }
             catch (Exception)
