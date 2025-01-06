@@ -39,14 +39,14 @@ namespace SpottersDB_FrontEnd.Classes.UI_Elements.Cards
                 }
             };
 
-            b.Content = parent;
-            int Width = 720;
-            int Height = 450;
+            int Width = 450;
+            int Height = 350;
             parent.MaximumWidthRequest = Width;
             parent.WidthRequest = Width;
             parent.MaximumHeightRequest = Height;
             parent.HeightRequest = Height;
             parent.Margin = 10;
+            b.Content = parent;
 
             Label lblName = new Label();
             lblName.Text = SpottingPicture.name;
@@ -106,6 +106,8 @@ namespace SpottersDB_FrontEnd.Classes.UI_Elements.Cards
             deleteBtn.CommandParameter = SpottingPicture;
             deleteBtn.Clicked += DeleteBtn_Clicked; ;
             deleteBtn.VerticalOptions = LayoutOptions.End;
+            deleteBtn.TextColor = Microsoft.Maui.Graphics.Colors.White;
+            deleteBtn.BackgroundColor = Microsoft.Maui.Graphics.Color.FromRgb(209, 36, 42);
             parent.Add(deleteBtn, 0, 5);
 
             return b;

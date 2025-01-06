@@ -97,6 +97,8 @@ namespace SpottersDB_FrontEnd.Classes.UI_Elements.Cards
             deleteBtn.CommandParameter = country;
             deleteBtn.Clicked += DeleteBtn_Clicked;
             deleteBtn.VerticalOptions = LayoutOptions.End;
+            deleteBtn.TextColor = Microsoft.Maui.Graphics.Colors.White;
+            deleteBtn.BackgroundColor = Microsoft.Maui.Graphics.Color.FromRgb(209, 36, 42);
             parent.Add(deleteBtn, 0, 3);
 
 

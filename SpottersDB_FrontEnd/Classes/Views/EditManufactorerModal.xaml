@@ -16,7 +16,7 @@
             <ColumnDefinition/>
         </Grid.ColumnDefinitions>
         <Label Grid.Row="0" Grid.Column="0" Text="Name:"/>
-        <Entry Grid.Row="0" Grid.Column="1" x:Name="ManufactorerName"/>
+        <Entry Grid.Row="0" Grid.Column="1" x:Name="ManufactorerName" TextChanged="ManufactorerName_TextChanged"/>
 
         <Label Grid.Row="1" Grid.Column="0" Text="Region: "/>
 

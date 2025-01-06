@@ -40,8 +40,8 @@ namespace SpottersDB_FrontEnd.Classes.UI_Elements.Cards
             b.Content = parent;
             parent.MaximumWidthRequest = 500;
             parent.WidthRequest = 400;
-            parent.MaximumHeightRequest = 200;
-            parent.HeightRequest = 200;
+            parent.MaximumHeightRequest = 250;
+            parent.HeightRequest = 250;
             parent.Margin = 10;
 
             Label lblName = new Label();
@@ -83,6 +83,8 @@ namespace SpottersDB_FrontEnd.Classes.UI_Elements.Cards
             deleteBtn.CommandParameter = airline;
             deleteBtn.Clicked += DeleteBtn_Clicked; ;
             deleteBtn.VerticalOptions = LayoutOptions.End;
+            deleteBtn.TextColor = Microsoft.Maui.Graphics.Colors.White;
+            deleteBtn.BackgroundColor = Microsoft.Maui.Graphics.Color.FromRgb(209, 36, 42);
             parent.Add(deleteBtn, 0, 4);
 
             return b;

@@ -12,11 +12,14 @@ public partial class EditManufactorerModal : ContentPage
     bool IsEditing;
     Manufactorer manufactorer;
     Picker RegionPicker = null;
+    bool IsLoaded = false;
 
     public EditManufactorerModal()
 	{
 		InitializeComponent();
         IsEditing = false;
+        Submit.IsEnabled = false;
+        ManufactorerName.Text = "";
         Submit.Clicked += Submit_Clicked;
     }
 
@@ -43,6 +46,7 @@ public partial class EditManufactorerModal : ContentPage
         InitializeComponent();
 
         manufactorer = man;
+        ManufactorerName.Text = man.name;
         IsEditing = true;
         ManufactorerName.Text = manufactorer.name;
         Submit.Clicked += Submit_Clicked;
@@ -65,12 +69,13 @@ public partial class EditManufactorerModal : ContentPage
         RegionPicker  = new Picker();
         List<string> regionNames = new List<string>();
 
+        regionNames.Add("Create New");
+
         foreach (Country country in Countries)
         {
             regionNames.Add(country.name + " - " + country.id);
         }
 
-        regionNames.Add("Create New");
 
         RegionPicker.ItemsSource = regionNames;
 
@@ -78,12 +83,13 @@ public partial class EditManufactorerModal : ContentPage
 
         if (IsEditing)
         {
-            int ID = Countries.FindIndex(c => c.id == manufactorer.region);
+            int ID = Countries.FindIndex(c => c.id == manufactorer.region) + 1;
             RegionPicker.SelectedIndex = ID;
         }
 
         RegionPicker.SelectedIndexChanged += RegionPickerSelectionChange;
-
+        IsLoaded = true;
+        CheckIfAllValid();
         GridMain.Add(RegionPicker, 1, 1);
     }
 
@@ -94,6 +100,18 @@ public partial class EditManufactorerModal : ContentPage
             case "Create New":
                 CreateNewRegion();
                 break;
+            default:
+                CheckIfAllValid();
+                break;
+
+        }
+    }
+
+    private void CheckIfAllValid()
+    {
+        if(IsLoaded)
+        {
+            Submit.IsEnabled = RegionPicker.SelectedIndex >= 1 && ManufactorerName.Text.Length >= 1;
         }
     }
 
@@ -101,5 +119,10 @@ public partial class EditManufactorerModal : ContentPage
     {
         EditCountryModal editCountryModal = new EditCountryModal(true);
         Navigation.PushAsync(editCountryModal);
+    }
+
+    private void ManufactorerName_TextChanged(object sender, TextChangedEventArgs e)
+    {
+        CheckIfAllValid();
     }
 }

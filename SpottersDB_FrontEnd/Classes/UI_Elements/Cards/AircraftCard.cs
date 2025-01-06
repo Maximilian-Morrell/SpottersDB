@@ -3,6 +3,7 @@ using SpottersDB_FrontEnd.Classes.Structure;
 using SpottersDB_FrontEnd.Classes.Views;
 using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -23,7 +24,7 @@ namespace SpottersDB_FrontEnd.Classes.UI_Elements.Cards
             rr.CornerRadius = 10;
             b.StrokeShape = rr;
             b.Padding = 10;
-            b.BackgroundColor = Color.FromRgb(128, 128, 128);
+            b.BackgroundColor = Microsoft.Maui.Graphics.Color.FromRgb(128, 128, 128);
 
             Grid parent = new Grid
             {
@@ -41,8 +42,8 @@ namespace SpottersDB_FrontEnd.Classes.UI_Elements.Cards
             b.Content = parent;
             parent.MaximumWidthRequest = 500;
             parent.WidthRequest = 400;
-            parent.MaximumHeightRequest = 250;
-            parent.HeightRequest = 250;
+            parent.MaximumHeightRequest = 300;
+            parent.HeightRequest = 300;
             parent.Margin = 10;
 
             Label lblName = new Label();
@@ -94,6 +95,8 @@ namespace SpottersDB_FrontEnd.Classes.UI_Elements.Cards
             deleteBtn.CommandParameter = aircraft;
             deleteBtn.Clicked += DeleteBtn_Clicked; ;
             deleteBtn.VerticalOptions = LayoutOptions.End;
+            deleteBtn.TextColor = Microsoft.Maui.Graphics.Colors.White;
+            deleteBtn.BackgroundColor = Microsoft.Maui.Graphics.Color.FromRgb(209, 36, 42);
             parent.Add(deleteBtn, 0, 5);
 
             return b;
