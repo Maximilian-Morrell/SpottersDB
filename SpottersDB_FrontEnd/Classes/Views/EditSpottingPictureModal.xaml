@@ -19,20 +19,20 @@
             <ColumnDefinition></ColumnDefinition>
             <ColumnDefinition></ColumnDefinition>
         </Grid.ColumnDefinitions>
-        <Label Grid.Row="0" Grid.Column="0" Text="Spotting Picture Name:"></Label>
-        <Entry Grid.Row="0" Grid.ColumnSpan="2" Grid.Column="1" x:Name="SpottingPictureName"></Entry>
+        <Label Grid.Row="0" Grid.Column="0" Text="Spotting Picture Name: *"></Label>
+        <Entry Grid.Row="0" Grid.ColumnSpan="2" Grid.Column="1" x:Name="SpottingPictureName" MaxLength="255" TextChanged="SpottingPictureName_TextChanged"></Entry>
 
         <Label Grid.Row="1" Grid.Column="0" Text="Spotting Picture Description:"></Label>
-        <Entry Grid.Row="1" Grid.ColumnSpan="2" Grid.Column="1" x:Name="SpottingPictureDescription"></Entry>
+        <Entry Grid.Row="1" Grid.ColumnSpan="2" Grid.Column="1" x:Name="SpottingPictureDescription" MaxLength="255"></Entry>
 
-        <Label Grid.Row="2" Grid.Column="0" Text="Spotting Picture:"></Label>
+        <Label Grid.Row="2" Grid.Column="0" Text="Spotting Picture: *"></Label>
         <Button Grid.Row="2" Grid.ColumnSpan="2" Grid.Column="1" Text="Select Image" x:Name="BtnFilePicker"></Button>
 
-        <Label Grid.Row="3" Grid.Column="0" Text="Spotting Picture Airport"/>
+        <Label Grid.Row="3" Grid.Column="0" Text="Spotting Picture Airport *"/>
 
-        <Label Grid.Row="4" Grid.Column="0" Text="Aircraft:"></Label>
+        <Label Grid.Row="4" Grid.Column="0" Text="Aircraft: *"></Label>
         
-        <Button Grid.Row="5" Grid.ColumnSpan="3" Text="Submit" x:Name="Submit" VerticalOptions="End"></Button>
+        <Button Grid.Row="5" Grid.ColumnSpan="3" Text="Submit" x:Name="Submit" VerticalOptions="End" IsEnabled="False"></Button>
         <Frame CornerRadius="10" HeightRequest="500" Padding="0" Margin="0" VerticalOptions="Start" Grid.Row="6" Grid.Column="0" Grid.ColumnSpan="3" HorizontalOptions="Center">
             <Image x:Name="PreviewImage"></Image>
         </Frame>
