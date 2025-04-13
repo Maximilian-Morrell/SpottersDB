@@ -47,9 +47,9 @@ public partial class EditAircraftModal : ContentPage
     {
         try
         {
-            int Type = Types[TypePicker.SelectedIndex].id;
-            int Airline = Airlines[AirlinePicker.SelectedIndex].id;
-            int Country = Countries[CountryPicker.SelectedIndex].id;
+            int Type = Types[TypePicker.SelectedIndex - 1].id;
+            int Airline = Airlines[AirlinePicker.SelectedIndex -1 ].id;
+            int Country = Countries[CountryPicker.SelectedIndex - 1].id;
             if (IsEditing)
             {
                 int ID = aircraft.id;

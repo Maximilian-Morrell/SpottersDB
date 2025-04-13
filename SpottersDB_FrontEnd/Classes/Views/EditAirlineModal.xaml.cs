@@ -36,7 +36,7 @@ public partial class EditAirlineModal : ContentPage
     {
         try
         {
-            int Region = Countries[CountryPicker.SelectedIndex].id;
+            int Region = Countries[CountryPicker.SelectedIndex - 1].id;
             if (IsEditing)
             {
                 int ID = airline.id;
