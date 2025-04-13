@@ -194,7 +194,7 @@ namespace SpottersDB_FrontEnd.Classes.Utilities
             pairs.Add("ICAO", aircraftType.icaoCode);
             pairs.Add("Fullname", aircraftType.fullName);
             pairs.Add("NickName", aircraftType.nickName);
-            pairs.Add("ManufactorerID", aircraftType.id.ToString());
+            pairs.Add("ManufactorerID", aircraftType.manufactorerID.ToString());
             return await APIPost("/Patch/AircraftType", pairs);
         }
 

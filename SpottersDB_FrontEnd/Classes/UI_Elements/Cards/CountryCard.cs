@@ -24,83 +24,34 @@ namespace SpottersDB_FrontEnd.Classes.UI_Elements.Cards
 
         public Border Card(Country country, string URL)
         {
-            
+            Border b = UI_Utilities.CreateBorder();
 
-            Border b = new Border();
-            RoundRectangle rr = new RoundRectangle();
-            rr.CornerRadius = 10;
-            b.StrokeShape = rr;
-            b.Padding = 10;
-            b.BackgroundColor = Color.FromRgb(128, 128, 128);
-            b.Padding = 0;
-            b.Margin = 0;
+            Grid parent = null;
 
-            Grid parent = new Grid
+            if(country.icaO_Code != "")
             {
-                RowDefinitions =
-                {
-                    new RowDefinition{Height = new GridLength(2, GridUnitType.Star)},
-                    new RowDefinition(),
-                    new RowDefinition(),
-                    new RowDefinition()
-                }
-            };
+                parent = UI_Utilities.CreateGrid(b, 4, MaximumWidth: 400);
 
-            b.Content = parent;
-            parent.MaximumWidthRequest = 500;
-            parent.WidthRequest = 400;
-            parent.MaximumHeightRequest = 250;
-            parent.HeightRequest = 250;
-            parent.Margin = 10;
+                Label lblName = UI_Utilities.CreateLabel(parent, country.icaO_Code, 0, 0, 50, FontAttributes.Bold);
 
-            Label lblName = new Label();
-            lblName.Text = country.name;
-            lblName.FontSize = 40;
-            lblName.FontAttributes = FontAttributes.Bold;
-            lblName.VerticalOptions = LayoutOptions.Fill;
-            lblName.VerticalTextAlignment = TextAlignment.Center;
-            lblName.HorizontalTextAlignment = TextAlignment.Center;
-            parent.Add(lblName, 0, 0);
+                Label lblCountry = UI_Utilities.CreateLabel(parent, country.name, 0, 1, 20);
+                lblCountry.LineBreakMode = LineBreakMode.WordWrap;
 
+                Button editBtn = UI_Utilities.CreateButton(false, parent, "Edit", country, EditBtn_Clicked, 0, 2);
 
-
-            if (country.icaO_Code == "")
-            {
-                Grid.SetRowSpan(lblName, 2);
-                lblName.FontSize = 55;
-                parent.MaximumHeightRequest = 250;
-                parent.HeightRequest = 250;
+                Button deleteBtn = UI_Utilities.CreateButton(true, parent, "Delete", country, DeleteBtn_Clicked, 0, 3);
             }
             else
             {
-                Border imgB = ImageItem.GetImageCardItem(URL);
-                imgB.Scale = 1.2;
-                parent.SetRowSpan(imgB, 3);
-                parent.Children.Add(imgB);
-                Label lblICAO = new Label();
-                lblICAO.Text = country.icaO_Code;
-                lblICAO.FontSize = 30;
-                lblICAO.HorizontalTextAlignment = TextAlignment.Center;
-                parent.Add(lblICAO, 0, 1);
+                parent = UI_Utilities.CreateGrid(b, 4, MaximumWidth: 400);
+                Label lblName = UI_Utilities.CreateLabel(parent, country.name, 0, 0, 30, FontAttributes.Bold);
+                lblName.LineBreakMode = LineBreakMode.WordWrap;
+
+                Button editBtn = UI_Utilities.CreateButton(false, parent, "Edit", country, EditBtn_Clicked, 0, 2);
+
+                Button deleteBtn = UI_Utilities.CreateButton(true, parent, "Delete", country, DeleteBtn_Clicked, 0, 3);
+
             }
-
-            Button editBtn = new Button();
-            editBtn.Text = "Edit";
-            editBtn.CommandParameter = country;
-            editBtn.Clicked += EditBtn_Clicked;
-            editBtn.VerticalOptions = LayoutOptions.End;
-            // editBtn.HorizontalOptions = LayoutOptions.Center;
-            parent.Add(editBtn, 0, 2);
-
-            Button deleteBtn = new Button();
-            deleteBtn.Text = "Delete";
-            deleteBtn.CommandParameter = country;
-            deleteBtn.Clicked += DeleteBtn_Clicked;
-            deleteBtn.VerticalOptions = LayoutOptions.End;
-            deleteBtn.TextColor = Microsoft.Maui.Graphics.Colors.White;
-            deleteBtn.BackgroundColor = Microsoft.Maui.Graphics.Color.FromRgb(209, 36, 42);
-            parent.Add(deleteBtn, 0, 3);
-
 
             return b;
         }

@@ -19,34 +19,25 @@ namespace SpottersDB_FrontEnd.Classes.UI_Elements.Cards
 
         public async Task<Border> Card(SpottingPicture SpottingPicture)
         {
+            Border final_Border = UI_Utilities.CreateBorder(Padding: 0);
             Border b = new Border();
-            RoundRectangle rr = new RoundRectangle();
-            rr.CornerRadius = 10;
-            b.StrokeShape = rr;
-            b.Padding = 10;
-            b.BackgroundColor = Color.FromRgb(128, 128, 128);
+            AbsoluteLayout.SetLayoutBounds(b, new Rect(0, 0, 640, 426.5));
+            AbsoluteLayout.SetLayoutFlags(b, Microsoft.Maui.Layouts.AbsoluteLayoutFlags.None);
 
-            Grid parent = new Grid
-            {
-                RowDefinitions =
-                {
-                    new RowDefinition(new GridLength(2, GridUnitType.Star)),
-                    new RowDefinition(),
-                    new RowDefinition(),
-                    new RowDefinition(),
-                    new RowDefinition(),
-                    new RowDefinition()
-                }
-            };
+            Image imgB = UI_Utilities.CreateImage(SpottingPicture.pictureUrl);
+            imgB.Opacity = 0.5;
+            AbsoluteLayout.SetLayoutBounds(imgB, new Rect(0, 0, 640, 426.5));
+            AbsoluteLayout.SetLayoutFlags(imgB, Microsoft.Maui.Layouts.AbsoluteLayoutFlags.None);
 
-            int Width = 450;
-            int Height = 350;
-            parent.MaximumWidthRequest = Width;
-            parent.WidthRequest = Width;
-            parent.MaximumHeightRequest = Height;
-            parent.HeightRequest = Height;
-            parent.Margin = 10;
-            b.Content = parent;
+            AbsoluteLayout GrandParent = new AbsoluteLayout();
+            GrandParent.HeightRequest = 426.5;
+            GrandParent.WidthRequest = 640;
+
+            GrandParent.Children.Add(imgB);
+            GrandParent.Children.Add(b);
+            final_Border.Content = GrandParent;
+
+            Grid parent = UI_Utilities.CreateGrid(b, 6, 620, 407);
 
             Label lblName = new Label();
             lblName.Text = SpottingPicture.name;
@@ -66,10 +57,6 @@ namespace SpottersDB_FrontEnd.Classes.UI_Elements.Cards
             lblDescription.VerticalTextAlignment = TextAlignment.Center;
             parent.Add(lblDescription, 0, 1);
 
-            Border imgB = ImageItem.GetImageCardItem(SpottingPicture.pictureUrl);
-            imgB.Scale = 1.2;
-            parent.SetRowSpan(imgB, 5);
-            parent.Children.Add(imgB);
 
             Dictionary<string, int> SpottingTripAirport = await HTTP_Controller.GetSpottingTripAirport(SpottingPicture.spottingTripAirportID);
             SpottingTrip spottingTrip = await HTTP_Controller.GetSpottingTrip(SpottingTripAirport["SpottingTrip"]);
@@ -110,7 +97,7 @@ namespace SpottersDB_FrontEnd.Classes.UI_Elements.Cards
             deleteBtn.BackgroundColor = Microsoft.Maui.Graphics.Color.FromRgb(209, 36, 42);
             parent.Add(deleteBtn, 0, 5);
 
-            return b;
+            return final_Border;
         }
 
         private void DeleteBtn_Clicked(object? sender, EventArgs e)

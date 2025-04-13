@@ -1,5 +1,6 @@
 ﻿using Microsoft.Maui.Controls.Shapes;
 using SpottersDB_FrontEnd.Classes.Structure;
+using SpottersDB_FrontEnd.Classes.Utilities;
 using SpottersDB_FrontEnd.Classes.Views;
 using System;
 using System.Collections.Generic;
@@ -18,84 +19,23 @@ namespace SpottersDB_FrontEnd.Classes.UI_Elements.Cards
 
         public async Task<Border> Card(Airport airport)
         {
-            Border b = new Border();
-            RoundRectangle rr = new RoundRectangle();
-            rr.CornerRadius = 10;
-            b.StrokeShape = rr;
-            b.Padding = 10;
-            b.BackgroundColor = Color.FromRgb(128, 128, 128);
+            Border b = UI_Utilities.CreateBorder();
 
-            Grid parent = new Grid
-            {
-                RowDefinitions =
-                {
-                    new RowDefinition(),
-                    new RowDefinition(),
-                    new RowDefinition(),
-                    new RowDefinition(),
-                    new RowDefinition(),
-                    new RowDefinition()
-                }
-            };
+            Grid parent = UI_Utilities.CreateGrid(b, 6, MaximumHeight: 400);
 
-            b.Content = parent;
-            parent.MaximumWidthRequest = 500;
-            parent.WidthRequest = 500;
-            parent.MaximumHeightRequest = 300;
-            parent.HeightRequest = 300;
-            parent.Margin = 10;
+            Label lblIATA_ICAO = UI_Utilities.CreateLabel(parent, airport.icaO_Code + " - " + airport.iatA_Code, 0, 0, 50, FontAttributes.Bold);
 
-            Label lblName = new Label();
-            lblName.Text = airport.name;
-            lblName.FontSize = 58;
-            lblName.LineBreakMode = LineBreakMode.WordWrap;
-            lblName.FontAttributes = FontAttributes.Bold;
-            lblName.HorizontalTextAlignment = TextAlignment.Center;
-            lblName.VerticalTextAlignment = TextAlignment.Center;
-            lblName.VerticalOptions = LayoutOptions.Center;
-            parent.Add(lblName, 0, 0);
+            Label lblAName = UI_Utilities.CreateLabel(parent, airport.name, 0, 1, 18);
+            lblIATA_ICAO.LineBreakMode = LineBreakMode.WordWrap;
 
-            Label lblIATA_ICAO = new Label();
-            lblIATA_ICAO.Text = airport.icaO_Code + " - " + airport.iatA_Code;
-            lblIATA_ICAO.HorizontalTextAlignment = TextAlignment.Center;
-            lblIATA_ICAO.FontSize = 30;
-            lblIATA_ICAO.VerticalOptions = LayoutOptions.Center;
-            lblIATA_ICAO.VerticalTextAlignment = TextAlignment.Center;
-            parent.Add(lblIATA_ICAO, 0, 1); 
+            Label lblCity = UI_Utilities.CreateLabel(parent, airport.city, 0, 2, 30);
 
-            Label lblCity = new Label();
-            lblCity.Text = airport.city;
-            lblCity.HorizontalTextAlignment = TextAlignment.Center;
-            lblCity.FontSize = 30;
-            lblCity.VerticalOptions = LayoutOptions.Center;
-            lblCity.VerticalTextAlignment = TextAlignment.Center;
-            parent.Add(lblCity, 0, 2);
-
-            Label lblRegion = new Label();
             Country c = await airport.GetRegion();
-            lblRegion.Text = c.name;
-            lblRegion.HorizontalTextAlignment = TextAlignment.Center;
-            lblRegion.FontSize = 30;
-            lblRegion.VerticalOptions = LayoutOptions.Center;
-            lblRegion.VerticalTextAlignment = TextAlignment.Center;
-            parent.Add(lblRegion, 0, 3);
+            Label lblRegion = UI_Utilities.CreateLabel(parent, c.name, 0, 3, 30);
 
-            Button editBtn = new Button();
-            editBtn.Text = "Edit";
-            editBtn.CommandParameter = airport;
-            editBtn.Clicked += EditBtn_Clicked;
-            editBtn.HorizontalOptions = LayoutOptions.Fill;
-            editBtn.VerticalOptions = LayoutOptions.End;
-            parent.Add(editBtn, 0, 4);
+            Button editBtn = UI_Utilities.CreateButton(false, parent, "Edit", airport, EditBtn_Clicked, 0, 4);
 
-            Button deleteBtn = new Button();
-            deleteBtn.Text = "Delete";
-            deleteBtn.CommandParameter = airport;
-            deleteBtn.Clicked += DeleteBtn_Clicked;
-            deleteBtn.VerticalOptions = LayoutOptions.End;
-            deleteBtn.TextColor = Microsoft.Maui.Graphics.Colors.White;
-            deleteBtn.BackgroundColor = Microsoft.Maui.Graphics.Color.FromRgb(209, 36, 42);
-            parent.Add(deleteBtn, 0, 5);
+            Button deleteBtn = UI_Utilities.CreateButton(true, parent, "Delete", airport, DeleteBtn_Clicked, 0, 5);
 
             return b;
         }

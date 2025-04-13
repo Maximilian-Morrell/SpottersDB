@@ -1,5 +1,6 @@
 ﻿using Microsoft.Maui.Controls.Shapes;
 using SpottersDB_FrontEnd.Classes.Structure;
+using SpottersDB_FrontEnd.Classes.Utilities;
 using SpottersDB_FrontEnd.Classes.Views;
 using System;
 using System.Collections.Generic;
@@ -18,74 +19,20 @@ namespace SpottersDB_FrontEnd.Classes.UI_Elements.Cards
 
         public async Task<Border> Card(Airline airline)
         {
-            Border b = new Border();
-            RoundRectangle rr = new RoundRectangle();
-            rr.CornerRadius = 10;
-            b.StrokeShape = rr;
-            b.Padding = 10;
-            b.BackgroundColor = Color.FromRgb(128, 128, 128);
+            Border b = UI_Utilities.CreateBorder();
 
-            Grid parent = new Grid
-            {
-                RowDefinitions =
-                {
-                    new RowDefinition(),
-                    new RowDefinition(),
-                    new RowDefinition(),
-                    new RowDefinition(),
-                    new RowDefinition()
-                }
-            };
+            Grid parent = UI_Utilities.CreateGrid(b, 5);
 
-            b.Content = parent;
-            parent.MaximumWidthRequest = 500;
-            parent.WidthRequest = 400;
-            parent.MaximumHeightRequest = 250;
-            parent.HeightRequest = 250;
-            parent.Margin = 10;
+            Label lblName = UI_Utilities.CreateLabel(parent, airline.iata, 0, 0, 50, FontAttributes.Bold);
 
-            Label lblName = new Label();
-            lblName.Text = airline.name;
-            lblName.FontSize = 58;
-            lblName.FontAttributes = FontAttributes.Bold;
-            lblName.HorizontalTextAlignment = TextAlignment.Center;
-            lblName.VerticalTextAlignment = TextAlignment.Center;
-            lblName.VerticalOptions = LayoutOptions.Center;
-            parent.Add(lblName, 0, 0);
+            Label lblIATA_ICAO = UI_Utilities.CreateLabel(parent, airline.name, 0, 1, 20);
 
-            Label lblIATA_ICAO = new Label();
-            lblIATA_ICAO.Text = airline.icao + " - " + airline.iata;
-            lblIATA_ICAO.HorizontalTextAlignment = TextAlignment.Center;
-            lblIATA_ICAO.FontSize = 30;
-            lblIATA_ICAO.VerticalOptions = LayoutOptions.Center;
-            lblIATA_ICAO.VerticalTextAlignment = TextAlignment.Center;
-            parent.Add(lblIATA_ICAO, 0, 1);
-
-            Label lblRegion = new Label();
             Country c = await airline.GetRegion();
-            lblRegion.Text = c.name;
-            lblRegion.HorizontalTextAlignment = TextAlignment.Center;
-            lblRegion.FontSize = 30;
-            lblRegion.VerticalOptions = LayoutOptions.Center;
-            lblRegion.VerticalTextAlignment = TextAlignment.Center;
-            parent.Add(lblRegion, 0, 2);
+            Label lblRegion = UI_Utilities.CreateLabel(parent, c.name, 0, 2, 30);
 
-            Button editBtn = new Button();
-            editBtn.Text = "Edit";
-            editBtn.CommandParameter = airline;
-            editBtn.Clicked += EditBtn_Clicked;
-            editBtn.HorizontalOptions = LayoutOptions.Fill;
-            editBtn.VerticalOptions = LayoutOptions.End;
-            parent.Add(editBtn, 0, 3);
+            Button editBtn = UI_Utilities.CreateButton(false, parent, "Edit", airline, EditBtn_Clicked, 0, 3);
 
-            Button deleteBtn = new Button();
-            deleteBtn.Text = "Delete";
-            deleteBtn.CommandParameter = airline;
-            deleteBtn.Clicked += DeleteBtn_Clicked; ;
-            deleteBtn.VerticalOptions = LayoutOptions.End;
-            deleteBtn.TextColor = Microsoft.Maui.Graphics.Colors.White;
-            deleteBtn.BackgroundColor = Microsoft.Maui.Graphics.Color.FromRgb(209, 36, 42);
-            parent.Add(deleteBtn, 0, 4);
+            Button deleteBtn = UI_Utilities.CreateButton(true, parent, "Delete", airline, DeleteBtn_Clicked, 0, 4);
 
             return b;
         }
@@ -109,6 +56,7 @@ namespace SpottersDB_FrontEnd.Classes.UI_Elements.Cards
             {
                 Window w = new Window(new ErrorBox(ex.StackTrace, ex.InnerException.Message));
                 Application.Current.OpenWindow(w);
+                
             }
         }
     }

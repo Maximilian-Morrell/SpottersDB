@@ -30,6 +30,7 @@ public partial class EditAirlineModal : ContentPage
         AirlineICAO.Text = airline.icao;
         AirlineIATA.Text = airline.iata;
         AirlineName.Text = airline.name;
+        Submit.IsEnabled = true;
     }
 
     private async void Submit_Clicked(object sender, EventArgs e)

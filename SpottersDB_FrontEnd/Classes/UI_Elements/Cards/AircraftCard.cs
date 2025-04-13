@@ -20,57 +20,32 @@ namespace SpottersDB_FrontEnd.Classes.UI_Elements.Cards
 
         public async Task<Border> Card(Aircraft aircraft)
         {
+            // Create the Border which adds the roundness to the edges and acts as the final content container
             Border b = UI_Utilities.CreateBorder();
 
-
+            // Creates the Parent Grid where all of the different UI Elements are aligned in
             Grid parent = UI_Utilities.CreateGrid(b, 6);
 
-            Label lblName = UI_Utilities.CreateLabel(parent, aircraft.registration, 0, 0, 58, FontAttributes.Bold);
+            // Name Label
+            Label lblName = UI_Utilities.CreateLabel(parent, aircraft.registration, 0, 0, 50, FontAttributes.Bold);
 
-
-            Label lblType = new Label();
+            // Aircraft Type Label
             AircraftType type = await aircraft.GetAircraftType();
-            lblType.Text = type.icaoCode;
-            lblType.HorizontalTextAlignment = TextAlignment.Center;
-            lblType.FontSize = 30;
-            lblType.VerticalOptions = LayoutOptions.Center;
-            lblType.VerticalTextAlignment = TextAlignment.Center;
-            parent.Add(lblType, 0, 1); 
+            Label lblType = UI_Utilities.CreateLabel(parent, type.icaoCode, 0, 1, 30);
 
-            Label lblAirline = new Label();
+            // Airline Label
             Airline airline = await aircraft.GetAirline();
-            lblAirline.Text = airline.iata;
-            lblAirline.HorizontalTextAlignment = TextAlignment.Center;
-            lblAirline.FontSize = 30;
-            lblAirline.VerticalOptions = LayoutOptions.Center;
-            lblAirline.VerticalTextAlignment = TextAlignment.Center;
-            parent.Add(lblAirline, 0, 2);
+            Label lblAirline = UI_Utilities.CreateLabel(parent, airline.iata, 0, 2, 30);
 
-            Label lblRegion = new Label();
+            // Country Label
             Country c = await aircraft.GetCountry();
-            lblRegion.Text = c.name;
-            lblRegion.HorizontalTextAlignment = TextAlignment.Center;
-            lblRegion.FontSize = 30;
-            lblRegion.VerticalOptions = LayoutOptions.Center;
-            lblRegion.VerticalTextAlignment = TextAlignment.Center;
-            parent.Add(lblRegion, 0, 3);
+            Label lblRegion = UI_Utilities.CreateLabel(parent, c.name, 0, 3, 30);
 
-            Button editBtn = new Button();
-            editBtn.Text = "Edit";
-            editBtn.CommandParameter = aircraft;
-            editBtn.Clicked += EditBtn_Clicked;
-            editBtn.HorizontalOptions = LayoutOptions.Fill;
-            editBtn.VerticalOptions = LayoutOptions.End;
-            parent.Add(editBtn, 0, 4);
+            // Edit Button
+            Button editBtn = UI_Utilities.CreateButton(false, parent, "Edit", aircraft, EditBtn_Clicked, 0, 4);
 
-            Button deleteBtn = new Button();
-            deleteBtn.Text = "Delete";
-            deleteBtn.CommandParameter = aircraft;
-            deleteBtn.Clicked += DeleteBtn_Clicked; ;
-            deleteBtn.VerticalOptions = LayoutOptions.End;
-            deleteBtn.TextColor = Microsoft.Maui.Graphics.Colors.White;
-            deleteBtn.BackgroundColor = Microsoft.Maui.Graphics.Color.FromRgb(209, 36, 42);
-            parent.Add(deleteBtn, 0, 5);
+            // Delete Button
+            Button deleteBtn = UI_Utilities.CreateButton(true, parent, "Delete", aircraft, DeleteBtn_Clicked, 0, 5);
 
             return b;
         }

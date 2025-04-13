@@ -57,6 +57,7 @@ public partial class EditManufactorerModal : ContentPage
         IsEditing = true;
         ManufactorerName.Text = manufactorer.name;
         Submit.Clicked += Submit_Clicked;
+        Submit.IsEnabled = true;
     }
 
     protected override void OnNavigatedTo(NavigatedToEventArgs args)

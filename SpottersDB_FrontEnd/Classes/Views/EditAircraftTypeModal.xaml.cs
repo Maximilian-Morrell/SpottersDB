@@ -29,6 +29,7 @@ public partial class EditAircraftTypeModal : ContentPage
         TypeICAO.Text = aircraftType.icaoCode;
         TypeName.Text = aircraftType.fullName;
         NickName.Text = aircraftType.nickName;
+        Submit.IsEnabled = true;
     }
 
     protected override void OnNavigatedTo(NavigatedToEventArgs args)

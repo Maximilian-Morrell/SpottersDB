@@ -27,7 +27,7 @@ public partial class EditAirportModal : ContentPage
         Submit.Clicked += Submit_Clicked;
         this.IsEditing = true;
         this.airport = airport;
-
+        Submit.IsEnabled = true;
         AirportICAO.Text = airport.icaO_Code;
         AirportIATA.Text = airport.iatA_Code;
         AirportName.Text = airport.name;

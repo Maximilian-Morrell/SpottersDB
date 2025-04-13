@@ -32,6 +32,7 @@ public partial class EditAircraftModal : ContentPage
         this.aircraft = aircraft;
         AircraftRegistration.Text = aircraft.registration;
         AircraftDescription.Text = aircraft.description;
+        Submit.IsEnabled = true;
         this.IsEditing = true;
     }
 

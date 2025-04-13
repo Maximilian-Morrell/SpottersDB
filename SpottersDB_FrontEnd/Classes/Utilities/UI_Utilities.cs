@@ -22,7 +22,7 @@ namespace SpottersDB_FrontEnd.Classes.Utilities
             return b;
         }
 
-        public static Grid CreateGrid(Border b, int Rows, int MaximumWidth = 500, int MaximumHeight = 300, int Margin = 10)
+        public static Grid CreateGrid(Border b, int Rows, int MaximumWidth = 500, int MaximumHeight = 300, int Margin = 5)
         {
             Grid parent = new Grid();
 
@@ -40,6 +40,17 @@ namespace SpottersDB_FrontEnd.Classes.Utilities
             return parent;
         }
 
+        public static Label CreateLabel(Grid parent, string Content, int Column, int Row, int fontSize)
+        {
+            Label lbl = new Label();
+            lbl.Text = Content;
+            lbl.FontSize = fontSize;
+            lbl.HorizontalTextAlignment = TextAlignment.Center;
+            lbl.VerticalTextAlignment = TextAlignment.Center;
+            lbl.VerticalOptions = LayoutOptions.Fill;
+            parent.Add(lbl, Column, Row);
+            return lbl;
+        }
         public static Label CreateLabel(Grid parent, string Content, int Column, int Row, int fontSize, FontAttributes fontAttributes)
         {
             Label lbl = new Label();
@@ -48,9 +59,46 @@ namespace SpottersDB_FrontEnd.Classes.Utilities
             lbl.FontAttributes = fontAttributes;
             lbl.HorizontalTextAlignment = TextAlignment.Center;
             lbl.VerticalTextAlignment = TextAlignment.Center;
-            lbl.VerticalOptions = LayoutOptions.Center;
+            lbl.VerticalOptions = LayoutOptions.Fill;
             parent.Add(lbl, Column, Row);
             return lbl;
+        }
+
+        public static Button CreateButton(bool IsDelete, Grid parent, string Text, object CommandParameter, EventHandler Clicked, int Column, int Row)
+        {
+            Button btn = new Button();
+            btn.Text = Text;
+            btn.CommandParameter = CommandParameter;
+            btn.Clicked += Clicked;
+            btn.HorizontalOptions = LayoutOptions.Fill;
+            btn.VerticalOptions = LayoutOptions.End;
+            parent.Add(btn, Column, Row);
+            if(IsDelete)
+            {
+                btn.TextColor = Microsoft.Maui.Graphics.Colors.White;
+                btn.BackgroundColor = Microsoft.Maui.Graphics.Color.FromRgb(209, 36, 42);
+            }
+            return btn;
+        }
+
+        public static Image CreateImage(string URL)
+        {
+            Image image = new Image();
+            try
+            {
+                image.Source = new UriImageSource
+                {
+                    Uri = new Uri(URL)
+                };
+            }
+            catch (Exception e)
+            {
+
+            }
+
+            image.Aspect = Aspect.Fill;
+
+            return image;
         }
     }
 }

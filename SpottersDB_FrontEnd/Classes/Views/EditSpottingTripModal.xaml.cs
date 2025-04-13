@@ -38,6 +38,7 @@ public partial class EditSpottingTripModal : ContentPage
             AddAirport(airport);
         }
         this.IsEditing = true;
+        Submit.IsEnabled = true;
     }
 
     private async void Submit_Clicked(object sender, EventArgs e)

@@ -36,7 +36,7 @@ public partial class EditSpottingPictureModal : ContentPage
         this.spottingPicture = spottingPicture;
         SetUp();
         GetAllAirports();
-        
+        Submit.IsEnabled = true;
     }
 
     private async void SetUp()
@@ -190,7 +190,7 @@ public partial class EditSpottingPictureModal : ContentPage
         if (IsEditing)
         {
             int ID = Aircrafts.FindIndex(a => a.id == spottingPicture.aircraftID);
-            AircraftPicker.SelectedIndex = ID;
+            AircraftPicker.SelectedIndex = ID + 1;
         }
 
         AircraftPicker.SelectedIndexChanged += AircraftPickerSelectionChanged;
@@ -266,7 +266,7 @@ public partial class EditSpottingPictureModal : ContentPage
         {
             Dictionary<string, int> ID = await HTTP_Controller.GetSpottingTripAirport(spottingPicture.spottingTripAirportID);
             int PickerID = Airports.FindIndex(s => s.id == ID["Airport"]);
-            AirportPicker.SelectedIndex = PickerID;
+            AirportPicker.SelectedIndex = PickerID + 1;
         }
 
         AirportPicker.IsEnabled = true;

@@ -57,6 +57,7 @@ public partial class EditCountryModal : ContentPage
         CountryName.Text = c.name;
         Submit.Clicked += Submit_Clicked;
         IsLoaded = true;
+        Submit.IsEnabled = true;
     }
 
     private async void Submit_Clicked(object sender, EventArgs e)
