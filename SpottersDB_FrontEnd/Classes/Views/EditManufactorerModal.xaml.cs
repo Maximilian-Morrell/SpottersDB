@@ -25,20 +25,27 @@ public partial class EditManufactorerModal : ContentPage
 
     private void Submit_Clicked(object sender, EventArgs e)
     {
-        string Name = ManufactorerName.Text;
-        int Region = Countries[RegionPicker.SelectedIndex].id;
-        if (IsEditing)
+        try
         {
-           Manufactorer newManufactorer = new Manufactorer(manufactorer.id, Name, Region);
-           HTTP_Controller.UpdateManufactorer(newManufactorer);
-        }
-        else
-        {
-           Manufactorer newManufactorer = new Manufactorer(Name, Region);
-           HTTP_Controller.AddNewManufactorer(newManufactorer);
-        }
+            string Name = ManufactorerName.Text;
+            int Region = Countries[RegionPicker.SelectedIndex -1 ].id;
+            if (IsEditing)
+            {
+                Manufactorer newManufactorer = new Manufactorer(manufactorer.id, Name, Region);
+                HTTP_Controller.UpdateManufactorer(newManufactorer);
+            }
+            else
+            {
+                Manufactorer newManufactorer = new Manufactorer(Name, Region);
+                HTTP_Controller.AddNewManufactorer(newManufactorer);
+            }
 
-        Navigation.RemovePage(this);
+            Navigation.RemovePage(this);
+        }
+        catch (Exception ex)
+        {
+
+        }
     }
 
     public EditManufactorerModal(Manufactorer man)

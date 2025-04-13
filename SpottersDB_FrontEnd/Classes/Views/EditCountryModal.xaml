@@ -15,9 +15,9 @@
             <ColumnDefinition></ColumnDefinition>
         </Grid.ColumnDefinitions>
         <Label Grid.Row="0" Grid.Column="0" Text="ICAO:"></Label>
-        <Entry Grid.Row="0" Grid.Column="1" x:Name="CountryICAO" MaxLength="10" TextChanged="TextChanged"></Entry>
+        <Entry Grid.Row="0" Grid.Column="1" x:Name="CountryICAO" MaxLength="2" TextChanged="TextChanged"></Entry>
 
-        <Label Grid.Row="1" Grid.Column="0" Text="Name:"></Label>
+        <Label Grid.Row="1" Grid.Column="0" Text="Name: *"></Label>
         <Entry Grid.Row="1" Grid.Column="1" x:Name="CountryName" MaxLength="255" TextChanged="TextChanged"></Entry>
 
         <Button Grid.Row="2" Grid.ColumnSpan="2" Text="Submit" x:Name="Submit"></Button>

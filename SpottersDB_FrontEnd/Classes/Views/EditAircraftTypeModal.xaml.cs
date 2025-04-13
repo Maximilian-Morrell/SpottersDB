@@ -9,6 +9,7 @@ public partial class EditAircraftTypeModal : ContentPage
     public List<Manufactorer> Manufactorers = new List<Manufactorer>();
     bool IsEditing;
     AircraftType aircraftType;
+    bool IsLoaded = false;
 
     public EditAircraftTypeModal()
 	{
@@ -36,19 +37,26 @@ public partial class EditAircraftTypeModal : ContentPage
 
     private async void Submit_Clicked(object sender, EventArgs e)
     {
-        int Manufactorer = Manufactorers[ManufactorerPicker.SelectedIndex].id;
-        if (IsEditing)
+        try
         {
-            int id = aircraftType.id;
-            AircraftType newaircraftType = new AircraftType(id, TypeICAO.Text, TypeName.Text, NickName.Text, Manufactorer);
-            await HTTP_Controller.UpdateAircraftType(newaircraftType);
-            Navigation.RemovePage(this);
+            int Manufactorer = Manufactorers[ManufactorerPicker.SelectedIndex -1].id;
+            if (IsEditing)
+            {
+                int id = aircraftType.id;
+                AircraftType newaircraftType = new AircraftType(id, TypeICAO.Text, TypeName.Text, NickName.Text, Manufactorer);
+                await HTTP_Controller.UpdateAircraftType(newaircraftType);
+                Navigation.RemovePage(this);
+            }
+            else
+            {
+                aircraftType = new AircraftType(TypeICAO.Text, TypeName.Text, NickName.Text, Manufactorer);
+                await HTTP_Controller.AddNewAircraftType(aircraftType);
+                Navigation.RemovePage(this);
+            }
         }
-        else
+        catch (Exception ex)
         {
-            aircraftType = new AircraftType(TypeICAO.Text, TypeName.Text, NickName.Text, Manufactorer);
-            await HTTP_Controller.AddNewAircraftType(aircraftType);
-            Navigation.RemovePage(this);
+
         }
     }
 
@@ -63,12 +71,12 @@ public partial class EditAircraftTypeModal : ContentPage
         ManufactorerPicker = new Picker();
         List<string> manufactorerNames = new List<string>();
 
+        manufactorerNames.Add("Create New");
         foreach (Manufactorer country in Manufactorers)
         {
             manufactorerNames.Add(country.name + " - " + country.id);
         }
 
-        manufactorerNames.Add("Create New");
 
         ManufactorerPicker.ItemsSource = manufactorerNames;
 
@@ -83,6 +91,7 @@ public partial class EditAircraftTypeModal : ContentPage
         ManufactorerPicker.SelectedIndexChanged += ManufactorerPicker_SelectedIndexChanged;
 
         GridMain.Add(ManufactorerPicker, 1, 3);
+        IsLoaded = true;
     }
 
     private void ManufactorerPicker_SelectedIndexChanged(object sender, EventArgs e)
@@ -92,6 +101,9 @@ public partial class EditAircraftTypeModal : ContentPage
             case "Create New":
                 CreateNewManufactorer();
                 break;
+            default:
+                CheckIfValid();
+                break;
         }
     }
 
@@ -99,5 +111,18 @@ public partial class EditAircraftTypeModal : ContentPage
     {
         EditManufactorerModal editManufactorerModal = new EditManufactorerModal();
         Navigation.PushAsync(editManufactorerModal);
+    }
+
+    private void CheckIfValid()
+    {
+        if(IsLoaded)
+        {
+            Submit.IsEnabled = ManufactorerPicker.SelectedIndex >= 1 && TypeICAO.Text.Length > 0 && TypeName.Text.Length > 0;
+        }
+    }
+
+    private void Entry_TextChange(object sender, TextChangedEventArgs e)
+    {
+        CheckIfValid();
     }
 }
