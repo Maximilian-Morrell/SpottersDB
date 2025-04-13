@@ -79,7 +79,7 @@ public partial class EditCountryModal : ContentPage
         }
         catch (Exception ex)
         {
-
+            await DisplayAlert("Something has gone wrong with saving", ex.Message, "OK");
         }
 
     }

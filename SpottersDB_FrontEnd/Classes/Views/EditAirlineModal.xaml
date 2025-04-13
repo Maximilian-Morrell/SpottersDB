@@ -15,17 +15,17 @@
             <ColumnDefinition></ColumnDefinition>
             <ColumnDefinition></ColumnDefinition>
         </Grid.ColumnDefinitions>
-        <Label Grid.Row="0" Grid.Column="0" Text="ICAO Code:"></Label>
-        <Entry Grid.Row="0" Grid.Column="1" x:Name="AirlineICAO"></Entry>
+        <Label Grid.Row="0" Grid.Column="0" Text="ICAO Code: *"></Label>
+        <Entry Grid.Row="0" Grid.Column="1" x:Name="AirlineICAO" MaxLength="3" TextChanged="Entry_TextChanged"></Entry>
 
-        <Label Grid.Row="1" Grid.Column="0" Text="IATA Code:"></Label>
-        <Entry Grid.Row="1" Grid.Column="1" x:Name="AirlineIATA"></Entry>
+        <Label Grid.Row="1" Grid.Column="0" Text="IATA Code: *"></Label>
+        <Entry Grid.Row="1" Grid.Column="1" x:Name="AirlineIATA" MaxLength="2" TextChanged="Entry_TextChanged"></Entry>
 
-        <Label Grid.Row="2" Grid.Column="0" Text="Name:"></Label>
-        <Entry Grid.Row="2" Grid.Column="1" x:Name="AirlineName"></Entry>
+        <Label Grid.Row="2" Grid.Column="0" Text="Name: *"></Label>
+        <Entry Grid.Row="2" Grid.Column="1" x:Name="AirlineName" MaxLength="255" TextChanged="Entry_TextChanged"></Entry>
 
-        <Label Grid.Row="3" Grid.Column="0" Text="Country: "/>
+        <Label Grid.Row="3" Grid.Column="0" Text="Country: *"/>
 
-        <Button Grid.Row="4" Grid.ColumnSpan="2" Text="Submit" x:Name="Submit"></Button>
+        <Button Grid.Row="4" Grid.ColumnSpan="2" Text="Submit" x:Name="Submit" IsEnabled="False"></Button>
     </Grid>
 </ContentPage>

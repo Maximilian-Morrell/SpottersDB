@@ -23,7 +23,7 @@ public partial class EditManufactorerModal : ContentPage
         Submit.Clicked += Submit_Clicked;
     }
 
-    private void Submit_Clicked(object sender, EventArgs e)
+    private async void Submit_Clicked(object sender, EventArgs e)
     {
         try
         {
@@ -44,7 +44,7 @@ public partial class EditManufactorerModal : ContentPage
         }
         catch (Exception ex)
         {
-
+            await DisplayAlert("Something has gone wrong with saving", ex.Message, "OK");
         }
     }
 

@@ -15,6 +15,8 @@ public partial class EditAircraftTypeModal : ContentPage
 	{
 		InitializeComponent();
         IsEditing = false;
+        TypeICAO.Text = "";
+        TypeName.Text = "";
         Submit.Clicked += Submit_Clicked;
 	}
 
@@ -56,7 +58,7 @@ public partial class EditAircraftTypeModal : ContentPage
         }
         catch (Exception ex)
         {
-
+            await DisplayAlert("Something has gone wrong with saving", ex.Message, "OK");
         }
     }
 
