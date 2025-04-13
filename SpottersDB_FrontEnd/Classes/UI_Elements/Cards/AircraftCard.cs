@@ -1,5 +1,6 @@
 ﻿using Microsoft.Maui.Controls.Shapes;
 using SpottersDB_FrontEnd.Classes.Structure;
+using SpottersDB_FrontEnd.Classes.Utilities;
 using SpottersDB_FrontEnd.Classes.Views;
 using System;
 using System.Collections.Generic;
@@ -19,41 +20,13 @@ namespace SpottersDB_FrontEnd.Classes.UI_Elements.Cards
 
         public async Task<Border> Card(Aircraft aircraft)
         {
-            Border b = new Border();
-            RoundRectangle rr = new RoundRectangle();
-            rr.CornerRadius = 10;
-            b.StrokeShape = rr;
-            b.Padding = 10;
-            b.BackgroundColor = Microsoft.Maui.Graphics.Color.FromRgb(128, 128, 128);
+            Border b = UI_Utilities.CreateBorder();
 
-            Grid parent = new Grid
-            {
-                RowDefinitions =
-                {
-                    new RowDefinition(),
-                    new RowDefinition(),
-                    new RowDefinition(),
-                    new RowDefinition(),
-                    new RowDefinition(),
-                    new RowDefinition()
-                }
-            };
 
-            b.Content = parent;
-            parent.MaximumWidthRequest = 500;
-            parent.WidthRequest = 400;
-            parent.MaximumHeightRequest = 300;
-            parent.HeightRequest = 300;
-            parent.Margin = 10;
+            Grid parent = UI_Utilities.CreateGrid(b, 6);
 
-            Label lblName = new Label();
-            lblName.Text = aircraft.registration;
-            lblName.FontSize = 58;
-            lblName.FontAttributes = FontAttributes.Bold;
-            lblName.HorizontalTextAlignment = TextAlignment.Center;
-            lblName.VerticalTextAlignment = TextAlignment.Center;
-            lblName.VerticalOptions = LayoutOptions.Center;
-            parent.Add(lblName, 0, 0);
+            Label lblName = UI_Utilities.CreateLabel(parent, aircraft.registration, 0, 0, 58, FontAttributes.Bold);
+
 
             Label lblType = new Label();
             AircraftType type = await aircraft.GetAircraftType();
