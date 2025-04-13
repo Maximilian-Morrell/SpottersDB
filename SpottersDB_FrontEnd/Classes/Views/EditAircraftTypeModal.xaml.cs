@@ -87,7 +87,7 @@ public partial class EditAircraftTypeModal : ContentPage
         if (IsEditing)
         {
             int ID = Manufactorers.FindIndex(c => c.id == aircraftType.manufactorerID);
-            ManufactorerPicker.SelectedIndex = ID;
+            ManufactorerPicker.SelectedIndex = ID + 1;
         }
 
         ManufactorerPicker.SelectedIndexChanged += ManufactorerPicker_SelectedIndexChanged;

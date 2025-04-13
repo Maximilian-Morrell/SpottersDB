@@ -91,7 +91,7 @@ public partial class EditManufactorerModal : ContentPage
         if (IsEditing)
         {
             int ID = Countries.FindIndex(c => c.id == manufactorer.region) + 1;
-            RegionPicker.SelectedIndex = ID;
+            RegionPicker.SelectedIndex = ID + 1;
         }
 
         RegionPicker.SelectedIndexChanged += RegionPickerSelectionChange;

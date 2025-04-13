@@ -88,7 +88,7 @@ public partial class EditAirlineModal : ContentPage
         if (IsEditing)
         {
             int ID = Countries.FindIndex(c => c.id == airline.region);
-            CountryPicker.SelectedIndex = ID;
+            CountryPicker.SelectedIndex = ID + 1;
         }
 
         CountryPicker.SelectedIndexChanged += CountryPickerSelectionChanged;

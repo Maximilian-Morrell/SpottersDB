@@ -22,19 +22,19 @@
             <ColumnDefinition></ColumnDefinition>
             <ColumnDefinition></ColumnDefinition>
         </Grid.ColumnDefinitions>
-        <Label Grid.Row="0" Grid.Column="0" Text="Aircraft Registration"></Label>
-        <Entry Grid.Row="0" Grid.Column="1" x:Name="AircraftRegistration">
+        <Label Grid.Row="0" Grid.Column="0" Text="Aircraft Registration: *"></Label>
+        <Entry Grid.Row="0" Grid.Column="1" x:Name="AircraftRegistration" MaxLength="8" TextChanged="AircraftRegistration_TextChanged">
         </Entry>
 
-        <Label Grid.Row="1" Grid.Column="0" Text="Aircraft Description:"></Label>
+        <Label Grid.Row="1" Grid.Column="0" Text="Aircraft Description: "></Label>
         <Entry Grid.Row="1" Grid.Column="1" x:Name="AircraftDescription"></Entry>
 
-        <Label Grid.Row="2" Grid.Column="0" Text="Aircraft Type:"></Label>
+        <Label Grid.Row="2" Grid.Column="0" Text="Aircraft Type: *"></Label>
 
-        <Label Grid.Row="3" Grid.Column="0" Text="Aircraft Airline:"/>
+        <Label Grid.Row="3" Grid.Column="0" Text="Aircraft Airline: *"/>
         
-        <Label Grid.Row="4" Grid.Column="0" Text="Aircraft Country:"/>
+        <Label Grid.Row="4" Grid.Column="0" Text="Aircraft Country: *"/>
 
-        <Button Grid.Row="5" Grid.ColumnSpan="2" Text="Submit" x:Name="Submit"></Button>
+        <Button Grid.Row="5" Grid.ColumnSpan="2" Text="Submit" x:Name="Submit" IsEnabled="False"></Button>
     </Grid>
 </ContentPage>

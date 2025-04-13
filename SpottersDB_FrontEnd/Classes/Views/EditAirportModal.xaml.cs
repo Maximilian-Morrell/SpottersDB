@@ -90,7 +90,7 @@ public partial class EditAirportModal : ContentPage
         if (IsEditing)
         {
            int ID = Countries.FindIndex(c => c.id == airport.countryID);
-           CountryPicker.SelectedIndex = ID;
+           CountryPicker.SelectedIndex = ID + 1;
         }
 
         CountryPicker.SelectedIndexChanged += CountryPickerSelectionChanged;
