@@ -96,23 +96,15 @@ public partial class EditSpottingTripModal : ContentPage
             }
         }
 
-        AirportPicker = new Picker();
         List<string> airportNames = new List<string>();
-
-        airportNames.Add("Create New");
         foreach (Airport airport in airports)
         {
             airportNames.Add(airport.name + " - " + airport.id);
         }
 
-        AirportPicker.ItemsSource = airportNames;
+        AirportPicker = UI_Utilities.CreatePicker(GridMain, AirportPickerSelectionChange, 1, 4, airportNames, "Select an Airport");
 
-        AirportPicker.Title = "Select an Airport";
-
-        AirportPicker.SelectedIndexChanged += AirportPickerSelectionChange;
         AirportPicker.HorizontalOptions = LayoutOptions.End;
-
-        GridMain.Add(AirportPicker, 1,4);
         Grid.SetColumnSpan(AirportPicker, 2);
         IsLoaded = true;
     }

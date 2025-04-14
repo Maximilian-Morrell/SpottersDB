@@ -72,29 +72,21 @@ public partial class EditAirlineModal : ContentPage
         }
 
         Countries = await HTTP_Controller.GetCountries(true);
-        CountryPicker = new Picker();
         List<string> regionNames = new List<string>();
-
-        regionNames.Add("Create New");
         foreach (Country country in Countries)
         {
-            regionNames.Add(country.name + " - " + country.id);
+            regionNames.Add(country.name);
         }
 
-
-        CountryPicker.ItemsSource = regionNames;
-
-        CountryPicker.Title = "Select a Country";
-
-        if (IsEditing)
+        if(IsEditing)
         {
             int ID = Countries.FindIndex(c => c.id == airline.region);
-            CountryPicker.SelectedIndex = ID + 1;
+            CountryPicker = UI_Utilities.CreatePicker(GridMain, CountryPickerSelectionChanged, 1, 3, regionNames, "Select a Country", ID);
         }
-
-        CountryPicker.SelectedIndexChanged += CountryPickerSelectionChanged;
-
-        GridMain.Add(CountryPicker, 1, 3);
+        else
+        {
+            CountryPicker = UI_Utilities.CreatePicker(GridMain, CountryPickerSelectionChanged, 1, 3, regionNames, "Select a Country");
+        }
 
         IsLoaded = true;
     }

@@ -139,5 +139,41 @@ namespace SpottersDB_FrontEnd.Classes.Utilities
             AL.WidthRequest = Width;
             return AL;
         }
+
+        public static Picker CreatePicker(Grid Parent, EventHandler PickerEvent, int Column, int Row, List<string> Items, string Title)
+        {
+            Picker p = new Picker();
+
+            p.Items.Add("Create New");
+            foreach( string item in Items )
+            {
+                p.Items.Add(item);
+            }
+            p.Title = Title;
+            p.SelectedIndexChanged += PickerEvent;
+
+            Parent.Add(p, Column, Row);
+
+            return p;
+        }
+
+        public static Picker CreatePicker(Grid Parent, EventHandler PickerEvent, int Column, int Row, List<string> Items, string Title, int ID)
+        {
+            Picker p = new Picker();
+
+            p.Items.Add("Create New");
+            foreach (string item in Items)
+            {
+                p.Items.Add(item);
+            }
+            p.Title = Title;
+            p.SelectedIndex = ID + 1;
+
+            p.SelectedIndexChanged += PickerEvent;
+
+            Parent.Add(p, Column, Row);
+
+            return p;
+        }
     }
 }

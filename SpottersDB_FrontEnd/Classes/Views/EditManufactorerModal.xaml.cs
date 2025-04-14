@@ -74,31 +74,24 @@ public partial class EditManufactorerModal : ContentPage
         }
 
         Countries = await HTTP_Controller.GetRegions();
-        RegionPicker  = new Picker();
         List<string> regionNames = new List<string>();
-
-        regionNames.Add("Create New");
-
         foreach (Country country in Countries)
         {
-            regionNames.Add(country.name + " - " + country.id);
+            regionNames.Add(country.name);
         }
 
-
-        RegionPicker.ItemsSource = regionNames;
-
-        RegionPicker.Title = "Select a Country";
-
-        if (IsEditing)
+        if(IsEditing)
         {
-            int ID = Countries.FindIndex(c => c.id == manufactorer.region) + 1;
-            RegionPicker.SelectedIndex = ID + 1;
+            int ID = Countries.FindIndex(c => c.id == manufactorer.region);
+            RegionPicker = UI_Utilities.CreatePicker(GridMain, RegionPickerSelectionChange, 1, 1, regionNames, "Select a Region", ID);
+        }
+        else
+        {
+            RegionPicker = UI_Utilities.CreatePicker(GridMain, RegionPickerSelectionChange, 1, 1, regionNames, "Select a Region");
         }
 
-        RegionPicker.SelectedIndexChanged += RegionPickerSelectionChange;
         IsLoaded = true;
         CheckIfAllValid();
-        GridMain.Add(RegionPicker, 1, 1);
     }
 
     private void RegionPickerSelectionChange(object sender, EventArgs e)

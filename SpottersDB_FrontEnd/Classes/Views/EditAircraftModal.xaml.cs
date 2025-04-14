@@ -48,8 +48,8 @@ public partial class EditAircraftModal : ContentPage
     {
         try
         {
-            int Type = Types[TypePicker.SelectedIndex - 1].id;
-            int Airline = Airlines[AirlinePicker.SelectedIndex -1 ].id;
+            int Type = Types[TypePicker.SelectedIndex -1].id;
+            int Airline = Airlines[AirlinePicker.SelectedIndex -1].id;
             int Country = Countries[CountryPicker.SelectedIndex - 1].id;
             if (IsEditing)
             {
@@ -76,31 +76,23 @@ public partial class EditAircraftModal : ContentPage
         {
             GridMain.Children.Remove(TypePicker);
         }
-        Thread.Sleep(250);
-        Types = await HTTP_Controller.GetAircraftTypes();
-        TypePicker = new Picker();
-        List<string> TypeNames = new List<string>();
 
-        TypeNames.Add("Create New");
+        Types = await HTTP_Controller.GetAircraftTypes();
+        List<string> TypeNames = new List<string>();
         foreach (AircraftType type in Types)
         {
-            TypeNames.Add(type.icaoCode + " - " + type.id);
+            TypeNames.Add(type.icaoCode);
         }
-
-
-        TypePicker.ItemsSource = TypeNames;
-
-        TypePicker.Title = "Select an Aircraft Type";
 
         if (IsEditing)
         {
             int ID = Types.FindIndex(c => c.id == aircraft.typeID);
-            TypePicker.SelectedIndex = ID;
+            TypePicker = UI_Utilities.CreatePicker(GridMain, TypePicker_SelectedIndexChanged, 1, 2, TypeNames, "Select an Aircraft Type", ID);
         }
-
-        TypePicker.SelectedIndexChanged += TypePicker_SelectedIndexChanged;
-
-        GridMain.Add(TypePicker, 1, 2);
+        else
+        {
+            TypePicker = UI_Utilities.CreatePicker(GridMain, TypePicker_SelectedIndexChanged, 1, 2, TypeNames, "Select an Aircraft Type");
+        }
     }
 
     private void TypePicker_SelectedIndexChanged(object sender, EventArgs e)
@@ -130,29 +122,21 @@ public partial class EditAircraftModal : ContentPage
         }
 
         Airlines = await HTTP_Controller.GetAirlines();
-        AirlinePicker = new Picker();
         List<string> airlineNames = new List<string>();
-
-        airlineNames.Add("Create New");
         foreach (Airline airline in Airlines)
         {
-            airlineNames.Add(airline.name + " - " + airline.id);
+            airlineNames.Add(airline.name);
         }
 
-
-        AirlinePicker.ItemsSource = airlineNames;
-
-        AirlinePicker.Title = "Select an Airline";
-
-        if (IsEditing)
+        if(IsEditing)
         {
             int ID = Airlines.FindIndex(c => c.id == aircraft.airlineID);
-            AirlinePicker.SelectedIndex = ID;
+            AirlinePicker = UI_Utilities.CreatePicker(GridMain, AirlinePicker_SelectedIndexChanged, 1, 3, airlineNames, "Select an Airline", ID);
         }
-
-        AirlinePicker.SelectedIndexChanged += AirlinePicker_SelectedIndexChanged;
-
-        GridMain.Add(AirlinePicker, 1, 3);
+        else
+        {
+            AirlinePicker = UI_Utilities.CreatePicker(GridMain, AirlinePicker_SelectedIndexChanged, 1, 3, airlineNames, "Select an Airline");
+        }
     }
 
     private void AirlinePicker_SelectedIndexChanged(object sender, EventArgs e)
@@ -182,29 +166,22 @@ public partial class EditAircraftModal : ContentPage
         }
 
         Countries = await HTTP_Controller.GetCountries(true);
-        CountryPicker = new Picker();
         List<string> regionNames = new List<string>();
-
-        regionNames.Add("Create New");
         foreach (Country country in Countries)
         {
-            regionNames.Add(country.name + " - " + country.id);
+            regionNames.Add(country.name);
         }
 
-
-        CountryPicker.ItemsSource = regionNames;
-
-        CountryPicker.Title = "Select a Country";
-
-        if (IsEditing)
+        if(IsEditing)
         {
             int ID = Countries.FindIndex(c => c.id == aircraft.countryID);
-            CountryPicker.SelectedIndex = ID + 1;
+            CountryPicker = UI_Utilities.CreatePicker(GridMain,CountryPickerSelectionChanged, 1, 4, regionNames, "Select a Country", ID);
+        }
+        else
+        {
+            CountryPicker = UI_Utilities.CreatePicker(GridMain, CountryPickerSelectionChanged, 1, 4, regionNames, "Select a Country");
         }
 
-        CountryPicker.SelectedIndexChanged += CountryPickerSelectionChanged;
-
-        GridMain.Add(CountryPicker, 1, 4);
         IsLoaded = true;
     }
 

@@ -71,29 +71,23 @@ public partial class EditAircraftTypeModal : ContentPage
         }
 
         Manufactorers = await HTTP_Controller.GetManufactorers();
-        ManufactorerPicker = new Picker();
         List<string> manufactorerNames = new List<string>();
-
-        manufactorerNames.Add("Create New");
         foreach (Manufactorer country in Manufactorers)
         {
-            manufactorerNames.Add(country.name + " - " + country.id);
+            manufactorerNames.Add(country.name);
         }
 
-
-        ManufactorerPicker.ItemsSource = manufactorerNames;
-
-        ManufactorerPicker.Title = "Select a Manufactorer";
-
-        if (IsEditing)
+        if(IsEditing)
         {
             int ID = Manufactorers.FindIndex(c => c.id == aircraftType.manufactorerID);
-            ManufactorerPicker.SelectedIndex = ID + 1;
+            ManufactorerPicker = UI_Utilities.CreatePicker(GridMain, ManufactorerPicker_SelectedIndexChanged, 1, 3, manufactorerNames, "Select a Manufactorer", ID);
+
+        }
+        else
+        {
+            ManufactorerPicker = UI_Utilities.CreatePicker(GridMain, ManufactorerPicker_SelectedIndexChanged, 1, 3, manufactorerNames, "Select a Manufactorer");
         }
 
-        ManufactorerPicker.SelectedIndexChanged += ManufactorerPicker_SelectedIndexChanged;
-
-        GridMain.Add(ManufactorerPicker, 1, 3);
         IsLoaded = true;
     }
 
