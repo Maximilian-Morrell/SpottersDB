@@ -24,11 +24,54 @@ namespace SpottersDB_FrontEnd.Classes.UI_Elements.Cards
 
         public Border Card(Country country, string URL)
         {
-            Border b = UI_Utilities.CreateBorder();
+            Border CardBorder = UI_Utilities.CreateBorder(Padding: 0);
+
+            Border b = UI_Utilities.CreateAbsoluteBorder(640, 426.5);
+
+            Image imgB = UI_Utilities.CreateImage(URL, 0.5, 640, 426.5);
+
+            AbsoluteLayout GrandParent = UI_Utilities.CreateAbsoluteLayout(640, 426.5);
+            CardBorder.Content = GrandParent;
+            GrandParent.Children.Add(imgB);
+            GrandParent.Add(b);
 
             Grid parent = null;
 
             if(country.icaO_Code != "")
+            {
+                parent = UI_Utilities.CreateGrid(b, 4, 620, 407);
+
+                Label lblName = UI_Utilities.CreateLabel(parent, country.icaO_Code, 0, 0, 50, FontAttributes.Bold);
+
+                Label lblCountry = UI_Utilities.CreateLabel(parent, country.name, 0, 1, 20);
+                lblCountry.LineBreakMode = LineBreakMode.WordWrap;
+
+                Button editBtn = UI_Utilities.CreateButton(false, parent, "Edit", country, EditBtn_Clicked, 0, 2);
+
+                Button deleteBtn = UI_Utilities.CreateButton(true, parent, "Delete", country, DeleteBtn_Clicked, 0, 3);
+            }
+            else
+            {
+                parent = UI_Utilities.CreateGrid(b, 3, 620, 407);
+                Label lblName = UI_Utilities.CreateLabel(parent, country.name, 0, 0, 30, FontAttributes.Bold);
+                lblName.LineBreakMode = LineBreakMode.WordWrap;
+
+                Button editBtn = UI_Utilities.CreateButton(false, parent, "Edit", country, EditBtn_Clicked, 0, 1);
+
+                Button deleteBtn = UI_Utilities.CreateButton(true, parent, "Delete", country, DeleteBtn_Clicked, 0,2);
+
+            }
+
+            return CardBorder;
+        }
+
+        public Border Card(Country country)
+        {
+            Border b = UI_Utilities.CreateBorder();
+
+            Grid parent = null;
+
+            if (country.icaO_Code != "")
             {
                 parent = UI_Utilities.CreateGrid(b, 4, MaximumWidth: 400);
 
@@ -43,13 +86,13 @@ namespace SpottersDB_FrontEnd.Classes.UI_Elements.Cards
             }
             else
             {
-                parent = UI_Utilities.CreateGrid(b, 4, MaximumWidth: 400);
+                parent = UI_Utilities.CreateGrid(b, 3, MaximumWidth: 400);
                 Label lblName = UI_Utilities.CreateLabel(parent, country.name, 0, 0, 30, FontAttributes.Bold);
                 lblName.LineBreakMode = LineBreakMode.WordWrap;
 
-                Button editBtn = UI_Utilities.CreateButton(false, parent, "Edit", country, EditBtn_Clicked, 0, 2);
+                Button editBtn = UI_Utilities.CreateButton(false, parent, "Edit", country, EditBtn_Clicked, 0, 1);
 
-                Button deleteBtn = UI_Utilities.CreateButton(true, parent, "Delete", country, DeleteBtn_Clicked, 0, 3);
+                Button deleteBtn = UI_Utilities.CreateButton(true, parent, "Delete", country, DeleteBtn_Clicked, 0, 2);
 
             }
 

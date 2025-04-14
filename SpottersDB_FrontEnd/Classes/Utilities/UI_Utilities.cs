@@ -10,6 +10,14 @@ namespace SpottersDB_FrontEnd.Classes.Utilities
 {
     internal class UI_Utilities
     {
+        public static Border CreateAbsoluteBorder(double Width, double Height)
+        {
+            Border b = new Border();
+            AbsoluteLayout.SetLayoutBounds(b, new Rect(0, 0, Width, Height));
+            AbsoluteLayout.SetLayoutFlags(b, Microsoft.Maui.Layouts.AbsoluteLayoutFlags.None);
+            return b;
+        }
+
         public static Border CreateBorder(int CornerRadius = 10, int Padding = 10, int Margin = 0)
         {
             Border b = new Border();
@@ -99,6 +107,37 @@ namespace SpottersDB_FrontEnd.Classes.Utilities
             image.Aspect = Aspect.Fill;
 
             return image;
+        }
+
+        public static Image CreateImage(string URL, double Opacity, double Width, double Height)
+        {
+            Image image = new Image();
+            image.Opacity = Opacity;
+            AbsoluteLayout.SetLayoutBounds(image, new Rect(0, 0, Width, Height));
+            AbsoluteLayout.SetLayoutFlags(image, Microsoft.Maui.Layouts.AbsoluteLayoutFlags.None);
+            try
+            {
+                image.Source = new UriImageSource
+                {
+                    Uri = new Uri(URL)
+                };
+            }
+            catch (Exception e)
+            {
+
+            }
+
+            image.Aspect = Aspect.Fill;
+
+            return image;
+        }
+
+        public static AbsoluteLayout CreateAbsoluteLayout(double Width, double Height)
+        {
+            AbsoluteLayout AL = new AbsoluteLayout();
+            AL.HeightRequest = Height;
+            AL.WidthRequest = Width;
+            return AL;
         }
     }
 }
