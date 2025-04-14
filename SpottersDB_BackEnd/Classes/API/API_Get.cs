@@ -174,7 +174,7 @@ namespace SpottersDB_BackEnd.Classes.API
             return sqlcontroller.GetLinkID(SpottingTripID, AirportID);
         }
 
-        private List<int> GET_SpottingTripAirport(int LinkID)
+        private Dictionary<string, int> GET_SpottingTripAirport(int LinkID)
         {
             return sqlcontroller.GetSpottingTripAirportFromLinkID(LinkID);
         }

@@ -11,11 +11,13 @@ public partial class EditSpottingTripModal : ContentPage
     bool IsEditing;
     SpottingTrip spottingTrip;
     Picker AirportPicker = null;
+    bool IsLoaded = false;
 
     public EditSpottingTripModal()
 	{
 		InitializeComponent();
         Submit.Clicked += Submit_Clicked;
+        SpottingTripName.Text = "";
         this.IsEditing = false;
 	}
 
@@ -36,24 +38,33 @@ public partial class EditSpottingTripModal : ContentPage
             AddAirport(airport);
         }
         this.IsEditing = true;
+        Submit.IsEnabled = true;
     }
 
-    private void Submit_Clicked(object sender, EventArgs e)
+    private async void Submit_Clicked(object sender, EventArgs e)
     {
-        DateTime Start = new DateTime(SpottingTripStartDate.Date.Year, SpottingTripStartDate.Date.Month, SpottingTripStartDate.Date.Day, SpottingTripStartTime.Time.Hours, SpottingTripStartTime.Time.Minutes, 0);
-        DateTime End = new DateTime(SpottingTripEndDate.Date.Year, SpottingTripEndDate.Date.Month, SpottingTripEndDate.Date.Day, SpottingTripEndTime.Time.Hours, SpottingTripEndTime.Time.Minutes, 0);
-        if (IsEditing)
+        try
         {
-            int ID = spottingTrip.id;
-            spottingTrip = new SpottingTrip(ID, SpottingTripName.Text, SpottingTripDescription.Text, Start, End, SelectedAirports);
-            HTTP_Controller.UpdateSpottingTrip(spottingTrip);
+            DateTime Start = new DateTime(SpottingTripStartDate.Date.Year, SpottingTripStartDate.Date.Month, SpottingTripStartDate.Date.Day, SpottingTripStartTime.Time.Hours, SpottingTripStartTime.Time.Minutes, 0);
+            DateTime End = new DateTime(SpottingTripEndDate.Date.Year, SpottingTripEndDate.Date.Month, SpottingTripEndDate.Date.Day, SpottingTripEndTime.Time.Hours, SpottingTripEndTime.Time.Minutes, 0);
+            if (IsEditing)
+            {
+                int ID = spottingTrip.id;
+                spottingTrip = new SpottingTrip(ID, SpottingTripName.Text, SpottingTripDescription.Text, Start, End, SelectedAirports);
+                HTTP_Controller.UpdateSpottingTrip(spottingTrip);
+            }
+            else
+            {
+                spottingTrip = new SpottingTrip(SpottingTripName.Text, SpottingTripDescription.Text, Start, End, SelectedAirports);
+                HTTP_Controller.AddNewSpottingTrip(spottingTrip);
+            }
+            Navigation.RemovePage(this);
         }
-        else
+        catch (Exception ex)
         {
-            spottingTrip = new SpottingTrip(SpottingTripName.Text, SpottingTripDescription.Text, Start, End, SelectedAirports);
-            HTTP_Controller.AddNewSpottingTrip(spottingTrip);
+            await DisplayAlert("Something has gone wrong with saving", ex.Message, "OK");
         }
-        Navigation.RemovePage(this);
+
     }
 
     protected override void OnNavigatedTo(NavigatedToEventArgs args)
@@ -66,7 +77,7 @@ public partial class EditSpottingTripModal : ContentPage
     {
         if (AirportPicker != null)
         {
-            AirportPickerParent.Children.Remove(AirportPicker);
+            GridMain.Remove(AirportPicker);
         }
 
         airports = await HTTP_Controller.GetAirports();
@@ -85,30 +96,17 @@ public partial class EditSpottingTripModal : ContentPage
             }
         }
 
-        AirportPicker = new Picker();
         List<string> airportNames = new List<string>();
-
-        foreach(Airport airport in airports)
+        foreach (Airport airport in airports)
         {
             airportNames.Add(airport.name + " - " + airport.id);
         }
 
-        airportNames.Add("Create New");
+        AirportPicker = UI_Utilities.CreatePicker(GridMain, AirportPickerSelectionChange, 1, 4, airportNames, "Select an Airport");
 
-        AirportPicker.ItemsSource = airportNames;
-
-        AirportPicker.Title = "Select an Airport";
-
-        if (IsEditing)
-        {
-          //  int ID = airports.FindIndex(c => c.id == manufactorer.region);
-          //  RegionPicker.SelectedIndex = ID;
-        }
-
-        AirportPicker.SelectedIndexChanged += AirportPickerSelectionChange;
         AirportPicker.HorizontalOptions = LayoutOptions.End;
-
-        AirportPickerParent.Children.Add(AirportPicker);
+        Grid.SetColumnSpan(AirportPicker, 2);
+        IsLoaded = true;
     }
 
     private void AirportPickerSelectionChange(object sender, EventArgs e)
@@ -120,6 +118,7 @@ public partial class EditSpottingTripModal : ContentPage
                 break;
             default:
                 AddAirport();
+                CheckIfValid();
                 break;
         }
     }
@@ -132,19 +131,26 @@ public partial class EditSpottingTripModal : ContentPage
 
     private async void AddAirport()
     {
-        SelectedAirports.Add(airports[AirportPicker.SelectedIndex]);
-        AirportCard airportCard = new AirportCard();
-        VerticalStackLayout Container = new VerticalStackLayout();
-        Frame f = await airportCard.Card(airports[AirportPicker.SelectedIndex]);
-        Container.Children.Add(f);
-        Button b = new Button();
-        b.Text = "Delete Airport from Trip";
-        b.CommandParameter = airports[AirportPicker.SelectedIndex];
-        b.Clicked += DeleteFromTripClicked;
-        Container.Children.Add(b);
-        airportCard.EditClicked += AirportCard_EditClicked;
-        AirportParent.Children.Add(Container);
-        GetAllAirports();
+        try
+        {
+            SelectedAirports.Add(airports[AirportPicker.SelectedIndex - 1]);
+            AirportCard airportCard = new AirportCard();
+            VerticalStackLayout Container = new VerticalStackLayout();
+            Border b = await airportCard.Card(airports[AirportPicker.SelectedIndex - 1]);
+            Container.Children.Add(b);
+            Button btn = new Button();
+            btn.Text = "Delete Airport from Trip";
+            btn.CommandParameter = airports[AirportPicker.SelectedIndex -1];
+            btn.Clicked += DeleteFromTripClicked;
+            Container.Children.Add(btn);
+            airportCard.EditClicked += AirportCard_EditClicked;
+            AirportParent.Children.Add(Container);
+            GetAllAirports();
+        }
+        catch (Exception ex)
+        {
+            await DisplayAlert("Something has gone wrong with adding the Airport to the List", ex.Message, "OK");
+        }
     }
 
     private void DeleteFromTripClicked(object sender, EventArgs e)
@@ -157,6 +163,7 @@ public partial class EditSpottingTripModal : ContentPage
             int ID = SelectedAirports.FindIndex(a => a.id == airport.id);
             SelectedAirports.RemoveAt(ID);
             GetAllAirports();
+            CheckIfValid();
         }
         catch (Exception ex)
         {
@@ -169,13 +176,13 @@ public partial class EditSpottingTripModal : ContentPage
     {
         AirportCard airportCard = new AirportCard();
         VerticalStackLayout Container = new VerticalStackLayout();
-        Frame f = await airportCard.Card(airport);
-        Container.Children.Add(f);
-        Button b = new Button();
-        b.Text = "Delete Airport from Trip";
-        b.CommandParameter = airport;
-        b.Clicked += DeleteFromTripClicked;
+        Border b = await airportCard.Card(airport);
         Container.Children.Add(b);
+        Button btn = new Button();
+        btn.Text = "Delete Airport from Trip";
+        btn.CommandParameter = airport;
+        btn.Clicked += DeleteFromTripClicked;
+        Container.Children.Add(btn);
         airportCard.EditClicked += AirportCard_EditClicked;
         AirportParent.Children.Add(Container);
     }
@@ -185,5 +192,28 @@ public partial class EditSpottingTripModal : ContentPage
         EditAirportModal airportModal = new EditAirportModal(airport);
         Navigation.PushAsync(airportModal);
         return null;
+    }
+
+    private void CheckIfValid()
+    {
+        if(IsLoaded)
+        {
+            Submit.IsEnabled = SpottingTripName.Text.Length > 0 && SpottingTripStartDate.Date != null && SpottingTripStartTime.Time != null && SpottingTripEndDate.Date >= SpottingTripStartDate.Date && SpottingTripEndTime.Time != null && SelectedAirports.Count > 0;
+        }
+    }
+
+    private void Date_Selected(object sender, DateChangedEventArgs e)
+    {
+        CheckIfValid();
+    }
+
+    private void Time_Selected(object sender, TimeChangedEventArgs e)
+    {
+        CheckIfValid();
+    }
+
+    private void SpottingTripName_TextChanged(object sender, TextChangedEventArgs e)
+    {
+        CheckIfValid();
     }
 }

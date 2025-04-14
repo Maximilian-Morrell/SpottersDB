@@ -3,1104 +3,602 @@ using SpottersDB_BackEnd.Classes.Structure;
 using System.Data;
 using System.Data.Common;
 using System.Dynamic;
+using System.Reflection.PortableExecutable;
+using System.Runtime.InteropServices;
 
 namespace SpottersDB_BackEnd.Classes.Utilities
 {
     public class SQLController
     {
-        // Instances for reuse
+        #region Instances for reuse
+        private static readonly SemaphoreSlim semaphore = new SemaphoreSlim(1,1);
         private SqlConnection con = new SqlConnection("server = (localdb)\\MSSQLLocalDB; integrated security = false;");
         private SqlCommand cmd = null;
-        private SqlDataReader reader = null;
+        List<Dictionary<string, object>> ReaderData;
         private WebApplication app;
         // JUST FOR DEBUGGING
         private bool isDebugMode = false;
+        #endregion
 
+        #region ExecuteCommand Methods
+        private bool ExecuteCMD(string CMDText, string LogText)
+        {
+            semaphore.Wait();
+            int SuccessInt = 0;
+            try
+            {
+                con.Open();
+                cmd.CommandText = CMDText;
+                SuccessInt = cmd.ExecuteNonQuery();
+                app.Logger.LogInformation($"[{DateTime.Now.ToString("HH:mm:ss")}]: {LogText}");
+                con.Close();
+            }
+            catch (Exception e)
+            {
+                app.Logger.LogError(e.Message);
+                con.Close();
+            }
+            semaphore.Release();
+            return SuccessInt > 0;
+        }
+
+        private object ExecuteCMDScalar(string CMDText, string LogText)
+        {
+            semaphore.Wait();
+            Object obj = null;
+            try
+            {
+                con.Open();
+                cmd.CommandText = CMDText;
+                obj = cmd.ExecuteScalar();
+                app.Logger.LogInformation($"[{DateTime.Now.ToString("HH:mm:ss")}]: {LogText}");
+                con.Close();
+            }
+            catch (Exception e)
+            {
+                app.Logger.LogError(e.Message);
+                con.Close();
+            }
+            semaphore.Release();
+            return obj;
+        }
+
+        private List<Dictionary<string, object>> ExecuteReadCMD(string CMDText, string LogText)
+        {
+            semaphore.Wait();
+            List<Dictionary<string, object>> ReaderData = new List<Dictionary<string, object>>();
+            try
+            {
+                con.Open();
+                cmd.CommandText = CMDText;
+                SqlDataReader reader = cmd.ExecuteReader();
+                while(reader.Read())
+                {
+                    Dictionary<string, object> pair = new Dictionary<string, object>();
+                    for(int i = 0; i < reader.FieldCount; i++)
+                    {
+                        pair[reader.GetName(i)] = reader.GetValue(i);
+                    }
+                    ReaderData.Add(pair);
+                }
+                con.Close();
+                app.Logger.LogInformation($"[{DateTime.Now.ToString("HH:mm:ss")}]: {LogText}");
+            }
+            catch (Exception e)
+            {
+                app.Logger.LogError(e.Message);
+                con.Close();
+            }
+            semaphore.Release();
+            return ReaderData;
+        }
+        #endregion
+
+        #region Setting UP DB
         // Checks if DB Exists
         public void ConnectToDB(string DatabaseName, WebApplication app)
         {
-
+            // Access the WebApp for logger & stuff
+            this.app = app;
             cmd = new SqlCommand("", con);
             // JUST FOR DEBUGGING
             if (isDebugMode)
             {
-                con.Open();
-                cmd.CommandText = "DROP DATABASE " + DatabaseName;
-                cmd.ExecuteNonQuery();
+                ExecuteCMD($"DROP DATABASE {DatabaseName}", "DEBUG: Dropping the DB");
                 isDebugMode = false;
-                con.Close();
+                // Delete any images that are for some reason in the Image Directory
+                foreach (string f in Directory.GetFiles(Path.GetFullPath(Environment.CurrentDirectory) + "/Images"))
+                {
+                    File.Delete(f);
+                }
             }
-            try
+
+
+            // Trys to connect to DB
+            ReaderData = ExecuteReadCMD("SELECT name FROM sys.databases", "Checking if Database exists");
+            bool DatabaseExists = false;
+            foreach (Dictionary<string, object> Data in ReaderData)
             {
-                // Access the WebApp for logger & stuff
-                this.app = app;
-                // Trys to connect to DB
-                con.Open();
-                con.ChangeDatabase(DatabaseName);
-                con.Close();
+                if (!DatabaseExists)
+                {
+                    DatabaseExists = Data["name"] == DatabaseName;
+                }
+            }
+
+            if (DatabaseExists)
+            {
                 con.ConnectionString = "server = (localdb)\\MSSQLLocalDB; integrated security = false; database = " + DatabaseName;
             }
-            catch (Exception e)
+            else
             {
-                // Fails
-                // DB does not Exists
                 CreateDatabase(DatabaseName);
             }
-            con.Close();
         }
 
         // Creates the DB
         private void CreateDatabase(string DatabaseName)
         {
-            try
+
+            // Creates the DB
+            ExecuteCMD("CREATE DATABASE " + DatabaseName, "Created the Database: " + DatabaseName);
+            con.ConnectionString = "server = (localdb)\\MSSQLLocalDB; integrated security = false; database = " + DatabaseName;
+
+            // Creates the Countries Table
+            ExecuteCMD("CREATE TABLE Countries (CountryID int NOT NULL PRIMARY KEY IDENTITY, CountryICAOCode varchar(10), CountryName varchar(255))", "Created the Table Countries");
+
+            // Creates the Airports Table
+            ExecuteCMD("CREATE TABLE Airports (AirportID int NOT NULL PRIMARY KEY IDENTITY, AirportICAOCode char(4), AirportIATACode char(3), AirportName text, AirportDescription text, AirportCity varchar(255), CountryID int, CONSTRAINT [FK_Airport_Country] FOREIGN KEY ([CountryID]) REFERENCES [Countries](CountryID))", "Created the Table Airports");
+
+            // Creates the Airline Table
+            ExecuteCMD("CREATE TABLE Airlines (AirlineID int NOT NULL PRIMARY KEY IDENTITY, AirlineICAOCode char(3), AirlineIATACode char(2), AirlineName text, AirlineRegion int, CONSTRAINT [FK_Airline_Country] FOREIGN KEY ([AirlineRegion]) REFERENCES [Countries](CountryID))", "Created the Table Airlines");
+
+            // Create the Manufactorer Table
+            ExecuteCMD("CREATE TABLE Manufactorers (ManufactorerID int NOT NULL PRIMARY KEY IDENTITY, ManufactorerName text, ManufactorerRegion int, CONSTRAINT [FK_Manufactorer_Country] FOREIGN KEY ([ManufactorerRegion]) REFERENCES [Countries](CountryID))", "Created the Table Manufactorers");
+
+            // Create the AircraftType Table
+            ExecuteCMD("CREATE TABLE AircraftTypes (AircraftTypeID int NOT NULL PRIMARY KEY IDENTITY, AircraftTypeICAO varchar(10), AircraftTypeName text, AircraftTypeNickName text, AircraftTypeManufactorerID int, CONSTRAINT [FK_AircraftType_Manufactorer] FOREIGN KEY ([AircraftTypeManufactorerID]) REFERENCES [Manufactorers](ManufactorerID))", "Created the Table AircraftTypes");
+
+            // Create the Aircraft Table
+            ExecuteCMD("CREATE TABLE Aircrafts (AircraftID int NOT NULL PRIMARY KEY IDENTITY, AircraftRegistration varchar(6), AircraftDescription text, AircraftTypeID int, AircraftCountryID int, AircraftAirlineID int, CONSTRAINT [FK_Aircraft_AircraftType] FOREIGN KEY ([AircraftTypeID]) REFERENCES [AircraftTypes](AircraftTypeID), CONSTRAINT [FK_Aircraft_Country] FOREIGN KEY ([AircraftCountryID]) REFERENCES [Countries](CountryID), CONSTRAINT [FK_Aircraft_Airline] FOREIGN KEY ([AircraftAirlineID]) REFERENCES [Airlines](AirlineID))", "Created the Table Aircrafts");
+
+            // Create Spotting Trip Table
+            ExecuteCMD("CREATE TABLE SpottingTrips (SpottingTripID int NOT NULL PRIMARY KEY IDENTITY, SpottingTripStart datetime2(0), SpottingTripEnd datetime2(0), SpottingTripName text, SpottingTripDescription text)", "Created the Table SpottingTrips");
+
+            // Create SpottingTrip & Airport Link Table
+            ExecuteCMD("CREATE TABLE SpottingTripAirports (LinkID int NOT NULL PRIMARY KEY IDENTITY, SpottingTripID int, AirportID int, CONSTRAINT [FK_SpottingTripAirport_SpottingTrip] FOREIGN KEY ([SpottingTripID]) REFERENCES [SpottingTrips](SpottingTripID), CONSTRAINT [FK_SpottingTripAirport_Airport] FOREIGN KEY ([AirportID]) REFERENCES [Airports](AirportID))", "Created the Link Table for SpottingTrips and Airports");
+
+            // Create SpottingPicture Table
+            ExecuteCMD("CREATE TABLE SpottingPictures (SpottingPictureID int NOT NULL PRIMARY KEY IDENTITY, SpottingPictureName text, SpottingPictureDescription text, SpottingPictureURL text, SpottingPictureOriginalFileName text, SpottingTripAirportID int, SpottingPictureAircraftID int, CONSTRAINT [FK_SpottingPicture_SpottingTripAirport] FOREIGN KEY ([SpottingTripAirportID]) REFERENCES [SpottingTripAirports](LinkID) ON DELETE SET NULL, CONSTRAINT [FK_SpottingPicture_Aircraft] FOREIGN KEY ([SpottingPictureAircraftID]) REFERENCES [Aircrafts](AircraftID))", "Created the Table SpottingPictures");
+        }
+        #endregion
+
+        #region Add Objects
+        public bool AddCountry(Country country)
+        {
+            return ExecuteCMD($"INSERT INTO Countries (CountryICAOCode, CountryName) VALUES ('{country.ICAO_Code}', '{country.Name}')", "Saved a Country Object");
+        }
+
+        public bool AddAirport(Airport airport)
+        {
+            return ExecuteCMD($"INSERT INTO Airports (AirportICAOCode, AirportIATACode, AirportName, AirportDescription, AirportCity, CountryID) VALUES ('{airport.ICAO_Code}', '{airport.IATA_Code}', '{airport.Name}', '{airport.Description}', '{airport.City}', '{airport.CountryID}')", "Saved an Airport Object");
+        }
+
+        public bool AddAirline(Airline airline)
+        {
+           return ExecuteCMD($"INSERT INTO Airlines (AirlineICAOCode, AirlineIATACode, AirlineName, AirlineRegion) VALUES ('{airline.ICAO}', '{airline.IATA}', '{airline.Name}', '{airline.Region}')", "Saved an Airline Object");
+        }
+
+        public bool AddManufactorer(Manufactorer manufactorer)
+        {
+           return ExecuteCMD($"INSERT INTO Manufactorers (ManufactorerName, ManufactorerRegion) VALUES ('{manufactorer.Name}','{manufactorer.Region}')", "Saved a Manufactorer Object");
+        }
+
+        public bool AddAircraftType(AircraftType aircraftType)
+        {
+            return ExecuteCMD($"INSERT INTO AircraftTypes (AircraftTypeICAO, AircraftTypeName, AircraftTypeNickName, AircraftTypeManufactorerID) VALUES ('{aircraftType.ICAOCode}', '{aircraftType.FullName}', '{aircraftType.NickName}', '{aircraftType.ManufactorerID}')", "Saved an AircraftType Object");
+        }
+
+        public bool AddAircraft(Aircraft aircraft)
+        {
+            return ExecuteCMD($"INSERT INTO Aircrafts (AircraftRegistration, AircraftDescription, AircraftTypeID, AircraftCountryID, AircraftAirlineID) VALUES('{aircraft.Registration}', '{aircraft.Description}', '{aircraft.TypeID}', '{aircraft.CountryID}', '{aircraft.AirlineID}')", "Saved an Aircraft Object");
+        }
+
+        public bool AddSpottingTrip(SpottingTrip spottingTrip, List<int> AirportIDs)
+        {
+            Object obj = ExecuteCMDScalar($"INSERT INTO SpottingTrips (SpottingTripStart, SpottingTripEnd, SpottingTripName, SpottingTripDescription) VALUES ('{spottingTrip.Start.ToString("yyyy-MM-dd HH:mm:ss")}', '{spottingTrip.End.ToString("yyyy-MM-dd HH:mm:ss")}', '{spottingTrip.Name}', '{spottingTrip.Description}'); SELECT SCOPE_IDENTITY()", "Saved Spotting Trip");
+            int ID = Convert.ToInt32(obj);
+
+            bool Successful = true;
+            foreach(int AirportID in AirportIDs)
             {
-                if (con.State == System.Data.ConnectionState.Open)
+                if(Successful)
                 {
-                    con.Close();
+                    Successful = ExecuteCMD($"INSERT INTO SpottingTripAirports (SpottingTripID, AirportID) VALUES ('{ID}', '{AirportID}')", "Saved an Link Item between Spottingtrip & Airport");
                 }
-                con.ConnectionString = "server = (localdb)\\MSSQLLocalDB; integrated security = false;";
-                con.Open();
-                // Creates the DB
-                cmd.CommandText = "CREATE DATABASE " + DatabaseName + ";";
-                cmd.ExecuteNonQuery();
-                app.Logger.LogInformation("Created the Database: " + DatabaseName);
-                con.ChangeDatabase(DatabaseName);
-                // Creates the Countries Table
-                cmd.CommandText = "CREATE TABLE Countries (CountryID int NOT NULL PRIMARY KEY IDENTITY, CountryICAOCode varchar(10), CountryName varchar(255));";
-                cmd.ExecuteNonQuery();
-                app.Logger.LogInformation("Created the Table Countries");
-                // Creates the Airports Table
-                cmd.CommandText = "CREATE TABLE Airports (AirportID int NOT NULL PRIMARY KEY IDENTITY, AirportICAOCode char(4), AirportIATACode char(3), AirportName text, AirportDescription text, AirportCity varchar(255), CountryID int, CONSTRAINT [FK_Airport_Country] FOREIGN KEY ([CountryID]) REFERENCES [Countries](CountryID));";
-                cmd.ExecuteNonQuery();
-                app.Logger.LogInformation("Created the Table Airports");
-                // Creates the Airline Table
-                cmd.CommandText = "CREATE TABLE Airlines (AirlineID int NOT NULL PRIMARY KEY IDENTITY, AirlineICAOCode char(3), AirlineIATACode char(2), AirlineName text, AirlineRegion int, CONSTRAINT [FK_Airline_Country] FOREIGN KEY ([AirlineRegion]) REFERENCES [Countries](CountryID));";
-                cmd.ExecuteNonQuery();
-                app.Logger.LogInformation("Created the Table Airlines");
-                // Create the Manufactorer Table
-                cmd.CommandText = "CREATE TABLE Manufactorers (ManufactorerID int NOT NULL PRIMARY KEY IDENTITY, ManufactorerName text, ManufactorerRegion int, CONSTRAINT [FK_Manufactorer_Country] FOREIGN KEY ([ManufactorerRegion]) REFERENCES [Countries](CountryID));";
-                cmd.ExecuteNonQuery();
-                app.Logger.LogInformation("Created the Table Manufactorers");
-                // Create the AircraftType Table
-                cmd.CommandText = "CREATE TABLE AircraftTypes (AircraftTypeID int NOT NULL PRIMARY KEY IDENTITY, AircraftTypeICAO varchar(10), AircraftTypeName text, AircraftTypeNickName text, AircraftTypeManufactorerID int, CONSTRAINT [FK_AircraftType_Manufactorer] FOREIGN KEY ([AircraftTypeManufactorerID]) REFERENCES [Manufactorers](ManufactorerID));";
-                cmd.ExecuteNonQuery();
-                app.Logger.LogInformation("Created the Table AircraftTypes");
-                // Create the Aircraft Table
-                cmd.CommandText = "CREATE TABLE Aircrafts (AircraftID int NOT NULL PRIMARY KEY IDENTITY, AircraftRegistration varchar(6), AircraftDescription text, AircraftTypeID int, AircraftCountryID int, AircraftAirlineID int, CONSTRAINT [FK_Aircraft_AircraftType] FOREIGN KEY ([AircraftTypeID]) REFERENCES [AircraftTypes](AircraftTypeID), CONSTRAINT [FK_Aircraft_Country] FOREIGN KEY ([AircraftCountryID]) REFERENCES [Countries](CountryID), CONSTRAINT [FK_Aircraft_Airline] FOREIGN KEY ([AircraftAirlineID]) REFERENCES [Airlines](AirlineID));";
-                cmd.ExecuteNonQuery();
-                app.Logger.LogInformation("Created the Table Aircrafts");
-                // Create Spotting Trip Table
-                cmd.CommandText = "CREATE TABLE SpottingTrips (SpottingTripID int NOT NULL PRIMARY KEY IDENTITY, SpottingTripStart datetime2(0), SpottingTripEnd datetime2(0), SpottingTripName text, SpottingTripDescription text);";
-                cmd.ExecuteNonQuery();
-                app.Logger.LogInformation("Created the Table SpottingTrips");
-                // Create SpottingTrip & Airport Link Table
-                cmd.CommandText = "CREATE TABLE SpottingTripAirports (LinkID int NOT NULL PRIMARY KEY IDENTITY, SpottingTripID int, AirportID int, CONSTRAINT [FK_SpottingTripAirport_SpottingTrip] FOREIGN KEY ([SpottingTripID]) REFERENCES [SpottingTrips](SpottingTripID), CONSTRAINT [FK_SpottingTripAirport_Airport] FOREIGN KEY ([AirportID]) REFERENCES [Airports](AirportID));";
-                cmd.ExecuteNonQuery();
-                app.Logger.LogInformation("Created the Link Table for SpottingTrips and Airports");
-                // Create SpottingPicture Table
-                cmd.CommandText = "CREATE TABLE SpottingPictures (SpottingPictureID int NOT NULL PRIMARY KEY IDENTITY, SpottingPictureName text, SpottingPictureDescription text, SpottingPictureURL text, SpottingPictureOriginalFileName text, SpottingTripAirportID int, SpottingPictureAircraftID int, CONSTRAINT [FK_SpottingPicture_SpottingTripAirport] FOREIGN KEY ([SpottingTripAirportID]) REFERENCES [SpottingTripAirports](LinkID) ON DELETE SET NULL, CONSTRAINT [FK_SpottingPicture_Aircraft] FOREIGN KEY ([SpottingPictureAircraftID]) REFERENCES [Aircrafts](AircraftID));";
-                cmd.ExecuteNonQuery();
-                app.Logger.LogInformation("Created the Table SpottingPictures");
-                con.Close();
-                ConnectToDB(DatabaseName, app);
             }
-            catch (Exception e)
-            {
-                app.Logger.LogError(e.Message);
-            }
-
-            if (con.State == System.Data.ConnectionState.Open)
-            {
-                con.Close();
-            }
-
-            con.Close();
+            return Successful;
         }
 
-        public void AddCountry(Country country)
+        public bool AddSpottingPicture(SpottingPicture spottingPicture)
         {
-            try
+            return ExecuteCMD($"INSERT INTO SpottingPictures (SpottingPictureName, SpottingPictureDescription, SpottingPictureURL, SpottingPictureOriginalFileName, SpottingTripAirportID, SpottingPictureAircraftID) VALUES ('{spottingPicture.Name}','{spottingPicture.Description}','{spottingPicture.PictureUrl}','{spottingPicture.OriginalFileName}','{spottingPicture.SpottingTripAirportID}','{spottingPicture.AircraftID}')", "Saved a SpottingPicture Object");
+        }
+        #endregion
+
+        #region Update Objects
+        public bool UpdateCountry(Country country)
+        {
+            return ExecuteCMD($"UPDATE Countries SET CountryICAOCode = '{country.ICAO_Code}', CountryName = '{country.Name}' WHERE CountryID = {country.ID}", "Updated Countries Object");
+        }
+
+        public bool UpdateAirport(Airport airport)
+        {
+            return ExecuteCMD($"UPDATE Airports SET AirportICAOCode = '{airport.ICAO_Code}', AirportIATACode = '{airport.IATA_Code}', AirportName = '{airport.Name}', AirportDescription = '{airport.Description}', AirportCity = '{airport.City}', CountryID = {airport.CountryID} WHERE AirportID = {airport.ID}", "Updated Airport Object");
+        }
+
+        public bool UpdateAirline(Airline airline)
+        {
+            return ExecuteCMD($"UPDATE Airlines SET AirlineICAOCode = '{airline.ICAO}', AirlineIATACode = '{airline.IATA}', AirlineName = '{airline.Name}', AirlineRegion = {airline.Region} WHERE AirlineID = {airline.ID}", "Updated Airline Object");
+        }
+
+        public bool UpdateAircraftType(AircraftType aircraftType)
+        {
+           return ExecuteCMD($"UPDATE AircraftTypes SET AircraftTypeICAO = '{aircraftType.ICAOCode}', AircraftTypeName = '{aircraftType.FullName}', AircraftTypeNickName = '{aircraftType.NickName}', AircraftTypeManufactorerID = {aircraftType.ManufactorerID} WHERE AircraftTypeID = {aircraftType.ID}", "Updated AircraftType Object");
+        }
+
+        public bool UpdateManufactorer(Manufactorer manufactorer)
+        {
+            return ExecuteCMD($"UPDATE Manufactorers SET ManufactorerName = '{manufactorer.Name}', ManufactorerRegion = {manufactorer.Region} WHERE ManufactorerID = {manufactorer.ID}", "Updated a Manufactorer Object");
+        }
+
+        public bool UpdateAircraft(Aircraft aircraft)
+        {
+            return ExecuteCMD($"UPDATE Aircrafts SET AircraftRegistration = '{aircraft.Registration}', AircraftDescription = '{aircraft.Description}', AircraftTypeID = {aircraft.TypeID}, AircraftCountryID = {aircraft.CountryID}, AircraftAirlineID = {aircraft.AirlineID} WHERE AircraftID = {aircraft.ID}", "Updated an Aircraft Object");
+        }
+
+        public bool UpdateSpottingTrip(SpottingTrip spottingTrip, List<int> AirportIDs)
+        {
+            bool IsSuccessfull = true;
+            IsSuccessfull = ExecuteCMD($"UPDATE SpottingTrips SET SpottingTripStart = '{spottingTrip.Start.ToString("yyyy-MM-dd HH:mm:ss")}', SpottingTripEnd = '{spottingTrip.End.ToString("yyyy-MM-dd HH:mm:ss")}', SpottingTripName = '{spottingTrip.Name}', SpottingTripDescription = '{spottingTrip.Description}' WHERE SpottingTripID = {spottingTrip.ID}", "Updating the SpottingTrip Object");
+
+            ReaderData = ExecuteReadCMD($"SELECT AirportID FROM SpottingTripAirports WHERE SpottingTripID = {spottingTrip.ID}", "Getting all AirportIDs from a SpottingTrip");
+            List<int> Airports2Delete = new List<int>();
+            foreach(Dictionary<string, object> Data in ReaderData)
             {
-                if (con.State == System.Data.ConnectionState.Open)
+                int ID = Convert.ToInt32(Data["AirportIDs"]);
+                if (AirportIDs.Contains(ID))
                 {
-                    con.Close();
+                    AirportIDs.Remove(ID);
                 }
-
-                con.Open();
-                cmd.CommandText = $"INSERT INTO Countries (CountryICAOCode, CountryName) VALUES ('{country.ICAO_Code}', '{country.Name}')";
-                cmd.ExecuteNonQuery();
-                app.Logger.LogInformation("Saved a Country Object", country);
-                con.Close();
-            }
-            catch (Exception e)
-            {
-                app.Logger.LogError(e.Message);
-            }
-
-            if (con.State == System.Data.ConnectionState.Open)
-            {
-                con.Close();
-            }
-            con.Close();
-        }
-
-        public void AddAirport(Airport airport)
-        {
-            try
-            {
-                con.Open();
-                cmd.CommandText = $"INSERT INTO Airports (AirportICAOCode, AirportIATACode, AirportName, AirportDescription, AirportCity, CountryID) VALUES ('{airport.ICAO_Code}', '{airport.IATA_Code}', '{airport.Name}', '{airport.Description}', '{airport.City}', '{airport.CountryID}')";
-                cmd.ExecuteNonQuery();
-                app.Logger.LogInformation("Saved an Airport Object", airport);
-                con.Close();
-            }
-            catch (Exception e)
-            {
-                app.Logger.LogError(e.Message);
-            }
-
-            if (con.State == System.Data.ConnectionState.Open)
-            {
-                con.Close();
-            }
-            con.Close();
-        }
-
-        public void AddAirline(Airline airline)
-        {
-            try
-            {
-                con.Open();
-                cmd.CommandText = $"INSERT INTO Airlines (AirlineICAOCode, AirlineIATACode, AirlineName, AirlineRegion) VALUES ('{airline.ICAO}', '{airline.IATA}', '{airline.Name}', '{airline.Region}');";
-                cmd.ExecuteNonQuery();
-                app.Logger.LogInformation("Saved an Airline Object", airline);
-                con.Close();
-            }
-            catch (Exception e)
-            {
-                app.Logger.LogError(e.Message);
-            }
-
-            if (con.State == System.Data.ConnectionState.Open)
-            {
-                con.Close();
-            }
-            con.Close();
-        }
-
-        public void AddManufactorer(Manufactorer manufactorer)
-        {
-            try
-            {
-                con.Open();
-                cmd.CommandText = $"INSERT INTO Manufactorers (ManufactorerName, ManufactorerRegion) VALUES ('{manufactorer.Name}','{manufactorer.Region}');";
-                cmd.ExecuteNonQuery();
-                app.Logger.LogInformation("Saved a Manufactorer Object", manufactorer);
-                con.Close();
-            }
-            catch (Exception e)
-            {
-                app.Logger.LogError(e.Message);
-            }
-
-            if (con.State == System.Data.ConnectionState.Open)
-            {
-                con.Close();
-            }
-            con.Close();
-        }
-
-        public void AddAircraftType(AircraftType aircraftType)
-        {
-            try
-            {
-                con.Open();
-                cmd.CommandText = $"INSERT INTO AircraftTypes (AircraftTypeICAO, AircraftTypeName, AircraftTypeNickName, AircraftTypeManufactorerID) VALUES ('{aircraftType.ICAOCode}', '{aircraftType.FullName}', '{aircraftType.NickName}', '{aircraftType.ManufactorerID}');";
-                cmd.ExecuteNonQuery();
-                app.Logger.LogInformation("Saved an AircraftType Object", aircraftType);
-                con.Close();
-            }
-            catch (Exception e)
-            {
-                app.Logger.LogError(e.Message);
-            }
-
-            if (con.State == System.Data.ConnectionState.Open)
-            {
-                con.Close();
-            }
-            con.Close();
-        }
-
-        public void AddAircraft(Aircraft aircraft)
-        {
-            try
-            {
-                con.Open();
-                cmd.CommandText = $"INSERT INTO Aircrafts (AircraftRegistration, AircraftDescription, AircraftTypeID, AircraftCountryID, AircraftAirlineID) VALUES('{aircraft.Registration}', '{aircraft.Description}', '{aircraft.TypeID}', '{aircraft.CountryID}', '{aircraft.AirlineID}');";
-                cmd.ExecuteNonQuery();
-                app.Logger.LogInformation("Saved an Aircraft Object", aircraft);
-                con.Close();
-            }
-            catch (Exception e)
-            {
-                app.Logger.LogError(e.Message);
-            }
-
-            if (con.State == System.Data.ConnectionState.Open)
-            {
-                con.Close();
-            }
-            con.Close();
-        }
-
-        public void AddSpottingTrip(SpottingTrip spottingTrip, List<int> AirportIDs)
-        {
-            try
-            {
-                con.Open();
-                cmd.CommandText = $"INSERT INTO SpottingTrips (SpottingTripStart, SpottingTripEnd, SpottingTripName, SpottingTripDescription) VALUES ('{spottingTrip.Start.ToString("yyyy-MM-dd HH:mm:ss")}', '{spottingTrip.End.ToString("yyyy-MM-dd HH:mm:ss")}', '{spottingTrip.Name}', '{spottingTrip.Description}'); SELECT SCOPE_IDENTITY()";
-                int ID = Convert.ToInt32(cmd.ExecuteScalar());
-                foreach(int AirportID in AirportIDs )
+                else
                 {
-                    cmd.CommandText = $"INSERT INTO SpottingTripAirports (SpottingTripID, AirportID) VALUES ('{ID}', '{AirportID}');";
-                    cmd.ExecuteNonQuery();
+                    Airports2Delete.Add(ID);
                 }
-                app.Logger.LogInformation("Saved a SpottingTrip Object", spottingTrip);
-                con.Close();
-            }
-            catch (Exception e)
-            {
-                app.Logger.LogError(e.Message);
             }
 
-            if (con.State == System.Data.ConnectionState.Open)
+            foreach(int airport2delete in Airports2Delete)
             {
-                con.Close();
-            }
-            con.Close();
-        }
-
-        public void AddSpottingPicture(SpottingPicture spottingPicture)
-        {
-            try
-            {
-                con.Open();
-                cmd.CommandText = $"INSERT INTO SpottingPictures (SpottingPictureName, SpottingPictureDescription, SpottingPictureURL, SpottingPictureOriginalFileName, SpottingTripAirportID, SpottingPictureAircraftID) VALUES ('{spottingPicture.Name}','{spottingPicture.Description}','{spottingPicture.PictureUrl}','{spottingPicture.OriginalFileName}','{spottingPicture.SpottingTripAirportID}','{spottingPicture.AircraftID}');";
-                cmd.ExecuteNonQuery();
-                app.Logger.LogInformation("Saved a SpottingPicture Object", spottingPicture);
-                con.Close();
-            }
-            catch (Exception e)
-            {
-                app.Logger.LogError(e.Message);
-            }
-
-            if (con.State == System.Data.ConnectionState.Open)
-            {
-                con.Close();
-            }
-            con.Close();
-        }
-
-        public void UpdateCountry(Country country)
-        {
-            try
-            {
-                con.Open();
-                cmd.CommandText = $"UPDATE Countries SET CountryICAOCode = '{country.ICAO_Code}', CountryName = '{country.Name}' WHERE CountryID = {country.ID}";
-                cmd.ExecuteNonQuery();
-                app.Logger.LogInformation("Updated Countries Object");
-                con.Close();
-            }
-            catch (Exception e)
-            {
-                app.Logger.LogError(e.Message);
-            }
-
-            if (con.State == System.Data.ConnectionState.Open)
-            {
-                con.Close();
-            }
-            con.Close();
-        }
-
-        public void UpdateAirport(Airport airport)
-        {
-            try
-            {
-                con.Open();
-                cmd.CommandText = $"UPDATE Airports SET AirportICAOCode = '{airport.ICAO_Code}', AirportIATACode = '{airport.IATA_Code}', AirportName = '{airport.Name}', AirportDescription = '{airport.Description}', AirportCity = '{airport.City}', CountryID = {airport.CountryID} WHERE AirportID = {airport.ID}";
-                cmd.ExecuteNonQuery();
-                app.Logger.LogInformation("Updated Airport Object");
-                con.Close();
-            }
-            catch (Exception e)
-            {
-                app.Logger.LogError(e.Message);
-            }
-
-            if (con.State == System.Data.ConnectionState.Open)
-            {
-                con.Close();
-            }
-            con.Close();
-        }
-
-        public void UpdateAirline(Airline airline)
-        {
-            try
-            {
-                con.Open();
-                cmd.CommandText = $"UPDATE Airlines SET AirlineICAOCode = '{airline.ICAO}', AirlineIATACode = '{airline.IATA}', AirlineName = '{airline.Name}', AirlineRegion = {airline.Region} WHERE AirlineID = {airline.ID}";
-                cmd.ExecuteNonQuery();
-                app.Logger.LogInformation("Updated Airline Object");
-                con.Close();
-            }
-            catch (Exception e)
-            {
-                app.Logger.LogError(e.Message);
-            }
-
-            if (con.State == System.Data.ConnectionState.Open)
-            {
-                con.Close();
-            }
-            con.Close();
-        }
-
-        public void UpdateAircraftType(AircraftType aircraftType)
-        {
-            try
-            {
-                con.Open();
-                cmd.CommandText = $"UPDATE AircraftTypes SET AircraftTypeICAO = '{aircraftType.ICAOCode}', AircraftTypeName = '{aircraftType.FullName}', AircraftTypeNickName = '{aircraftType.NickName}', AircraftTypeManufactorerID = {aircraftType.ManufactorerID} WHERE AircraftTypeID = {aircraftType.ID}";
-                cmd.ExecuteNonQuery();
-                app.Logger.LogInformation("Updated AircraftType Object");
-                con.Close();
-            }
-            catch (Exception e)
-            {
-                app.Logger.LogError(e.Message);
-            }
-
-            if (con.State == System.Data.ConnectionState.Open)
-            {
-                con.Close();
-            }
-            con.Close();
-        }
-
-        public void UpdateManufactorer(Manufactorer manufactorer)
-        {
-            try
-            {
-                con.Open();
-                cmd.CommandText = $"UPDATE Manufactorers SET ManufactorerName = '{manufactorer.Name}', ManufactorerRegion = {manufactorer.Region} WHERE ManufactorerID = {manufactorer.ID}";
-                cmd.ExecuteNonQuery();
-                app.Logger.LogInformation("Updated a Manufactorer Object");
-                con.Close();
-            }
-            catch (Exception e)
-            {
-                app.Logger.LogError(e.Message);
-            }
-
-            if (con.State == System.Data.ConnectionState.Open)
-            {
-                con.Close();
-            }
-            con.Close();
-        }
-
-        public void UpdateAircraft(Aircraft aircraft)
-        {
-            try
-            {
-                con.Open();
-                cmd.CommandText = $"UPDATE Aircrafts SET AircraftRegistration = '{aircraft.Registration}', AircraftDescription = '{aircraft.Description}', AircraftTypeID = {aircraft.TypeID}, AircraftCountryID = {aircraft.CountryID}, AircraftAirlineID = {aircraft.AirlineID} WHERE AircraftID = {aircraft.ID}";
-                cmd.ExecuteNonQuery();
-                app.Logger.LogInformation("Updated an Aircraft Object");
-                con.Close();
-            }
-            catch (Exception e)
-            {
-                app.Logger.LogError(e.Message);
-            }
-
-            if (con.State == System.Data.ConnectionState.Open)
-            {
-                con.Close();
-            }
-            con.Close();
-        }
-
-        public void UpdateSpottingTrip(SpottingTrip spottingTrip, List<int> AirportIDs)
-        {
-            try
-            {
-                con.Open();
-                cmd.CommandText = $"UPDATE SpottingTrips SET SpottingTripStart = '{spottingTrip.Start.ToString("yyyy-MM-dd HH:mm:ss")}', SpottingTripEnd = '{spottingTrip.End.ToString("yyyy-MM-dd HH:mm:ss")}', SpottingTripName = '{spottingTrip.Name}', SpottingTripDescription = '{spottingTrip.Description}' WHERE SpottingTripID = {spottingTrip.ID}";
-                cmd.ExecuteNonQuery();
-                cmd.CommandText = $"SELECT AirportID FROM SpottingTripAirports WHERE SpottingTripID = {spottingTrip.ID}";
-                List<int> Airports2Delete = new List<int>();
-                reader = cmd.ExecuteReader();
-                while(reader.Read())
+                if(IsSuccessfull)
                 {
-                    int ID = Convert.ToInt32(reader[0]);
-                    if(AirportIDs.Contains(ID))
-                    {
-                        AirportIDs.Remove(ID);
-                    }
-                    else
-                    {
-                        Airports2Delete.Add(ID);
-                    }
+                    IsSuccessfull = ExecuteCMD($"DELETE FROM SpottingTripAirports WHERE AirportID = {airport2delete} AND SpottingTripID = {spottingTrip.ID}", "Delete Airports from SpottingTrip");
                 }
-
-                con.Close();
-
-                foreach(int airport2delete in Airports2Delete)
-                {
-                    con.Open();
-                    cmd.CommandText = $"DELETE FROM SpottingTripAirports WHERE AirportID = {airport2delete} AND SpottingTripID = {spottingTrip.ID};";
-                    cmd.ExecuteNonQuery();
-                    con.Close();
-                }
-
-                foreach (int AirportID in AirportIDs)
-                {
-                    con.Open();
-                    cmd.CommandText = $"INSERT INTO SpottingTripAirports (SpottingTripID, AirportID) VALUES ('{spottingTrip.ID}', '{AirportID}');";
-                    cmd.ExecuteNonQuery();
-                    con.Close();
-                }
-                app.Logger.LogInformation("Updated a SpottingTrip Object");
-                con.Close();
+                
             }
-            catch (Exception e)
+
+            foreach(int AirportID in AirportIDs)
             {
-                app.Logger.LogError(e.Message);
+                if(IsSuccessfull)
+                {
+                  IsSuccessfull = ExecuteCMD($"INSERT INTO SpottingTripAirports (SpottingTripID, AirportID) VALUES ('{spottingTrip.ID}', '{AirportID}')", "Add Airports to SpottingTrip");
+                }
             }
-
-            if (con.State == System.Data.ConnectionState.Open)
-            {
-                con.Close();
-            }
-            con.Close();
+            return IsSuccessfull;
         }
 
-        public void UpdateSpottingPicture(SpottingPicture spottingPicture)
+        public bool UpdateSpottingPicture(SpottingPicture spottingPicture)
         {
-            try
-            {
-                con.Open();
-                cmd.CommandText = $"UPDATE SpottingPictures SET SpottingPictureName = '{spottingPicture.Name}', SpottingPictureDescription = '{spottingPicture.Description}', SpottingPictureURL = '{spottingPicture.PictureUrl}', SpottingPictureOriginalFileName = '{spottingPicture.OriginalFileName}', SpottingTripAirportID = {spottingPicture.SpottingTripAirportID}, SpottingPictureAircraftID = {spottingPicture.AircraftID} WHERE SpottingPictureID = {spottingPicture.ID}";
-                cmd.ExecuteNonQuery();
-                app.Logger.LogInformation("Updated a SpottingPicture Object");
-                con.Close();
-            }
-            catch (Exception e)
-            {
-                app.Logger.LogError(e.Message);
-            }
-
-            if (con.State == System.Data.ConnectionState.Open)
-            {
-                con.Close();
-            }
+            return ExecuteCMD($"UPDATE SpottingPictures SET SpottingPictureName = '{spottingPicture.Name}', SpottingPictureDescription = '{spottingPicture.Description}', SpottingPictureURL = '{spottingPicture.PictureUrl}', SpottingPictureOriginalFileName = '{spottingPicture.OriginalFileName}', SpottingTripAirportID = {spottingPicture.SpottingTripAirportID}, SpottingPictureAircraftID = {spottingPicture.AircraftID} WHERE SpottingPictureID = {spottingPicture.ID}", "Updated a SpottingPicture Object");
         }
+        #endregion
 
+        #region Get Objects
         public List<Country> GetCountries()
         {
             List<Country> Countries = new List<Country>();
-            try
+            ReaderData = ExecuteReadCMD($"SELECT * FROM Countries", "Reading Country/Region Objects");
+            foreach(Dictionary<string, object> Data in ReaderData)
             {
-                con.Open();
-                cmd.CommandText = $"SELECT * FROM Countries";
-                reader = cmd.ExecuteReader();
-                while (reader.Read())
-                {
-                    Country country = new Country(Convert.ToInt32(reader["CountryID"]), Convert.ToString(reader["CountryICAOCode"]), Convert.ToString(reader["CountryName"]));
-                    Countries.Add(country);
-                }
-                app.Logger.LogInformation("Read " + Countries.Count + " Country Objects");
-                con.Close();
+                Country country = new Country(Convert.ToInt32(Data["CountryID"]), Convert.ToString(Data["CountryICAOCode"]), Convert.ToString(Data["CountryName"]));
+                Countries.Add(country);
             }
-            catch (Exception e)
-            {
-                app.Logger.LogInformation(e.Message);
-            }
-
-            if (con.State == System.Data.ConnectionState.Open)
-            {
-                con.Close();
-            }
-            con.Close();
             return Countries;
         }
 
         public List<Country> GetCountries(bool OnlyCountries)
         {
             List<Country> Countries = new List<Country>();
-            try
+            ReaderData = ExecuteReadCMD($"SELECT * FROM Countries WHERE NOT CountryICAOCode = ''", "Reading Only Country Objects");
+            foreach(Dictionary<string , object> Data in ReaderData)
             {
-                con.Open();
-                cmd.CommandText = $"SELECT * FROM Countries WHERE NOT CountryICAOCode = ''";
-                reader = cmd.ExecuteReader();
-                while (reader.Read())
-                {
-                    Country country = new Country(Convert.ToInt32(reader["CountryID"]), Convert.ToString(reader["CountryICAOCode"]), Convert.ToString(reader["CountryName"]));
-                    Countries.Add(country);
-                }
-                app.Logger.LogInformation("Read " + Countries.Count + " Country Objects");
-                con.Close();
+                Country country = new Country(Convert.ToInt32(Data["CountryID"]), Convert.ToString(Data["CountryICAOCode"]), Convert.ToString(Data["CountryName"]));
+                Countries.Add(country);
             }
-            catch (Exception e)
-            {
-                app.Logger.LogInformation(e.Message);
-            }
-
-            if (con.State == System.Data.ConnectionState.Open)
-            {
-                con.Close();
-            }
-            con.Close();
             return Countries;
         }
 
         public List<Country> GetRegions()
         {
             List<Country> Countries = new List<Country>();
-            try
+            ReaderData = ExecuteReadCMD($"SELECT * FROM Countries WHERE CountryICAOCode = ''", "Reading Only Region Objects");
+            foreach(Dictionary<string, object> Data in ReaderData)
             {
-                con.Open();
-                cmd.CommandText = "SELECT * FROM Countries WHERE CountryICAOCode = ''";
-                reader = cmd.ExecuteReader();
-                while (reader.Read())
-                {
-                    Country country = new Country(Convert.ToInt32(reader["CountryID"]), Convert.ToString(reader["CountryICAOCode"]), Convert.ToString(reader["CountryName"]));
-                    Countries.Add(country);
-                }
-                app.Logger.LogInformation("Read " + Countries.Count + " Country Objects");
-                con.Close();
+                Country country = new Country(Convert.ToInt32(Data["CountryID"]), Convert.ToString(Data["CountryICAOCode"]), Convert.ToString(Data["CountryName"]));
+                Countries.Add(country);
             }
-            catch (Exception e)
-            {
-                app.Logger.LogInformation(e.Message);
-            }
-
-            if (con.State == System.Data.ConnectionState.Open)
-            {
-                con.Close();
-            }
-            con.Close();
             return Countries;
         }
 
         public Country GetCountryByID(int ID)
         {
             Country country = null;
-            try
+            ReaderData = ExecuteReadCMD($"SELECT * FROM Countries WHERE CountryID = {ID}", $"Reading the Country Object with the ID = {ID}");
+            foreach(Dictionary<string, object> Data in ReaderData)
             {
-                con.Open();
-                cmd.CommandText = $"SELECT * FROM Countries WHERE CountryID = {ID}";
-                reader = cmd.ExecuteReader();
-                while(reader.Read())
-                {
-                    country = new Country(Convert.ToInt32(reader["CountryID"]), Convert.ToString(reader["CountryICAOCode"]), Convert.ToString(reader["CountryName"]));
-                }
-                con.Close();
+                country = new Country(Convert.ToInt32(Data["CountryID"]), Convert.ToString(Data["CountryICAOCode"]), Convert.ToString(Data["CountryName"]));
             }
-            catch (Exception e)
-            {
-                app.Logger.LogInformation(e.Message);
-            }
-
-            if (con.State == System.Data.ConnectionState.Open)
-            {
-                con.Close();
-            }
-            con.Close();
             return country;
         }
 
         public List<Airport> GetAirports()
         {
             List<Airport> Airports = new List<Airport>();
-            try
+            ReaderData = ExecuteReadCMD($"SELECT * FROM Airports", "Reading Airport Objects");
+            foreach(Dictionary <string, object> Data in ReaderData)
             {
-                con.Open();
-                cmd.CommandText = $"SELECT * FROM Airports";
-                reader = cmd.ExecuteReader();
-                while (reader.Read())
-                {
-                    Airport airport = new Airport(Convert.ToInt32(reader["AirportID"]), Convert.ToString(reader["AirportICAOCode"]), Convert.ToString(reader["AirportIATACode"]), Convert.ToString(reader["AirportName"]), Convert.ToString(reader["AirportDescription"]), Convert.ToString(reader["AirportCity"]), Convert.ToInt32(reader["CountryID"]));
-                    Airports.Add(airport);
-                }
-                con.Close();
+                Airport airport = new Airport(Convert.ToInt32(Data["AirportID"]), Convert.ToString(Data["AirportICAOCode"]), Convert.ToString(Data["AirportIATACode"]), Convert.ToString(Data["AirportName"]), Convert.ToString(Data["AirportDescription"]), Convert.ToString(Data["AirportCity"]), Convert.ToInt32(Data["CountryID"]));
+                Airports.Add(airport);
             }
-            catch (Exception e)
-            {
-                app.Logger.LogError(e.Message);
-            }
-
-            if (con.State == System.Data.ConnectionState.Open)
-            {
-                con.Close();
-            }
-            con.Close();
             return Airports;
         }
 
         public Airport GetAirportByID(int ID)
         {
             Airport airport = null;
-            try
+            ReaderData = ExecuteReadCMD($"SELECT * FROM Airports WHERE AirportID = {ID}", $"Reading Airport Object with ID {ID}");
+            foreach(Dictionary<string, object> Data in ReaderData)
             {
-                con.Open();
-                cmd.CommandText = $"SELECT * FROM Airports WHERE AirportID = {ID}";
-                reader = cmd.ExecuteReader();
-                while (reader.Read())
-                {
-                    airport = new Airport(Convert.ToInt32(reader["AirportID"]), Convert.ToString(reader["AirportICAOCode"]), Convert.ToString(reader["AirportIATACode"]), Convert.ToString(reader["AirportName"]), Convert.ToString(reader["AirportDescription"]), Convert.ToString(reader["AirportCity"]), Convert.ToInt32(reader["CountryID"]));
-                }
-                con.Close();
+                airport = new Airport(Convert.ToInt32(Data["AirportID"]), Convert.ToString(Data["AirportICAOCode"]), Convert.ToString(Data["AirportIATACode"]), Convert.ToString(Data["AirportName"]), Convert.ToString(Data["AirportDescription"]), Convert.ToString(Data["AirportCity"]), Convert.ToInt32(Data["CountryID"]));
             }
-            catch (Exception e)
-            {
-                app.Logger.LogError(e.Message);
-            }
-
-            if (con.State == System.Data.ConnectionState.Open)
-            {
-                con.Close();
-            }
-            con.Close();
             return airport;
         }
 
         public List<Airline> GetAirlines()
         {
             List<Airline> Airlines = new List<Airline>();
-            try
+            ReaderData = ExecuteReadCMD($"SELECT * FROM Airlines", "Reading Airline Objects");
+            foreach(Dictionary<string, object> Data in ReaderData)
             {
-                con.Open();
-                cmd.CommandText = $"SELECT * FROM Airlines";
-                reader = cmd.ExecuteReader();
-                while (reader.Read())
-                {
-                    Airline airline = new Airline(Convert.ToInt32(reader["AirlineID"]), Convert.ToString(reader["AirlineICAOCode"]), Convert.ToString(reader["AirlineIATACode"]), Convert.ToString(reader["AirlineName"]), Convert.ToInt32(reader["AirlineRegion"]));
-                    Airlines.Add(airline);
-                }
-                con.Close();
+                Airline airline = new Airline(Convert.ToInt32(Data["AirlineID"]), Convert.ToString(Data["AirlineICAOCode"]), Convert.ToString(Data["AirlineIATACode"]), Convert.ToString(Data["AirlineName"]), Convert.ToInt32(Data["AirlineRegion"]));
+                Airlines.Add(airline);
             }
-            catch (Exception e)
-            {
-                app.Logger.LogError(e.Message);
-            }
-
-            if (con.State == System.Data.ConnectionState.Open)
-            {
-                con.Close();
-            }
-            con.Close();
             return Airlines;
         }
 
         public Airline GetAirlineByID(int ID)
         {
             Airline airline = null;
-            try
+            ReaderData = ExecuteReadCMD($"SELECT * FROM Airlines WHERE AirlineID = {ID}", $"Reading Airline Object with ID {ID}");
+            foreach(Dictionary<string, object> Data in ReaderData)
             {
-                con.Open();
-                cmd.CommandText = $"SELECT * FROM Airlines WHERE AirlineID = {ID}";
-                reader = cmd.ExecuteReader();
-                while (reader.Read())
-                {
-                    airline = new Airline(Convert.ToInt32(reader["AirlineID"]), Convert.ToString(reader["AirlineICAOCode"]), Convert.ToString(reader["AirlineIATACode"]), Convert.ToString(reader["AirlineName"]), Convert.ToInt32(reader["AirlineRegion"]));
-                }
-                con.Close();
+                airline = new Airline(Convert.ToInt32(Data["AirlineID"]), Convert.ToString(Data["AirlineICAOCode"]), Convert.ToString(Data["AirlineIATACode"]), Convert.ToString(Data["AirlineName"]), Convert.ToInt32(Data["AirlineRegion"]));
             }
-            catch (Exception e)
-            {
-                app.Logger.LogError(e.Message);
-            }
-
-            if (con.State == System.Data.ConnectionState.Open)
-            {
-                con.Close();
-            }
-            con.Close();
             return airline;
         }
 
         public List<AircraftType> GetAircraftTypes()
         {
             List<AircraftType> AircraftTypes = new List<AircraftType>();
-            try
+            ReaderData = ExecuteReadCMD($"SELECT * FROM AircraftTypes", "Reading the AircraftType Objects");
+            foreach(Dictionary<string, object> Data in ReaderData)
             {
-                con.Open();
-                cmd.CommandText = $"SELECT * FROM AircraftTypes";
-                reader = cmd.ExecuteReader();
-                while (reader.Read())
-                {
-                   AircraftType aircraftType = new AircraftType(Convert.ToInt32(reader["AircraftTypeID"]), Convert.ToString(reader["AircraftTypeICAO"]), Convert.ToString(reader["AircraftTypeName"]), Convert.ToString(reader["AircraftTypeNickName"]), Convert.ToInt32(reader["AircraftTypeManufactorerID"]));
-                   AircraftTypes.Add(aircraftType);
-                }
-                con.Close();
+                AircraftType aircraftType = new AircraftType(Convert.ToInt32(Data["AircraftTypeID"]), Convert.ToString(Data["AircraftTypeICAO"]), Convert.ToString(Data["AircraftTypeName"]), Convert.ToString(Data["AircraftTypeNickName"]), Convert.ToInt32(Data["AircraftTypeManufactorerID"]));
+                AircraftTypes.Add(aircraftType);
             }
-            catch (Exception e)
-            {
-                app.Logger.LogError(e.Message);
-            }
-
-            if (con.State == System.Data.ConnectionState.Open)
-            {
-                con.Close();
-            }
-            con.Close();
             return AircraftTypes;
         }
 
         public AircraftType GetAircraftTypeByID(int ID)
         {
             AircraftType aircraftType = null;
-            try
+            ReaderData = ExecuteReadCMD($"SELECT * FROM AircraftTypes WHERE AircraftTypeID = {ID}", $"Reading the AircraftType Object with the ID {ID}");
+            foreach(Dictionary<string, object> Data in ReaderData)
             {
-                con.Open();
-                cmd.CommandText = $"SELECT * FROM AircraftTypes WHERE AircraftTypeID = {ID}";
-                reader = cmd.ExecuteReader();
-                while(reader.Read())
-                {
-                    aircraftType = new AircraftType(Convert.ToInt32(reader["AircraftTypeID"]), Convert.ToString(reader["AircraftTypeICAO"]), Convert.ToString(reader["AircraftTypeName"]), Convert.ToString(reader["AircraftTypeNickName"]), Convert.ToInt32(reader["AircraftTypeManufactorerID"]));
-                }
-                con.Close();
+                aircraftType = new AircraftType(Convert.ToInt32(Data["AircraftTypeID"]), Convert.ToString(Data["AircraftTypeICAO"]), Convert.ToString(Data["AircraftTypeName"]), Convert.ToString(Data["AircraftTypeNickName"]), Convert.ToInt32(Data["AircraftTypeManufactorerID"]));
             }
-            catch (Exception e)
-            {
-                app.Logger.LogError(e.Message);
-            }
-
-            if (con.State == System.Data.ConnectionState.Open)
-            {
-                con.Close();
-            }
-            con.Close();
             return aircraftType;
         }
 
         public List<Manufactorer> GetManufactorers()
         {
             List<Manufactorer> Manufactorers = new List<Manufactorer>();
-            try
+            ReaderData = ExecuteReadCMD($"SELECT * FROM Manufactorers", "Reading the Manufactorer Objects");
+            foreach(Dictionary<string, object> Data in ReaderData)
             {
-                con.Open();
-                cmd.CommandText = $"SELECT * FROM Manufactorers";
-                reader = cmd.ExecuteReader();
-                while(reader.Read())
-                {
-                    Manufactorer manufactorer = new Manufactorer(Convert.ToInt32(reader["ManufactorerID"]), Convert.ToString(reader["ManufactorerName"]), Convert.ToInt32(reader["ManufactorerRegion"]));
-                    Manufactorers.Add(manufactorer);
-                }
-                con.Close();
+                Manufactorer manufactorer = new Manufactorer(Convert.ToInt32(Data["ManufactorerID"]), Convert.ToString(Data["ManufactorerName"]), Convert.ToInt32(Data["ManufactorerRegion"]));
+                Manufactorers.Add(manufactorer);
             }
-            catch (Exception e)
-            {
-                app.Logger.LogError(e.Message);
-            }
-
-            if (con.State == System.Data.ConnectionState.Open)
-            {
-                con.Close();
-            }
-            con.Close();
             return Manufactorers;
         }
 
         public Manufactorer GetManufactorerByID(int id)
         {
             Manufactorer manufactorer = null;
-            try
+            ReaderData = ExecuteReadCMD($"SELECT * FROM Manufactorers WHERE ManufactorerID = {id}", $"Reading the Manufactorer Object with the ID {id}");
+            foreach(Dictionary <string, object> Data in ReaderData)
             {
-                con.Open();
-                cmd.CommandText = $"SELECT * FROM Manufactorers WHERE ManufactorerID = {id}";
-                reader = cmd.ExecuteReader();
-                while(reader.Read())
-                {
-                    manufactorer = new Manufactorer(Convert.ToInt32(reader["ManufactorerID"]), Convert.ToString(reader["ManufactorerName"]), Convert.ToInt32(reader["ManufactorerRegion"]));
-                }
-                con.Close();
+                manufactorer = new Manufactorer(Convert.ToInt32(Data["ManufactorerID"]), Convert.ToString(Data["ManufactorerName"]), Convert.ToInt32(Data["ManufactorerRegion"]));
             }
-            catch (Exception e)
-            {
-                app.Logger.LogError(e.Message);
-            }
-
-            if (con.State == System.Data.ConnectionState.Open)
-            {
-                con.Close();
-            }
-            con.Close();
             return manufactorer;
         }
 
         public List<Aircraft> GetAircrafts()
         {
             List<Aircraft> aircrafts = new List<Aircraft>();
-            try
+            ReaderData = ExecuteReadCMD("SELECT * FROM Aircrafts", "Reading Aircraft Objects");
+            foreach(Dictionary<string, object> Data in ReaderData)
             {
-                con.Open();
-                cmd.CommandText = "SELECT * FROM Aircrafts";
-                reader = cmd.ExecuteReader();
-                while(reader.Read())
-                {
-                    Aircraft aircraft = new Aircraft(Convert.ToInt32(reader["AircraftID"]), Convert.ToString(reader["AircraftRegistration"]), Convert.ToString(reader["AircraftDescription"]), Convert.ToInt32(reader["AircraftTypeID"]), Convert.ToInt32(reader["AircraftCountryID"]), Convert.ToInt32(reader["AircraftAirlineID"]));
-                    aircrafts.Add(aircraft);
-                }
-                con.Close();
+                Aircraft aircraft = new Aircraft(Convert.ToInt32(Data["AircraftID"]), Convert.ToString(Data["AircraftRegistration"]), Convert.ToString(Data["AircraftDescription"]), Convert.ToInt32(Data["AircraftTypeID"]), Convert.ToInt32(Data["AircraftCountryID"]), Convert.ToInt32(Data["AircraftAirlineID"]));
+                aircrafts.Add(aircraft);
             }
-            catch (Exception e)
-            {
-                app.Logger.LogError(e.Message);
-            }
-
-            if (con.State == System.Data.ConnectionState.Open)
-            {
-                con.Close();
-            }
-            con.Close();
             return aircrafts;
         }
 
         public Aircraft GetAircraftByID(int id)
         {
             Aircraft aircraft = null;
-            try
+            ReaderData = ExecuteReadCMD($"SELECT * FROM Aircrafts WHERE AircraftID = {id}", $"Reading Aircraft Object with the ID {id}");
+            foreach(Dictionary<string, object> Data in ReaderData)
             {
-                con.Open();
-                cmd.CommandText = $"SELECT * FROM Aircrafts WHERE AircraftID = {id}";
-                reader = cmd.ExecuteReader();
-                while(reader.Read())
-                {
-                    aircraft = new Aircraft(Convert.ToInt32(reader["AircraftID"]), Convert.ToString(reader["AircraftRegistration"]), Convert.ToString(reader["AircraftDescription"]), Convert.ToInt32(reader["AircraftTypeID"]), Convert.ToInt32(reader["AircraftCountryID"]), Convert.ToInt32(reader["AircraftAirlineID"]));
-                }
-                con.Close();
+                aircraft = new Aircraft(Convert.ToInt32(Data["AircraftID"]), Convert.ToString(Data["AircraftRegistration"]), Convert.ToString(Data["AircraftDescription"]), Convert.ToInt32(Data["AircraftTypeID"]), Convert.ToInt32(Data["AircraftCountryID"]), Convert.ToInt32(Data["AircraftAirlineID"]));
             }
-            catch (Exception e)
-            {
-                app.Logger.LogError(e.Message);
-            }
-
-            if (con.State == System.Data.ConnectionState.Open)
-            {
-                con.Close();
-            }
-            con.Close();
             return aircraft;
         }
 
         public List<SpottingTrip> GetSpottingTrips()
         {
-            Thread.Sleep(100);
             List<SpottingTrip> spottingTrips = new List<SpottingTrip>();
-            try
+            ReaderData = ExecuteReadCMD("SELECT * FROM SpottingTrips", "Reading SpottingTrip Objects");
+            foreach(Dictionary<string, object> Data in ReaderData)
             {
-                cmd.CommandText = "SELECT * FROM SpottingTrips";
-                con.Open();
-                reader = cmd.ExecuteReader();
-                while(reader.Read())
-                {
-                    SpottingTrip spottingTrip = new SpottingTrip(Convert.ToInt32(reader["SpottingTripID"]), Convert.ToDateTime(reader["SpottingTripStart"]), Convert.ToDateTime(reader["SpottingTripEnd"]), Convert.ToString(reader["SpottingTripName"]), Convert.ToString(reader["SpottingTripDescription"]));
-                    spottingTrips.Add(spottingTrip);
-                }
-                con.Close();
+                SpottingTrip spottingTrip = new SpottingTrip(Convert.ToInt32(Data["SpottingTripID"]), Convert.ToDateTime(Data["SpottingTripStart"]), Convert.ToDateTime(Data["SpottingTripEnd"]), Convert.ToString(Data["SpottingTripName"]), Convert.ToString(Data["SpottingTripDescription"]));
+                spottingTrips.Add(spottingTrip);
             }
-            catch (Exception e)
-            {
-                app.Logger.LogError(e.Message);
-            }
-
-            if (con.State == System.Data.ConnectionState.Open)
-            {
-                con.Close();
-            }
-            con.Close();
             return spottingTrips;
         }
 
         public SpottingTrip GetSpottingTripByID(int id)
         {
             SpottingTrip spottingTrip = null;
-            try
+            ReaderData = ExecuteReadCMD($"SELECT * FROM SpottingTrips WHERE SpottingTripID = {id}", $"Reading SpottingTrip with ID {id}");
+            foreach(Dictionary<string, object> Data in ReaderData)
             {
-                con.Open();
-                cmd.CommandText = $"SELECT * FROM SpottingTrips WHERE SpottingTripID = {id}";
-                reader = cmd.ExecuteReader();
-                while(reader.Read())
-                {
-                    spottingTrip = new SpottingTrip(Convert.ToInt32(reader["SpottingTripID"]), Convert.ToDateTime(reader["SpottingTripStart"]), Convert.ToDateTime(reader["SpottingTripEnd"]), Convert.ToString(reader["SpottingTripName"]), Convert.ToString(reader["SpottingTripDescription"]));
-                }
-                con.Close();
+                spottingTrip = new SpottingTrip(Convert.ToInt32(Data["SpottingTripID"]), Convert.ToDateTime(Data["SpottingTripStart"]), Convert.ToDateTime(Data["SpottingTripEnd"]), Convert.ToString(Data["SpottingTripName"]), Convert.ToString(Data["SpottingTripDescription"]));
             }
-            catch (Exception e)
-            {
-                app.Logger.LogError(e.Message);
-            }
-
-            if (con.State == System.Data.ConnectionState.Open)
-            {
-                con.Close();
-            }
-            con.Close();
             return spottingTrip;
         }
 
         public List<SpottingPicture> GetSpottingPictures()
         {
             List<SpottingPicture> spottingPictures = new List<SpottingPicture>();
-            try
+            ReaderData = ExecuteReadCMD("SELECT * FROM SpottingPictures", "Reading SpottingPicture Objects");
+            foreach(Dictionary<string, object> Data in ReaderData)
             {
-                con.Open();
-                cmd.CommandText = "SELECT * FROM SpottingPictures;";
-                reader = cmd.ExecuteReader();
-                while(reader.Read())
-                {
-                    SpottingPicture spottingPicture = new SpottingPicture(Convert.ToInt32(reader["SpottingPictureID"]), Convert.ToString(reader["SpottingPictureName"]), Convert.ToString(reader["SpottingPictureDescription"]), Convert.ToString(reader["SpottingPictureURL"]), Convert.ToString(reader["SpottingPictureOriginalFileName"]), Convert.ToInt32(reader["SpottingTripAirportID"]), Convert.ToInt32(reader["SpottingPictureAircraftID"]));
-                    spottingPictures.Add(spottingPicture);
-                }
-                con.Close();
+                SpottingPicture spottingPicture = new SpottingPicture(Convert.ToInt32(Data["SpottingPictureID"]), Convert.ToString(Data["SpottingPictureName"]), Convert.ToString(Data["SpottingPictureDescription"]), Convert.ToString(Data["SpottingPictureURL"]), Convert.ToString(Data["SpottingPictureOriginalFileName"]), Convert.ToInt32(Data["SpottingTripAirportID"]), Convert.ToInt32(Data["SpottingPictureAircraftID"]));
+                spottingPictures.Add(spottingPicture);
             }
-            catch (Exception e)
-            {
-                app.Logger.LogError(e.Message);
-            }
-
-            if (con.State == System.Data.ConnectionState.Open)
-            {
-                con.Close();
-            }
-            con.Close();
             return spottingPictures;
         }
 
         public SpottingPicture GetSpottingPictureByID(int id)
         {
             SpottingPicture spottingPicture = null;
-            try
+            ReaderData = ExecuteReadCMD($"SELECT * FROM SpottingPictures WHERE SpottingPictureID = {id}", $"Reading SpottingPicture with ID {id}");
+            foreach(Dictionary<string, object> Data in ReaderData)
             {
-                con.Open();
-                cmd.CommandText = $"SELECT * FROM SpottingPictures WHERE SpottingPictureID = {id}";
-                reader = cmd.ExecuteReader();
-                while(reader.Read())
-                {
-                    spottingPicture = new SpottingPicture(Convert.ToInt32(reader["SpottingPictureID"]), Convert.ToString(reader["SpottingPictureName"]), Convert.ToString(reader["SpottingPictureDescription"]), Convert.ToString(reader["SpottingPictureURL"]), Convert.ToString(reader["SpottingPictureOriginalFileName"]), Convert.ToInt32(reader["SpottingPictureSpottingTripID"]), Convert.ToInt32(reader["SpottingPictureAircraftID"]));
-                }
-                con.Close();
+                spottingPicture = new SpottingPicture(Convert.ToInt32(Data["SpottingPictureID"]), Convert.ToString(Data["SpottingPictureName"]), Convert.ToString(Data["SpottingPictureDescription"]), Convert.ToString(Data["SpottingPictureURL"]), Convert.ToString(Data["SpottingPictureOriginalFileName"]), Convert.ToInt32(Data["SpottingTripAirportID"]), Convert.ToInt32(Data["SpottingPictureAircraftID"]));
             }
-            catch (Exception e)
-            {
-                app.Logger.LogError(e.Message);
-            }
-
-            if (con.State == System.Data.ConnectionState.Open)
-            {
-                con.Close();
-            }
-            con.Close();
             return spottingPicture;
         }
 
         public string GetNewestImageFromCountry(int Country)
         {
             string newestImage = "";
-            try
+            ReaderData = ExecuteReadCMD($"SELECT sp.SpottingPictureURL FROM Countries c JOIN Airports a ON c.CountryID = a.CountryID JOIN SpottingTripAirports sta ON a.AirportID = sta.AirportID JOIN SpottingPictures sp ON sp.SpottingTripAirportID = sta.LinkID WHERE c.CountryID = {Country}", "Getting the newest Picture from a Country");
+            foreach(Dictionary<string, object> Data in ReaderData)
             {
-                con.Open();
-                cmd.CommandText = $"SELECT sp.SpottingPictureURL FROM Countries c JOIN Airports a ON c.CountryID = a.CountryID JOIN SpottingTripAirports sta ON a.AirportID = sta.AirportID JOIN SpottingPictures sp ON sp.SpottingTripAirportID = sta.LinkID WHERE c.CountryID = {Country};";
-                reader = cmd.ExecuteReader();
-                {
-                    while(reader.Read())
-                    {
-                        newestImage = Convert.ToString(reader["SpottingPictureURL"]);
-                    }
-                }
-                con.Close();
+                newestImage = Convert.ToString(Data["SpottingPictureURL"]);
             }
-            catch (Exception e)
-            {
-                app.Logger.LogError(e.Message);
-            }
-            con.Close();
             return newestImage;
         }
 
         public List<Airport> GetAirportsFromSpottingTrip(int ID)
         {
             List<Airport> airports = new List<Airport>();
-            try
+            ReaderData = ExecuteReadCMD($"SELECT a.* FROM SpottingTripAirports sta JOIN Airports a ON sta.AirportID = a.AirportID WHERE sta.SpottingTripID = {ID}", $"Getting Airports from SpottingTrip with ID {ID}");
+            foreach(Dictionary<string, object> Data in ReaderData)
             {
-                con.Open();
-                cmd.CommandText = $"SELECT a.* FROM SpottingTripAirports sta JOIN Airports a ON sta.AirportID = a.AirportID WHERE sta.SpottingTripID = {ID};";
-                reader = cmd.ExecuteReader();
-                while (reader.Read())
-                {
-                    airports.Add(new Airport(Convert.ToInt32(reader["AirportID"]), Convert.ToString(reader["AirportICAOCode"]), Convert.ToString(reader["AirportIATACode"]), Convert.ToString(reader["AirportName"]), Convert.ToString(reader["AirportDescription"]), Convert.ToString(reader["AirportCity"]), Convert.ToInt32(reader["CountryID"])));
-                }
-                con.Close();
+                airports.Add(new Airport(Convert.ToInt32(Data["AirportID"]), Convert.ToString(Data["AirportICAOCode"]), Convert.ToString(Data["AirportIATACode"]), Convert.ToString(Data["AirportName"]), Convert.ToString(Data["AirportDescription"]), Convert.ToString(Data["AirportCity"]), Convert.ToInt32(Data["CountryID"])));
             }
-            catch (Exception e)
-            {
-                app.Logger.LogError(e.Message);
-            }
-            con.Close();
             return airports;
         }
 
         public int GetLinkID(int SpottingTripID, int AirportID)
         {
             int LinkID = -1;
-            try
+            ReaderData = ExecuteReadCMD($"SELECT LinkID FROM SpottingTripAirports WHERE SpottingTripID = {SpottingTripID} AND AirportID = {AirportID}", $"Getting LinkID from SpottingTrip {SpottingTripID} and Airport {AirportID}");
+            foreach(Dictionary<string, object> Data in ReaderData)
             {
-                con.Open();
-                cmd.CommandText = $"SELECT LinkID FROM SpottingTripAirports WHERE SpottingTripID = {SpottingTripID} AND AirportID = {AirportID}";
-                reader = cmd.ExecuteReader();
-                while (reader.Read())
-                {
-                    LinkID = Convert.ToInt32(reader[0]);
-                }
-                con.Close();
+                LinkID = Convert.ToInt32(Data["LinkID"]);
             }
-            catch (Exception e)
-            {
-                app.Logger.LogError(e.Message);
-            }
-            con.Close();
             return LinkID;
         }
 
-        public List<int> GetSpottingTripAirportFromLinkID(int LinkID)
+        public Dictionary<string, int> GetSpottingTripAirportFromLinkID(int LinkID)
         {
-            List<int> IDs = new List<int>();
-            try
+            Dictionary<string, int> IDs = new Dictionary<string, int>();
+            ReaderData = ExecuteReadCMD($"SELECT SpottingTripID, AirportID FROM SpottingTripAirports WHERE LinkID = {LinkID}", $"Getting Airport & SpottingTrip from LinkID {LinkID}");
+            foreach(Dictionary<string, object> Data in ReaderData)
             {
-                con.Open();
-                cmd.CommandText = $"SELECT SpottingTripID, AirportID FROM SpottingTripAirports WHERE LinkID = {LinkID}";
-                reader = cmd.ExecuteReader();
-                while (reader.Read())
-                {
-                    IDs.Add(Convert.ToInt32(reader["SpottingTripID"]));
-                    IDs.Add(Convert.ToInt32(reader["AirportID"]));
-                }
-                con.Close();
+                IDs.Add("SpottingTrip", Convert.ToInt32(Data["SpottingTripID"]));
+                IDs.Add("Airport", Convert.ToInt32(Data["AirportID"]));
             }
-            catch (Exception e)
-            {
-                app.Logger.LogError(e.Message);
-            }
-            con.Close();
             return IDs;
         }
+
+        #endregion
+
+        #region Delete Objects
+        public bool DeleteCountryByID(int CountryID)
+        {
+            return ExecuteCMD($"DELETE FROM Countries WHERE CountryID = {CountryID}", $"Deleting Country with ID {CountryID}");
+        }
+
+        public bool DeleteAirportByID(int AirportID)
+        {
+            return ExecuteCMD($"DELETE FROM Airports WHERE AirportID = {AirportID}", $"Deleting Airport with ID {AirportID}");
+        }
+
+        public bool DeleteAirlineByID(int AirlineID)
+        {
+            return ExecuteCMD($"DELETE FROM Airlines WHERE AirlineID = {AirlineID}", $"Deleting Airline with ID {AirlineID}");
+        }
+
+        public bool DeleteAircraftTypeByID(int AircraftTypeID)
+        {
+            return ExecuteCMD($"DELETE FROM AircraftTypes WHERE AircraftTypeID = {AircraftTypeID}", $"Deleting AircraftType with ID {AircraftTypeID}");
+        }
+
+        public bool DeleteManufactorerByID(int ManufactorerID)
+        {
+            return ExecuteCMD($"DELETE FROM Manufactorers WHERE ManufactorerID = {ManufactorerID}", $"Deleting Manufactorer with ID {ManufactorerID}");
+        }
+
+        public bool DeleteAircraftByID(int AircraftID)
+        {
+            return ExecuteCMD($"DELETE FROM Aircrafts WHERE AircraftID = {AircraftID}", $"Deleting Aircraft with ID {AircraftID}");
+        }
+
+        public bool DeleteSpottingTripByID(int SpottingTripID)
+        {
+            ExecuteCMD($"DELETE FROM SpottingTripAirports WHERE SpottingTripID = {SpottingTripID}", $"Deleting all SpottingTripAirportLinks from SpottingTrip with ID {SpottingTripID}");
+            return ExecuteCMD($"DELETE FROM SpottingTrips WHERE SpottingTripID = {SpottingTripID}", $"Deleting SpottingTrip with ID {SpottingTripID}");
+        }
+
+        public bool DeleteSpottingPictureByID(int SpottingPictureID)
+        {
+            return ExecuteCMD($"DELETE FROM SpottingPictures WHERE SpottingPictureID = {SpottingPictureID}", $"Deleting SpottingPicture with ID {SpottingPictureID}");
+        }
+        #endregion
     }
 }
 

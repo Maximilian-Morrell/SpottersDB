@@ -15,10 +15,13 @@ public partial class EditSpottingPictureModal : ContentPage
     Picker SpottingTripPicker = null;
     Picker AirportPicker = null;
     Picker AircraftPicker = null;
+    bool IsLoaded = false;
 
     public EditSpottingPictureModal()
 	{
 		InitializeComponent();
+        SpottingPictureName.Text = "";
+        SpottingPictureDescription.Text = "";
         this.IsEditing = false;
         Submit.Clicked += Submit_Clicked;
         BtnFilePicker.Clicked += BtnFilePicker_Clicked;
@@ -33,7 +36,7 @@ public partial class EditSpottingPictureModal : ContentPage
         this.spottingPicture = spottingPicture;
         SetUp();
         GetAllAirports();
-        
+        Submit.IsEnabled = true;
     }
 
     private async void SetUp()
@@ -53,11 +56,19 @@ public partial class EditSpottingPictureModal : ContentPage
 
     private async void OpenFile()
     {
-        PickOptions pickOptions = new PickOptions();
-        pickOptions.FileTypes = FilePickerFileType.Images;
-        pickOptions.PickerTitle = "Select Image";
-        fileResult = await FilePicker.PickAsync(pickOptions);
-        PreviewImage.Source = ImageSource.FromFile(fileResult.FullPath);
+        try
+        {
+            PickOptions pickOptions = new PickOptions();
+            pickOptions.FileTypes = FilePickerFileType.Images;
+            pickOptions.PickerTitle = "Select Image";
+            fileResult = await FilePicker.PickAsync(pickOptions);
+            PreviewImage.Source = ImageSource.FromFile(fileResult.FullPath);
+            CheckIfValid();
+        }
+        catch (Exception ex)
+        {
+            await DisplayAlert("Something has gone wrong with loading hte image", ex.Message, "OK");
+        }
     }
 
     private void Submit_Clicked(object sender, EventArgs e)
@@ -67,39 +78,47 @@ public partial class EditSpottingPictureModal : ContentPage
 
     private async void SaveSpottingPicture()
     {
-        int Aircraft = Aircrafts[AircraftPicker.SelectedIndex].id;
-        int SpottingTrip = SpottingTrips[SpottingTripPicker.SelectedIndex].id;
-        int Airport = Airports[AirportPicker.SelectedIndex].id;
-
-        int LinkID = await HTTP_Controller.GetLinkID(SpottingTrip, Airport);
-
-        if (IsEditing)
+        try
         {
-            if (fileResult == null)
-            {
-                spottingPicture.name = SpottingPictureName.Text;
-                spottingPicture.description = SpottingPictureDescription.Text;
-                spottingPicture.spottingTripAirportID = LinkID;
-                spottingPicture.aircraftID = Aircraft;
+            int Aircraft = Aircrafts[AircraftPicker.SelectedIndex - 1].id;
+            int SpottingTrip = SpottingTrips[SpottingTripPicker.SelectedIndex - 1].id;
+            int Airport = Airports[AirportPicker.SelectedIndex - 1].id;
 
-                HTTP_Controller.UpdateSpottingPicture(spottingPicture);
+            int LinkID = await HTTP_Controller.GetLinkID(SpottingTrip, Airport);
+
+            if (IsEditing)
+            {
+                if (fileResult == null)
+                {
+                    spottingPicture.name = SpottingPictureName.Text;
+                    spottingPicture.description = SpottingPictureDescription.Text;
+                    spottingPicture.spottingTripAirportID = LinkID;
+                    spottingPicture.aircraftID = Aircraft;
+
+                    HTTP_Controller.UpdateSpottingPicture(spottingPicture);
+                }
+                else
+                {
+                    string FileName = spottingPicture.pictureUrl.Substring(spottingPicture.pictureUrl.LastIndexOf('/') + 1);
+                    int ID = spottingPicture.id;
+                    spottingPicture = new SpottingPicture(ID, SpottingPictureName.Text, SpottingPictureDescription.Text, LinkID, Aircraft);
+                    spottingPicture.pictureUrl = FileName;
+                    HTTP_Controller.UpdateSpottingPicture(spottingPicture, fileResult);
+                }
             }
             else
             {
-                string FileName = spottingPicture.pictureUrl.Substring(spottingPicture.pictureUrl.LastIndexOf('/') +1);
-                int ID = spottingPicture.id;
-                spottingPicture = new SpottingPicture(ID, SpottingPictureName.Text, SpottingPictureDescription.Text, LinkID, Aircraft);
-                spottingPicture.pictureUrl = FileName;
-                HTTP_Controller.UpdateSpottingPicture(spottingPicture, fileResult);
+                spottingPicture = new SpottingPicture(SpottingPictureName.Text, SpottingPictureDescription.Text, LinkID, Aircraft);
+                HTTP_Controller.AddNewSpottingPicture(spottingPicture, fileResult);
             }
+
+            Navigation.RemovePage(this);
         }
-        else
+        catch (Exception ex)
         {
-            spottingPicture = new SpottingPicture(SpottingPictureName.Text, SpottingPictureDescription.Text, LinkID, Aircraft);
-            HTTP_Controller.AddNewSpottingPicture(spottingPicture, fileResult);
+            await DisplayAlert("Something has gone wrong with saving", ex.Message, "OK");
         }
 
-        Navigation.RemovePage(this);
     }
 
     protected override void OnNavigatedTo(NavigatedToEventArgs args)
@@ -122,30 +141,22 @@ public partial class EditSpottingPictureModal : ContentPage
         }
 
         SpottingTrips = await HTTP_Controller.GetSpottingTrips();
-        SpottingTripPicker = new Picker();
         List<string> spottingTripNames = new List<string>();
-
         foreach (SpottingTrip spottingTrip in SpottingTrips)
         {
             spottingTripNames.Add(spottingTrip.name + " - " + spottingTrip.id);
         }
 
-        spottingTripNames.Add("Create New");
-
-        SpottingTripPicker.ItemsSource = spottingTripNames;
-
-        SpottingTripPicker.Title = "Select a SpottingTrip";
-
-        if (IsEditing)
+        if(IsEditing)
         {
-            List<int> ID = await HTTP_Controller.GetSpottingTripAirport(spottingPicture.spottingTripAirportID);
-            int PickerID = SpottingTrips.FindIndex(s => s.id == ID[0]);
-            SpottingTripPicker.SelectedIndex = PickerID;
+            Dictionary<string, int> ID = await HTTP_Controller.GetSpottingTripAirport(spottingPicture.spottingTripAirportID);
+            int PickerID = SpottingTrips.FindIndex(s => s.id == ID["SpottingTrip"]);
+            SpottingTripPicker = UI_Utilities.CreatePicker(GridMain, SpottingTripPickerSelectionChanged, 1, 3, spottingTripNames, "Select a Spotting Trip", PickerID);
         }
-
-        SpottingTripPicker.SelectedIndexChanged += SpottingTripPickerSelectionChanged;
-
-        GridMain.Add(SpottingTripPicker, 1, 3);
+        else
+        {
+            SpottingTripPicker = UI_Utilities.CreatePicker(GridMain, SpottingTripPickerSelectionChanged, 1, 3, spottingTripNames, "Select a Spotting Trip");
+        }
     }
 
     public async void GetAllAircraft()
@@ -156,30 +167,24 @@ public partial class EditSpottingPictureModal : ContentPage
         }
 
         Aircrafts = await HTTP_Controller.GetAircrafts();
-        AircraftPicker = new Picker();
         List<string> aircraftNames = new List<string>();
-
         foreach (Aircraft aircraft in Aircrafts)
         {
             aircraftNames.Add(aircraft.registration + " - " + aircraft.id);
         }
 
-        aircraftNames.Add("Create New");
-
-        AircraftPicker.ItemsSource = aircraftNames;
-
-        AircraftPicker.Title = "Select an Aircraft";
-
-        if (IsEditing)
+        if(IsEditing)
         {
             int ID = Aircrafts.FindIndex(a => a.id == spottingPicture.aircraftID);
-            AircraftPicker.SelectedIndex = ID;
+            AircraftPicker = UI_Utilities.CreatePicker(GridMain, AircraftPickerSelectionChanged, 1, 4, aircraftNames, "Select an Aircraft", ID);
+        }
+        else
+        {
+            AircraftPicker = UI_Utilities.CreatePicker(GridMain, AircraftPickerSelectionChanged, 1, 4, aircraftNames, "Select an Aircraft");
         }
 
-        AircraftPicker.SelectedIndexChanged += AircraftPickerSelectionChanged;
         Grid.SetColumnSpan(AircraftPicker, 2);
-
-        GridMain.Add(AircraftPicker, 1, 4);
+        IsLoaded = true;
     }
 
     private void AircraftPickerSelectionChanged(object sender, EventArgs e)
@@ -188,6 +193,9 @@ public partial class EditSpottingPictureModal : ContentPage
         {
             case "Create New":
                 CreateNewAircraft();
+                break;
+            default:
+                CheckIfValid();
                 break;
         }
     }
@@ -198,6 +206,9 @@ public partial class EditSpottingPictureModal : ContentPage
         {
             case "Create New":
                 CreateNewAirport();
+                break;
+            default:
+                CheckIfValid();
                 break;
         }
     }
@@ -211,41 +222,31 @@ public partial class EditSpottingPictureModal : ContentPage
 
         if(IsEditing && AirportPicker == null)
         {
-            List<int> IDs = await HTTP_Controller.GetSpottingTripAirport(spottingPicture.spottingTripAirportID);
-            Airports = await HTTP_Controller.GetAirportsFromSpottingTrip(IDs[0]);
+            Dictionary<string, int> IDs = await HTTP_Controller.GetSpottingTripAirport(spottingPicture.spottingTripAirportID);
+            Airports = await HTTP_Controller.GetAirportsFromSpottingTrip(IDs["Airport"]);
         }
         else
         {
-            int SpottingTripID = SpottingTrips[SpottingTripPicker.SelectedIndex].id;
+            int SpottingTripID = SpottingTrips[SpottingTripPicker.SelectedIndex -1].id;
             Airports = await HTTP_Controller.GetAirportsFromSpottingTrip(SpottingTripID);
         }
 
-        AirportPicker = new Picker();
-        AirportPicker.Title = "Select an Airport";
-
-        AirportPicker.SelectedIndexChanged += AirportPicker_SelectedIndexChanged;
-
         List<string> airportNames = new List<string>();
-
         foreach (Airport airport in Airports)
         {
             airportNames.Add(airport.name + " - " + airport.id);
         }
 
-        airportNames.Add("Create New");
-
-        AirportPicker.ItemsSource = airportNames;
-
-
         if (IsEditing)
         {
-            List<int> ID = await HTTP_Controller.GetSpottingTripAirport(spottingPicture.spottingTripAirportID);
-            int PickerID = Airports.FindIndex(s => s.id == ID[1]);
-            AirportPicker.SelectedIndex = PickerID;
+            Dictionary<string, int> ID = await HTTP_Controller.GetSpottingTripAirport(spottingPicture.spottingTripAirportID);
+            int PickerID = Airports.FindIndex(s => s.id == ID["Airport"]);
+            AirportPicker = UI_Utilities.CreatePicker(GridMain, AirportPicker_SelectedIndexChanged, 2, 3, airportNames, "Select an Airport", PickerID);
         }
-
-        AirportPicker.IsEnabled = true;
-        GridMain.Add(AirportPicker, 2, 3);
+        else
+        {
+            AirportPicker = UI_Utilities.CreatePicker(GridMain, AirportPicker_SelectedIndexChanged, 2, 3, airportNames, "Select an Airport");
+        }
     }
 
     private void SpottingTripPickerSelectionChanged(object sender, EventArgs e)
@@ -277,5 +278,18 @@ public partial class EditSpottingPictureModal : ContentPage
     {
         EditAircraftModal editAircraftModal = new EditAircraftModal();
         Navigation.PushAsync(editAircraftModal);
+    }
+
+    private void CheckIfValid()
+    {
+        if(IsLoaded)
+        {
+            Submit.IsEnabled = SpottingPictureName.Text.Length > 0 && fileResult != null && AircraftPicker.SelectedIndex >= 1 && AirportPicker != null && AirportPicker.SelectedIndex >= 1;
+        }
+    }
+
+    private void SpottingPictureName_TextChanged(object sender, TextChangedEventArgs e)
+    {
+        CheckIfValid();
     }
 }

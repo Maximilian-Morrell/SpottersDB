@@ -4,14 +4,14 @@
              x:Class="SpottersDB_FrontEnd.Classes.Views.EditSpottingTripModal"
              Title="EditSpottingTripModal">
 
-    <Grid MaximumHeightRequest="120" Padding="20" RowSpacing="10" VerticalOptions="StartAndExpand" x:Name="GridMain">
+    <Grid MaximumHeightRequest="1000" Padding="20" RowSpacing="10" VerticalOptions="StartAndExpand" x:Name="GridMain">
         <Grid.RowDefinitions>
             <RowDefinition></RowDefinition>
             <RowDefinition></RowDefinition>
             <RowDefinition></RowDefinition>
             <RowDefinition></RowDefinition>
             <RowDefinition></RowDefinition>
-            <RowDefinition></RowDefinition>
+            <RowDefinition Height="370"></RowDefinition>
             <RowDefinition></RowDefinition>
         </Grid.RowDefinitions>
         <Grid.ColumnDefinitions>
@@ -19,29 +19,29 @@
             <ColumnDefinition></ColumnDefinition>
             <ColumnDefinition></ColumnDefinition>
         </Grid.ColumnDefinitions>
-        <Label Grid.Row="0" Grid.Column="0" Text="Spottingtrip Name:"></Label>
-        <Entry Grid.Row="0" Grid.ColumnSpan="2" Grid.Column="1" x:Name="SpottingTripName"></Entry>
+        <Label Grid.Row="0" Grid.Column="0" Text="Spottingtrip Name: *"></Label>
+        <Entry Grid.Row="0" Grid.ColumnSpan="2" Grid.Column="1" x:Name="SpottingTripName" TextChanged="SpottingTripName_TextChanged" MaxLength="255"></Entry>
 
         <Label Grid.Row="1" Grid.Column="0" Text="Spottingtrip Description:"></Label>
-        <Entry Grid.Row="1" Grid.ColumnSpan="2" Grid.Column="1" x:Name="SpottingTripDescription"></Entry>
+        <Entry Grid.Row="1" Grid.ColumnSpan="2" Grid.Column="1" x:Name="SpottingTripDescription" MaxLength="255"></Entry>
 
-        <Label Grid.Row="2" Grid.Column="0" Text="Spottingtrip Start:"></Label>
-        <DatePicker Grid.Row="2" Grid.Column="1" x:Name="SpottingTripStartDate"></DatePicker>
-        <TimePicker Grid.Row="2" Grid.Column="2" x:Name="SpottingTripStartTime"></TimePicker>
+        <Label Grid.Row="2" Grid.Column="0" Text="Spottingtrip Start: *"></Label>
+        <DatePicker Grid.Row="2" Grid.Column="1" x:Name="SpottingTripStartDate" DateSelected="Date_Selected"></DatePicker>
+        <TimePicker Grid.Row="2" Grid.Column="2" x:Name="SpottingTripStartTime" TimeSelected="Time_Selected"></TimePicker>
         
-        <Label Grid.Row="3" Grid.Column="0" Text="Spottingtrip End:"/>
-        <DatePicker Grid.Row="3" Grid.Column="1" x:Name="SpottingTripEndDate"></DatePicker>
-        <TimePicker Grid.Row="3" Grid.Column="2" x:Name="SpottingTripEndTime"></TimePicker>
+        <Label Grid.Row="3" Grid.Column="0" Text="Spottingtrip End: *"/>
+        <DatePicker Grid.Row="3" Grid.Column="1" x:Name="SpottingTripEndDate" DateSelected="Date_Selected"></DatePicker>
+        <TimePicker Grid.Row="3" Grid.Column="2" x:Name="SpottingTripEndTime" TimeSelected="Time_Selected"></TimePicker>
 
-        <Label Grid.Row="4" Grid.Column="0" Text="Spottingtrip Airports:"/>
-        <VerticalStackLayout Grid.Row="5" Grid.Column="0" Grid.ColumnSpan="3" x:Name="AirportPickerParent" HeightRequest="600">
-            <ScrollView Orientation="Horizontal" >
-                <HorizontalStackLayout x:Name="AirportParent">
+        <Label Grid.Row="4" Grid.Column="0" Text="Spottingtrip Airports: *"/>
 
-                </HorizontalStackLayout>
-            </ScrollView>
-        </VerticalStackLayout>
+        <ScrollView Grid.Row="5" Grid.Column="0" Grid.ColumnSpan="3" Orientation="Horizontal">
+            <HorizontalStackLayout x:Name="AirportParent">
 
-        <Button Grid.Row="6" Grid.ColumnSpan="3" Text="Submit" x:Name="Submit" VerticalOptions="End"></Button>
+            </HorizontalStackLayout>
+        </ScrollView>
+
+
+        <Button Grid.Row="6" Grid.ColumnSpan="3" Text="Submit" x:Name="Submit" VerticalOptions="End" IsEnabled="False"></Button>
     </Grid>
 </ContentPage>

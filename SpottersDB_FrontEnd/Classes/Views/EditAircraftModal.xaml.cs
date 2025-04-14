@@ -13,12 +13,15 @@ public partial class EditAircraftModal : ContentPage
     Picker CountryPicker = null;
     Picker TypePicker = null;
     Picker AirlinePicker = null;
+    bool IsLoaded = false;
 
 
     public EditAircraftModal()
 	{
 		InitializeComponent();
         Submit.Clicked += Submit_Clicked;
+        AircraftRegistration.Text = "";
+        AircraftDescription.Text = "";
         this.IsEditing = false;
 	}
 
@@ -29,6 +32,7 @@ public partial class EditAircraftModal : ContentPage
         this.aircraft = aircraft;
         AircraftRegistration.Text = aircraft.registration;
         AircraftDescription.Text = aircraft.description;
+        Submit.IsEnabled = true;
         this.IsEditing = true;
     }
 
@@ -40,23 +44,30 @@ public partial class EditAircraftModal : ContentPage
         base.OnNavigatedTo(args);
     }
 
-    private void Submit_Clicked(object sender, EventArgs e)
+    private async void Submit_Clicked(object sender, EventArgs e)
     {
-        int Type = Types[TypePicker.SelectedIndex].id;
-        int Airline = Airlines[AirlinePicker.SelectedIndex].id;
-        int Country = Countries[CountryPicker.SelectedIndex].id;
-        if (IsEditing)
+        try
         {
-            int ID = aircraft.id;
-            aircraft = new Aircraft(ID, AircraftRegistration.Text, AircraftDescription.Text, Type, Airline, Country);
-            HTTP_Controller.UpdateAircraft(aircraft);
+            int Type = Types[TypePicker.SelectedIndex -1].id;
+            int Airline = Airlines[AirlinePicker.SelectedIndex -1].id;
+            int Country = Countries[CountryPicker.SelectedIndex - 1].id;
+            if (IsEditing)
+            {
+                int ID = aircraft.id;
+                aircraft = new Aircraft(ID, AircraftRegistration.Text, AircraftDescription.Text, Type, Airline, Country);
+                HTTP_Controller.UpdateAircraft(aircraft);
+            }
+            else
+            {
+                aircraft = new Aircraft(AircraftRegistration.Text, AircraftDescription.Text, Type, Airline, Country);
+                HTTP_Controller.AddNewAircraft(aircraft);
+            }
+            Navigation.RemovePage(this);
         }
-        else
+        catch (Exception ex)
         {
-            aircraft = new Aircraft(AircraftRegistration.Text, AircraftDescription.Text, Type, Airline, Country);
-            HTTP_Controller.AddNewAircraft(aircraft);
+            await DisplayAlert("Something has gone wrong with saving", ex.Message, "OK");
         }
-        Navigation.RemovePage(this);
     }
 
     public async void GetAllTypes()
@@ -65,31 +76,23 @@ public partial class EditAircraftModal : ContentPage
         {
             GridMain.Children.Remove(TypePicker);
         }
-        Thread.Sleep(250);
-        Types = await HTTP_Controller.GetAircraftTypes();
-        TypePicker = new Picker();
-        List<string> TypeNames = new List<string>();
 
+        Types = await HTTP_Controller.GetAircraftTypes();
+        List<string> TypeNames = new List<string>();
         foreach (AircraftType type in Types)
         {
-            TypeNames.Add(type.icaoCode + " - " + type.id);
+            TypeNames.Add(type.icaoCode);
         }
-
-        TypeNames.Add("Create New");
-
-        TypePicker.ItemsSource = TypeNames;
-
-        TypePicker.Title = "Select an Aircraft Type";
 
         if (IsEditing)
         {
             int ID = Types.FindIndex(c => c.id == aircraft.typeID);
-            TypePicker.SelectedIndex = ID;
+            TypePicker = UI_Utilities.CreatePicker(GridMain, TypePicker_SelectedIndexChanged, 1, 2, TypeNames, "Select an Aircraft Type", ID);
         }
-
-        TypePicker.SelectedIndexChanged += TypePicker_SelectedIndexChanged;
-
-        GridMain.Add(TypePicker, 1, 2);
+        else
+        {
+            TypePicker = UI_Utilities.CreatePicker(GridMain, TypePicker_SelectedIndexChanged, 1, 2, TypeNames, "Select an Aircraft Type");
+        }
     }
 
     private void TypePicker_SelectedIndexChanged(object sender, EventArgs e)
@@ -98,6 +101,9 @@ public partial class EditAircraftModal : ContentPage
         {
             case "Create New":
                 CreateNewType();
+                break;
+            default:
+                CheckIfValid();
                 break;
         }
     }
@@ -116,29 +122,21 @@ public partial class EditAircraftModal : ContentPage
         }
 
         Airlines = await HTTP_Controller.GetAirlines();
-        AirlinePicker = new Picker();
         List<string> airlineNames = new List<string>();
-
         foreach (Airline airline in Airlines)
         {
-            airlineNames.Add(airline.name + " - " + airline.id);
+            airlineNames.Add(airline.name);
         }
 
-        airlineNames.Add("Create New");
-
-        AirlinePicker.ItemsSource = airlineNames;
-
-        AirlinePicker.Title = "Select an Airline";
-
-        if (IsEditing)
+        if(IsEditing)
         {
             int ID = Airlines.FindIndex(c => c.id == aircraft.airlineID);
-            AirlinePicker.SelectedIndex = ID;
+            AirlinePicker = UI_Utilities.CreatePicker(GridMain, AirlinePicker_SelectedIndexChanged, 1, 3, airlineNames, "Select an Airline", ID);
         }
-
-        AirlinePicker.SelectedIndexChanged += AirlinePicker_SelectedIndexChanged;
-
-        GridMain.Add(AirlinePicker, 1, 3);
+        else
+        {
+            AirlinePicker = UI_Utilities.CreatePicker(GridMain, AirlinePicker_SelectedIndexChanged, 1, 3, airlineNames, "Select an Airline");
+        }
     }
 
     private void AirlinePicker_SelectedIndexChanged(object sender, EventArgs e)
@@ -147,6 +145,9 @@ public partial class EditAircraftModal : ContentPage
         {
             case "Create New":
                 CreateNewAirline();
+                break;
+            default:
+                CheckIfValid();
                 break;
         }
     }
@@ -165,29 +166,23 @@ public partial class EditAircraftModal : ContentPage
         }
 
         Countries = await HTTP_Controller.GetCountries(true);
-        CountryPicker = new Picker();
         List<string> regionNames = new List<string>();
-
         foreach (Country country in Countries)
         {
-            regionNames.Add(country.name + " - " + country.id);
+            regionNames.Add(country.name);
         }
 
-        regionNames.Add("Create New");
-
-        CountryPicker.ItemsSource = regionNames;
-
-        CountryPicker.Title = "Select a Country";
-
-        if (IsEditing)
+        if(IsEditing)
         {
             int ID = Countries.FindIndex(c => c.id == aircraft.countryID);
-            CountryPicker.SelectedIndex = ID;
+            CountryPicker = UI_Utilities.CreatePicker(GridMain,CountryPickerSelectionChanged, 1, 4, regionNames, "Select a Country", ID);
+        }
+        else
+        {
+            CountryPicker = UI_Utilities.CreatePicker(GridMain, CountryPickerSelectionChanged, 1, 4, regionNames, "Select a Country");
         }
 
-        CountryPicker.SelectedIndexChanged += CountryPickerSelectionChanged;
-
-        GridMain.Add(CountryPicker, 1, 4);
+        IsLoaded = true;
     }
 
     private void CountryPickerSelectionChanged(object sender, EventArgs e)
@@ -197,6 +192,9 @@ public partial class EditAircraftModal : ContentPage
             case "Create New":
                 CreateNewCountry();
                 break;
+            default:
+                CheckIfValid();
+                break;
         }
     }
 
@@ -204,5 +202,18 @@ public partial class EditAircraftModal : ContentPage
     {
         EditCountryModal editCountryModal = new EditCountryModal();
         Navigation.PushAsync(editCountryModal);
+    }
+
+    private void CheckIfValid()
+    {
+        if (IsLoaded)
+        {
+            Submit.IsEnabled = TypePicker.SelectedIndex >= 1 && AirlinePicker.SelectedIndex >= 1 && CountryPicker.SelectedIndex >= 1 && AircraftRegistration.Text.Length > 0;
+        }
+    }
+
+    private void AircraftRegistration_TextChanged(object sender, TextChangedEventArgs e)
+    {
+        CheckIfValid();
     }
 }

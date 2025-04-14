@@ -1,4 +1,5 @@
-﻿using SpottersDB_FrontEnd.Classes.Structure;
+﻿using Microsoft.Maui.Controls.Shapes;
+using SpottersDB_FrontEnd.Classes.Structure;
 using SpottersDB_FrontEnd.Classes.Utilities;
 using SpottersDB_FrontEnd.Classes.Views;
 using System;
@@ -13,91 +14,52 @@ namespace SpottersDB_FrontEnd.Classes.UI_Elements.Cards
     {
         public delegate EventHandler EditClickHandler(SpottingPicture spottingPicture);
         public event EditClickHandler EditClicked;
+        public delegate EventHandler DeleteClickedHandler(SpottingPicture spottingPicture);
+        public event DeleteClickedHandler DeleteClicked;
 
-        public async Task<Frame> Card(SpottingPicture SpottingPicture)
+        public async Task<Border> Card(SpottingPicture SpottingPicture)
         {
-            Frame f = new Frame();
-            f.CornerRadius = 10;
-            f.Padding = 10;
-            f.BackgroundColor = Color.FromRgb(128, 128, 128);
-            f.HasShadow = true;
-
-            Grid parent = new Grid
-            {
-                RowDefinitions =
-                {
-                    new RowDefinition(),
-                    new RowDefinition(),
-                    new RowDefinition(),
-                    new RowDefinition(),
-                   // new RowDefinition(), - for the delete Button
-                    new RowDefinition()
-                }
-            };
-
-            f.Content = parent;
-            parent.MaximumWidthRequest = 480;
-            parent.WidthRequest = 480;
-            parent.MaximumHeightRequest = 300;
-            parent.HeightRequest = 300;
-            parent.Margin = 10;
-
-            Label lblName = new Label();
-            lblName.Text = SpottingPicture.name;
-            lblName.FontSize = 58;
-            lblName.FontAttributes = FontAttributes.Bold;
-            lblName.HorizontalTextAlignment = TextAlignment.Center;
-            lblName.VerticalTextAlignment = TextAlignment.Center;
-            lblName.VerticalOptions = LayoutOptions.Center;
-            parent.Add(lblName, 0, 0);
-
-            Label lblDescription = new Label();
-            lblDescription.Text = SpottingPicture.description;
-            lblDescription.LineBreakMode = LineBreakMode.WordWrap;
-            lblDescription.HorizontalTextAlignment = TextAlignment.Center;
-            lblDescription.FontSize = 20;
-            lblDescription.VerticalOptions = LayoutOptions.Center;
-            lblDescription.VerticalTextAlignment = TextAlignment.Center;
-            parent.Add(lblDescription, 0, 1);
-
-            Frame imgF = ImageItem.GetImageCardItem(SpottingPicture.pictureUrl);
-            imgF.Scale = 1.2;
-            parent.SetRowSpan(imgF, 5);
-            parent.Children.Add(imgF);
-
-            List<int> SpottingTripAirport = await HTTP_Controller.GetSpottingTripAirport(SpottingPicture.spottingTripAirportID);
-            SpottingTrip spottingTrip = await HTTP_Controller.GetSpottingTrip(SpottingTripAirport[0]);
-            Airport airport = await HTTP_Controller.GetAirport(SpottingTripAirport[1]);
+            Border CardBorder = UI_Utilities.CreateBorder(Padding: 0);
             
-            Label lblAirportList = new Label();
-            lblAirportList.Text = spottingTrip.name + " - " + airport.icaO_Code;
-            lblAirportList.HorizontalTextAlignment = TextAlignment.Center;
+            Border b = UI_Utilities.CreateAbsoluteBorder(640, 426.5);
+
+            Image imgB = UI_Utilities.CreateImage(SpottingPicture.pictureUrl, 0.5, 640, 426.5);
+
+            AbsoluteLayout GrandParent = UI_Utilities.CreateAbsoluteLayout(640, 426.5);
+            GrandParent.Children.Add(imgB);
+            GrandParent.Children.Add(b);
+            CardBorder.Content = GrandParent;
+
+            Grid parent = UI_Utilities.CreateGrid(b, 6, 620, 407);
+
+            Label lblName = UI_Utilities.CreateLabel(parent, SpottingPicture.name, 0, 0, 50, FontAttributes.Bold);
+
+            Label lblDescription = UI_Utilities.CreateLabel(parent, SpottingPicture.description, 0, 1, 20);
+            lblDescription.LineBreakMode = LineBreakMode.WordWrap;
+
+            Dictionary<string, int> SpottingTripAirport = await HTTP_Controller.GetSpottingTripAirport(SpottingPicture.spottingTripAirportID);
+            SpottingTrip spottingTrip = await HTTP_Controller.GetSpottingTrip(SpottingTripAirport["SpottingTrip"]);
+            Airport airport = await HTTP_Controller.GetAirport(SpottingTripAirport["Airport"]);
+
+            Label lblAirportList = UI_Utilities.CreateLabel(parent, spottingTrip.name + " - " + airport.icaO_Code, 0, 2, 20);
             lblAirportList.LineBreakMode = LineBreakMode.WordWrap;
-            lblAirportList.FontSize = 15;
-            lblAirportList.VerticalOptions = LayoutOptions.Center;
-            lblAirportList.VerticalTextAlignment = TextAlignment.Center;
-            parent.Add(lblAirportList, 0, 2);
 
             Aircraft aircraft = await HTTP_Controller.GetAircraft(SpottingPicture.aircraftID);
-            Label spottingTripDates = new Label();
-            spottingTripDates.Text = aircraft.registration;
-            spottingTripDates.HorizontalTextAlignment = TextAlignment.Center;
-            spottingTripDates.FontSize = 20;
-            spottingTripDates.VerticalOptions = LayoutOptions.Center;
-            spottingTripDates.VerticalTextAlignment = TextAlignment.Center;
-            parent.Add(spottingTripDates, 0, 3);
+            Label spottingTripDates = UI_Utilities.CreateLabel(parent, aircraft.registration, 0, 3, 20);
 
-            Button editBtn = new Button();
-            editBtn.Text = "Edit";
-            editBtn.CommandParameter = SpottingPicture;
-            editBtn.Clicked += EditBtn_Clicked;
-            editBtn.HorizontalOptions = LayoutOptions.Fill;
-            editBtn.VerticalOptions = LayoutOptions.End;
-            parent.Add(editBtn, 0, 4);
+            Button editBtn = UI_Utilities.CreateButton(false, parent, "Edit", SpottingPicture, EditBtn_Clicked, 0, 4);
 
-            return f;
+            Button deleteBtn = UI_Utilities.CreateButton(true, parent, "Delete", SpottingPicture, DeleteBtn_Clicked, 0, 5);
+
+            return CardBorder;
         }
 
+        private void DeleteBtn_Clicked(object? sender, EventArgs e)
+        {
+            Button b = sender as Button;
+            DeleteClickedHandler handler = DeleteClicked;
+            handler(b.CommandParameter as SpottingPicture);
+        }
 
         private async void EditBtn_Clicked(object sender, EventArgs e)
         {

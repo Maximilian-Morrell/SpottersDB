@@ -37,118 +37,155 @@ namespace SpottersDB_BackEnd.Classes.API
 
             // Post SpottingPicture Route
             app.MapPost("/Post/SpottingPicture", (HttpRequest req) => Post_SpottingPicture(req));
+
+            // Delete Country Route
+            app.MapPost("/Delete/Country", (HttpRequest req) => Delete_Country(req));
+
+            // Delete Airport Route
+            app.MapPost("/Delete/Airport", (HttpRequest req) => Delete_Airport(req));
+
+            // Delete Airline Route
+            app.MapPost("/Delete/Airline", (HttpRequest req) => Delete_Airline(req));
+
+            // Delete AircraftType Route
+            app.MapPost("/Delete/AircraftType", (HttpRequest req) => Delete_AircraftType(req));
+
+            // Delete Manufactorer Route
+            app.MapPost("/Delete/Manufactorer", (HttpRequest req) => Delete_Manufactorer(req));
+
+            // Delete Aircraft Route
+            app.MapPost("/Delete/Aircraft", (HttpRequest req) => Delete_Aircraft(req));
+
+            // Delete SpottingTrip Route
+            app.MapPost("/Delete/SpottingTrip", (HttpRequest req) => Delete_SpottingTrip(req));
+
+            // Delete SpottingPicture Route
+            app.MapPost("/Delete/SpottingPicture", (HttpRequest req) => Delete_SpottingPicture(req));
         }
 
-        private async void Post_Country(HttpRequest req)
+        private async Task<bool> Post_Country(HttpRequest req)
         {
+            bool IsSuccessfull = false;
             try
             {
                 IFormCollection form = await req.ReadFormAsync();
                 Country country = new Country(form["ICAO"], form["Name"]);
-                sqlcontroller.AddCountry(country);
+                IsSuccessfull = sqlcontroller.AddCountry(country);
             }
-            catch (Exception e)
+            catch (Exception)
             {
 
             }
+            return IsSuccessfull;
         }
 
-        private async void Post_Airport(HttpRequest req)
+        private async Task<bool> Post_Airport(HttpRequest req)
         {
+            bool IsSuccessfull = false;
             try
             {
                 IFormCollection form = await req.ReadFormAsync();
                 Airport airport = new Airport(form["ICAO"], form["IATA"], form["Name"], form["Description"], form["City"], Convert.ToInt32(form["Country"]));
-                sqlcontroller.AddAirport(airport);
+                IsSuccessfull = sqlcontroller.AddAirport(airport);
             }
-            catch (Exception e)
+            catch (Exception)
             {
 
             }
+            return IsSuccessfull;
         }
 
-        private async void Post_Airline(HttpRequest req)
+        private async Task<bool> Post_Airline(HttpRequest req)
         {
+            bool IsSuccessfull = false;
             try
             {
                 IFormCollection form = await req.ReadFormAsync();
                 Airline airline = new Airline(form["ICAO"], form["IATA"], form["Name"], Convert.ToInt32(form["Region"]));
-                sqlcontroller.AddAirline(airline);
+                IsSuccessfull = sqlcontroller.AddAirline(airline);
             }
-            catch (Exception e)
+            catch (Exception)
             {
 
             }
+            return IsSuccessfull;
         }
 
-        private async void Post_Manufactorer(HttpRequest req)
+        private async Task<bool> Post_Manufactorer(HttpRequest req)
         {
+            bool IsSuccessfull = false;
             try
             {
                 IFormCollection form = await req.ReadFormAsync();
                 Manufactorer manufactorer = new Manufactorer(form["Name"], Convert.ToInt32(form["Region"]));
-                sqlcontroller.AddManufactorer(manufactorer);
+                IsSuccessfull = sqlcontroller.AddManufactorer(manufactorer);
             }
-            catch (Exception e)
+            catch (Exception)
             {
 
             }
+            return IsSuccessfull;
         }
 
-        private async void Post_AircraftType(HttpRequest req)
+        private async Task<bool> Post_AircraftType(HttpRequest req)
         {
+            bool IsSuccessfull = false;
             try
             {
                 IFormCollection form = await req.ReadFormAsync();
                 AircraftType aircraftType = new AircraftType(form["ICAO"], form["FullName"], form["NickName"], Convert.ToInt32(form["ManufactorerID"]));
-                sqlcontroller.AddAircraftType(aircraftType);
+                IsSuccessfull = sqlcontroller.AddAircraftType(aircraftType);
             }
-            catch (Exception e)
+            catch (Exception)
             {
 
             }
+            return IsSuccessfull;
         }
 
-        private async void Post_Aircraft(HttpRequest req)
+        private async Task<bool> Post_Aircraft(HttpRequest req)
         {
+            bool IsSuccessfull = false;
             try
             {
                 IFormCollection form = await req.ReadFormAsync();
                 Aircraft aircraft = new Aircraft(form["Registration"], form["Description"], Convert.ToInt32(form["TypeID"]), Convert.ToInt32(form["CountryID"]), Convert.ToInt32(form["AirlineID"]));
-                sqlcontroller.AddAircraft(aircraft);
+                IsSuccessfull = sqlcontroller.AddAircraft(aircraft);
             }
-            catch (Exception e)
+            catch (Exception)
             {
 
             }
+            return IsSuccessfull;
         }
 
-        private async void Post_SpottingTrip(HttpRequest req)
+        private async Task<bool> Post_SpottingTrip(HttpRequest req)
         {
-
+            bool IsSuccessfull = false;
             try
             {
                 IFormCollection form = await req.ReadFormAsync();
                 SpottingTrip spottingTrip = new SpottingTrip(Convert.ToDateTime(form["Start"]), Convert.ToDateTime(form["End"]), form["Name"], form["Description"]);
                 List<int> AirportIDs = new List<int>(); if (form["AirportID"] != "")
                 {
-                    foreach (string AirportID in Convert.ToString(form["AirportID"]).Split(','))
+                    foreach (string AirportID in Convert.ToString(form["AirportIDs"]).Split(','))
                     {
                         AirportIDs.Add(Convert.ToInt32(AirportID));
                     }
                 }
-                sqlcontroller.AddSpottingTrip(spottingTrip, AirportIDs);
+                IsSuccessfull = sqlcontroller.AddSpottingTrip(spottingTrip, AirportIDs);
             }
-            catch (Exception e)
+            catch (Exception)
             {
-                app.Logger.LogError(e.Message);
+
             }
+            return IsSuccessfull;
         }
 
-        private async void Post_SpottingPicture(HttpRequest req)
+        private async Task<bool> Post_SpottingPicture(HttpRequest req)
         {
             string BasePath = app.Urls.ToList()[0] + "/Pic";
-
+            bool IsSuccessfull = false;
             try
             {
                 string URL = "";
@@ -171,12 +208,148 @@ namespace SpottersDB_BackEnd.Classes.API
                 }
                 IFormCollection form = await req.ReadFormAsync();
                 SpottingPicture spottingPicture = new SpottingPicture(form["Name"], form["Description"], URL, OldFileName, Convert.ToInt32(form["SpottingTripAirport"]), Convert.ToInt32(form["AircraftID"]));
-                sqlcontroller.AddSpottingPicture(spottingPicture);
+                IsSuccessfull = sqlcontroller.AddSpottingPicture(spottingPicture);
+            }
+            catch (Exception)
+            {
+
+            }
+            return IsSuccessfull;
+        }
+
+        private async Task<bool> Delete_Country(HttpRequest req)
+        {
+            bool Success = false;
+            try
+            {
+                IFormCollection form = await req.ReadFormAsync();
+                Success = sqlcontroller.DeleteCountryByID(Convert.ToInt32(form["ID"]));
+            }
+            catch (Exception)
+            {
+
+            }
+
+            return Success;
+        }
+
+        private async Task<bool> Delete_Airport(HttpRequest req)
+        {
+            bool Success = false;
+            try
+            {
+                IFormCollection form = await req.ReadFormAsync();
+                Success = sqlcontroller.DeleteAirportByID(Convert.ToInt32(form["ID"]));
+            }
+            catch (Exception)
+            {
+
+            }
+
+            return Success;
+        }
+
+        private async Task<bool> Delete_Airline(HttpRequest req)
+        {
+            bool Success = false;
+            try
+            {
+                IFormCollection form = await req.ReadFormAsync();
+                Success = sqlcontroller.DeleteAirlineByID(Convert.ToInt32(form["ID"]));
+            }
+            catch (Exception)
+            {
+
+            }
+
+            return Success;
+        }
+
+        private async Task<bool> Delete_AircraftType(HttpRequest req)
+        {
+            bool Success = false;
+            try
+            {
+                IFormCollection form = await req.ReadFormAsync();
+                Success = sqlcontroller.DeleteAircraftTypeByID(Convert.ToInt32(form["ID"]));
+            }
+            catch (Exception)
+            {
+
+            }
+
+            return Success;
+        }
+
+        private async Task<bool> Delete_Manufactorer(HttpRequest req)
+        {
+            bool Success = false;
+            try
+            {
+                IFormCollection form = await req.ReadFormAsync();
+                Success = sqlcontroller.DeleteManufactorerByID(Convert.ToInt32(form["ID"]));
+            }
+            catch (Exception)
+            {
+
+            }
+
+            return Success;
+        }
+
+        private async Task<bool> Delete_Aircraft(HttpRequest req)
+        {
+            bool Success = false;
+            try
+            {
+                IFormCollection form = await req.ReadFormAsync();
+                Success = sqlcontroller.DeleteAircraftByID(Convert.ToInt32(form["ID"]));
+            }
+            catch (Exception)
+            {
+
+            }
+
+            return Success;
+        }
+
+        private async Task<bool> Delete_SpottingTrip(HttpRequest req)
+        {
+            bool Success = false;
+            try
+            {
+                IFormCollection form = await req.ReadFormAsync();
+                Success = sqlcontroller.DeleteSpottingTripByID(Convert.ToInt32(form["ID"]));
+            }
+            catch (Exception)
+            {
+
+            }
+
+            return Success;
+        }
+
+        private async Task<bool> Delete_SpottingPicture(HttpRequest req)
+        {
+            bool Success = false;
+            try
+            {
+                IFormCollection form = await req.ReadFormAsync();
+                SpottingPicture pic = sqlcontroller.GetSpottingPictureByID(Convert.ToInt32(form["ID"]));
+                Success = sqlcontroller.DeleteSpottingPictureByID(Convert.ToInt32(form["ID"]));
+                if(Success)
+                {
+                    string FolderPath = Path.GetFullPath(Environment.CurrentDirectory) + "/Images";
+                    string filepath = pic.PictureUrl.Substring(pic.PictureUrl.LastIndexOf("/"));
+                    File.Delete(FolderPath + filepath);
+                }
             }
             catch (Exception e)
             {
                 app.Logger.LogError(e.Message);
             }
+
+            return Success;
         }
     }
 }

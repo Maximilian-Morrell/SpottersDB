@@ -5,7 +5,7 @@
              x:Class="SpottersDB_FrontEnd.Classes.Views.EditManufactorerModal"
              Title="EditManufactorerModal">
     
-    <Grid MaximumHeightRequest="420" Padding="20" RowSpacing="10" VerticalOptions="StartAndExpand" x:Name="GridMain">
+    <Grid MaximumHeightRequest="520" Padding="20" RowSpacing="10" VerticalOptions="StartAndExpand" x:Name="GridMain">
         <Grid.RowDefinitions>
             <RowDefinition/>
             <RowDefinition/>
@@ -15,10 +15,10 @@
             <ColumnDefinition/>
             <ColumnDefinition/>
         </Grid.ColumnDefinitions>
-        <Label Grid.Row="0" Grid.Column="0" Text="Name:"/>
-        <Entry Grid.Row="0" Grid.Column="1" x:Name="ManufactorerName"/>
+        <Label Grid.Row="0" Grid.Column="0" Text="Name: *"/>
+        <Entry Grid.Row="0" Grid.Column="1" x:Name="ManufactorerName" TextChanged="ManufactorerName_TextChanged"/>
 
-        <Label Grid.Row="1" Grid.Column="0" Text="Region: "/>
+        <Label Grid.Row="1" Grid.Column="0" Text="Region: *"/>
 
         <Button Grid.Row="2" Grid.ColumnSpan="2" Text="Submit" x:Name="Submit"/>
     </Grid>

@@ -21,4 +21,5 @@ namespace SpottersDB_FrontEnd.WinUI
 
         protected override MauiApp CreateMauiApp() => MauiProgram.CreateMauiApp();
     }
+
 }

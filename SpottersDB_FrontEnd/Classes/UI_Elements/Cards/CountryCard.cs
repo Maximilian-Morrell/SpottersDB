@@ -6,6 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using SpottersDB_FrontEnd.Classes.Utilities;
+using Microsoft.Maui.Controls.Shapes;
 
 namespace SpottersDB_FrontEnd.Classes.UI_Elements.Cards
 {
@@ -18,78 +19,91 @@ namespace SpottersDB_FrontEnd.Classes.UI_Elements.Cards
 
         public delegate EventHandler EditClickedHandler(Country country);
         public event EditClickedHandler EditClicked;
+        public delegate EventHandler DeleteClickedHandler(Country country);
+        public event DeleteClickedHandler DeleteClicked;
 
-        public Frame Card(Country country, string URL)
+        public Border Card(Country country, string URL)
         {
-            
+            Border CardBorder = UI_Utilities.CreateBorder(Padding: 0);
 
-            Frame f = new Frame();
-            f.CornerRadius = 10;
-            f.Padding = 10;
-            f.BackgroundColor = Color.FromRgb(128, 128, 128);
-            f.HasShadow = true;
-            f.Padding = 0;
-            f.Margin = 0;
+            Border b = UI_Utilities.CreateAbsoluteBorder(640, 426.5);
 
-            Grid parent = new Grid
+            Image imgB = UI_Utilities.CreateImage(URL, 0.5, 640, 426.5);
+
+            AbsoluteLayout GrandParent = UI_Utilities.CreateAbsoluteLayout(640, 426.5);
+            CardBorder.Content = GrandParent;
+            GrandParent.Children.Add(imgB);
+            GrandParent.Add(b);
+
+            Grid parent = null;
+
+            if(country.icaO_Code != "")
             {
-                RowDefinitions =
-                {
-                    new RowDefinition{Height = new GridLength(2, GridUnitType.Star)},
-                    new RowDefinition(),
-                   // new RowDefinition(), - for the delete Button
-                    new RowDefinition()
-                }
-            };
+                parent = UI_Utilities.CreateGrid(b, 4, 620, 407);
 
-            f.Content = parent;
-            parent.MaximumWidthRequest = 500;
-            parent.WidthRequest = 400;
-            parent.MaximumHeightRequest = 250;
-            parent.HeightRequest = 250;
-            parent.Margin = 10;
+                Label lblName = UI_Utilities.CreateLabel(parent, country.icaO_Code, 0, 0, 50, FontAttributes.Bold);
 
-            Label lblName = new Label();
-            lblName.Text = country.name;
-            lblName.FontSize = 40;
-            lblName.FontAttributes = FontAttributes.Bold;
-            lblName.VerticalOptions = LayoutOptions.Fill;
-            lblName.VerticalTextAlignment = TextAlignment.Center;
-            lblName.HorizontalTextAlignment = TextAlignment.Center;
-            parent.Add(lblName, 0, 0);
+                Label lblCountry = UI_Utilities.CreateLabel(parent, country.name, 0, 1, 20);
+                lblCountry.LineBreakMode = LineBreakMode.WordWrap;
 
+                Button editBtn = UI_Utilities.CreateButton(false, parent, "Edit", country, EditBtn_Clicked, 0, 2);
 
-
-            if (country.icaO_Code == "")
-            {
-                Grid.SetRowSpan(lblName, 3);
-                lblName.FontSize = 55;
-                parent.MaximumHeightRequest = 200;
-                parent.HeightRequest = 200;
+                Button deleteBtn = UI_Utilities.CreateButton(true, parent, "Delete", country, DeleteBtn_Clicked, 0, 3);
             }
             else
             {
-                Frame imgF = ImageItem.GetImageCardItem(URL);
-                imgF.Scale = 1.2;
-                parent.SetRowSpan(imgF, 3);
-                parent.Children.Add(imgF);
-                Label lblICAO = new Label();
-                lblICAO.Text = country.icaO_Code;
-                lblICAO.FontSize = 30;
-                lblICAO.HorizontalTextAlignment = TextAlignment.Center;
-                parent.Add(lblICAO, 0, 1);
+                parent = UI_Utilities.CreateGrid(b, 3, 620, 407);
+                Label lblName = UI_Utilities.CreateLabel(parent, country.name, 0, 0, 30, FontAttributes.Bold);
+                lblName.LineBreakMode = LineBreakMode.WordWrap;
+
+                Button editBtn = UI_Utilities.CreateButton(false, parent, "Edit", country, EditBtn_Clicked, 0, 1);
+
+                Button deleteBtn = UI_Utilities.CreateButton(true, parent, "Delete", country, DeleteBtn_Clicked, 0,2);
+
             }
 
-            Button editBtn = new Button();
-            editBtn.Text = "Edit";
-            editBtn.CommandParameter = country;
-            editBtn.Clicked += EditBtn_Clicked;
-            editBtn.VerticalOptions = LayoutOptions.End;
-           // editBtn.HorizontalOptions = LayoutOptions.Center;
+            return CardBorder;
+        }
 
-            parent.Add(editBtn,0,2);
+        public Border Card(Country country)
+        {
+            Border b = UI_Utilities.CreateBorder();
 
-            return f;
+            Grid parent = null;
+
+            if (country.icaO_Code != "")
+            {
+                parent = UI_Utilities.CreateGrid(b, 4, MaximumWidth: 400);
+
+                Label lblName = UI_Utilities.CreateLabel(parent, country.icaO_Code, 0, 0, 50, FontAttributes.Bold);
+
+                Label lblCountry = UI_Utilities.CreateLabel(parent, country.name, 0, 1, 20);
+                lblCountry.LineBreakMode = LineBreakMode.WordWrap;
+
+                Button editBtn = UI_Utilities.CreateButton(false, parent, "Edit", country, EditBtn_Clicked, 0, 2);
+
+                Button deleteBtn = UI_Utilities.CreateButton(true, parent, "Delete", country, DeleteBtn_Clicked, 0, 3);
+            }
+            else
+            {
+                parent = UI_Utilities.CreateGrid(b, 3, MaximumWidth: 400);
+                Label lblName = UI_Utilities.CreateLabel(parent, country.name, 0, 0, 30, FontAttributes.Bold);
+                lblName.LineBreakMode = LineBreakMode.WordWrap;
+
+                Button editBtn = UI_Utilities.CreateButton(false, parent, "Edit", country, EditBtn_Clicked, 0, 1);
+
+                Button deleteBtn = UI_Utilities.CreateButton(true, parent, "Delete", country, DeleteBtn_Clicked, 0, 2);
+
+            }
+
+            return b;
+        }
+
+        private void DeleteBtn_Clicked(object? sender, EventArgs e)
+        {
+            Button b = sender as Button;
+            DeleteClickedHandler handler = DeleteClicked;
+            handler(b.CommandParameter as Country);
         }
 
         private void EditBtn_Clicked(object sender, EventArgs e)

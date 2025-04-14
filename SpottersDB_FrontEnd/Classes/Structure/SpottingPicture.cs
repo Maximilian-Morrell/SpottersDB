@@ -123,7 +123,7 @@ namespace SpottersDB_FrontEnd.Classes.Structure
             this.aircraftID = AircraftID;
         }
 
-        public async Task<List<int>> GetSpottingTripAirport()
+        public async Task<Dictionary<string, int>> GetSpottingTripAirport()
         {
             return await HTTP_Controller.GetSpottingTripAirport(spottingTripAirportID);
         }

@@ -1,6 +1,5 @@
 using Microsoft.AspNetCore.Http.Features;
 using Microsoft.Extensions.FileProviders;
-using Microsoft.Identity.Client;
 using SpottersDB_BackEnd.Classes.API;
 using SpottersDB_BackEnd.Classes.Utilities;
 
@@ -30,8 +29,6 @@ namespace SpottersDB_BackEnd
             StaticOptions.RequestPath = "/Pic";
             app.UseStaticFiles(StaticOptions);
 
-
-            
 
             app.MapGet("/", () => "Hello World!");
             // Fallback if route is not found

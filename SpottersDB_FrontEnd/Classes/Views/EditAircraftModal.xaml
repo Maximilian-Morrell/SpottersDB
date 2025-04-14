@@ -1,10 +1,15 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="SpottersDB_FrontEnd.Classes.Views.EditAircraftModal"
              Title="EditAircraftModal">
-    
-    <Grid MaximumHeightRequest="120" Padding="20" RowSpacing="10" VerticalOptions="StartAndExpand" x:Name="GridMain">
+
+    <ContentPage.Resources>
+
+    </ContentPage.Resources>
+
+    <Grid MaximumHeightRequest="520" Padding="20" RowSpacing="10" VerticalOptions="StartAndExpand" x:Name="GridMain">
         <Grid.RowDefinitions>
             <RowDefinition></RowDefinition>
             <RowDefinition></RowDefinition>
@@ -17,18 +22,19 @@
             <ColumnDefinition></ColumnDefinition>
             <ColumnDefinition></ColumnDefinition>
         </Grid.ColumnDefinitions>
-        <Label Grid.Row="0" Grid.Column="0" Text="Aircraft Registration"></Label>
-        <Entry Grid.Row="0" Grid.Column="1" x:Name="AircraftRegistration"></Entry>
+        <Label Grid.Row="0" Grid.Column="0" Text="Aircraft Registration: *"></Label>
+        <Entry Grid.Row="0" Grid.Column="1" x:Name="AircraftRegistration" MaxLength="8" TextChanged="AircraftRegistration_TextChanged">
+        </Entry>
 
-        <Label Grid.Row="1" Grid.Column="0" Text="Aircraft Description:"></Label>
+        <Label Grid.Row="1" Grid.Column="0" Text="Aircraft Description: "></Label>
         <Entry Grid.Row="1" Grid.Column="1" x:Name="AircraftDescription"></Entry>
 
-        <Label Grid.Row="2" Grid.Column="0" Text="Aircraft Type:"></Label>
+        <Label Grid.Row="2" Grid.Column="0" Text="Aircraft Type: *"></Label>
 
-        <Label Grid.Row="3" Grid.Column="0" Text="Aircraft Airline:"/>
+        <Label Grid.Row="3" Grid.Column="0" Text="Aircraft Airline: *"/>
         
-        <Label Grid.Row="4" Grid.Column="0" Text="Aircraft Country:"/>
+        <Label Grid.Row="4" Grid.Column="0" Text="Aircraft Country: *"/>
 
-        <Button Grid.Row="5" Grid.ColumnSpan="2" Text="Submit" x:Name="Submit"></Button>
+        <Button Grid.Row="5" Grid.ColumnSpan="2" Text="Submit" x:Name="Submit" IsEnabled="False"></Button>
     </Grid>
 </ContentPage>

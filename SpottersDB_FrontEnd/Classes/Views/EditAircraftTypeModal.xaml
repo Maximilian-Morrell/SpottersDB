@@ -4,7 +4,7 @@
              x:Class="SpottersDB_FrontEnd.Classes.Views.EditAircraftTypeModal"
              Title="EditAircraftType">
 
-    <Grid MaximumHeightRequest="120" Padding="20" RowSpacing="10" VerticalOptions="StartAndExpand" x:Name="GridMain">
+    <Grid MaximumHeightRequest="520" Padding="20" RowSpacing="10" VerticalOptions="StartAndExpand" x:Name="GridMain">
         <Grid.RowDefinitions>
             <RowDefinition></RowDefinition>
             <RowDefinition></RowDefinition>
@@ -16,17 +16,17 @@
             <ColumnDefinition></ColumnDefinition>
             <ColumnDefinition></ColumnDefinition>
         </Grid.ColumnDefinitions>
-        <Label Grid.Row="0" Grid.Column="0" Text="ICAO Type:"></Label>
-        <Entry Grid.Row="0" Grid.Column="1" x:Name="TypeICAO"></Entry>
+        <Label Grid.Row="0" Grid.Column="0" Text="ICAO Type: *"></Label>
+        <Entry Grid.Row="0" Grid.Column="1" x:Name="TypeICAO" MaxLength="4" TextChanged="Entry_TextChange"></Entry>
 
-        <Label Grid.Row="1" Grid.Column="0" Text="Name:"></Label>
-        <Entry Grid.Row="1" Grid.Column="1" x:Name="TypeName"></Entry>
+        <Label Grid.Row="1" Grid.Column="0" Text="Name: *"></Label>
+        <Entry Grid.Row="1" Grid.Column="1" x:Name="TypeName" MaxLength="255" TextChanged="Entry_TextChange"></Entry>
 
         <Label Grid.Row="2" Grid.Column="0" Text="Nickname:"></Label>
-        <Entry Grid.Row="2" Grid.Column="1" x:Name="NickName"></Entry>
+        <Entry Grid.Row="2" Grid.Column="1" x:Name="NickName" MaxLength="255"></Entry>
 
-        <Label Grid.Row="3" Grid.Column="0" Text="Manufactorer: "/>
+        <Label Grid.Row="3" Grid.Column="0" Text="Manufactorer: *"/>
 
-        <Button Grid.Row="4" Grid.ColumnSpan="2" Text="Submit" x:Name="Submit"></Button>
+        <Button Grid.Row="4" Grid.ColumnSpan="2" Text="Submit" x:Name="Submit" IsEnabled="False"></Button>
     </Grid>
 </ContentPage>

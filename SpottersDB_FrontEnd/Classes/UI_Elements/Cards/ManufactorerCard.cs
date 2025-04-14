@@ -1,4 +1,6 @@
-﻿using SpottersDB_FrontEnd.Classes.Structure;
+﻿using Microsoft.Maui.Controls.Shapes;
+using SpottersDB_FrontEnd.Classes.Structure;
+using SpottersDB_FrontEnd.Classes.Utilities;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,60 +13,33 @@ namespace SpottersDB_FrontEnd.Classes.UI_Elements.Cards
     {
         public delegate EventHandler EditClickHandler(Manufactorer manufactorer);
         public event EditClickHandler EditClicked;
+        public delegate EventHandler DeleteClickedHandler(Manufactorer manufactorer);
+        public event DeleteClickedHandler DeleteClicked;
 
-        public async Task<Frame> Card(Manufactorer manufactorer)
+        public async Task<Border> Card(Manufactorer manufactorer)
         {
-            Frame f = new Frame();
-            f.CornerRadius = 10;
-            f.Padding = 10;
-            f.BackgroundColor = Color.FromRgb(128, 128, 128);
-            f.HasShadow = true;
+            Border b = UI_Utilities.CreateBorder();
 
-            Grid parent = new Grid
-            {
-                RowDefinitions =
-                {
-                    new RowDefinition(),
-                    new RowDefinition(),
-                   // new RowDefinition(), - for the delete Button
-                    new RowDefinition()
-                }
-            };
+            Grid parent = UI_Utilities.CreateGrid(b, 4, MaximumHeight: 250);
 
-            f.Content = parent;
-            parent.MaximumWidthRequest = 500;
-            parent.WidthRequest = 400;
-            parent.MaximumHeightRequest = 200;
-            parent.HeightRequest = 200;
-            parent.Margin = 10;
+            Label lblName = UI_Utilities.CreateLabel(parent, manufactorer.name, 0, 0, 50, FontAttributes.Bold);
 
-            Label lblName = new Label();
-            lblName.Text = manufactorer.name;
-            lblName.FontSize = 58;
-            lblName.FontAttributes = FontAttributes.Bold;
-            lblName.HorizontalTextAlignment = TextAlignment.Center;
-            lblName.VerticalTextAlignment = TextAlignment.Center;
-            lblName.VerticalOptions = LayoutOptions.Center;
-            parent.Add(lblName, 0,0);
-
-            Label lblRegion = new Label();
             Country c = await manufactorer.GetRegion();
-            lblRegion.Text = c.name;
-            lblRegion.HorizontalTextAlignment = TextAlignment.Center;
-            lblRegion.FontSize = 30;
-            lblRegion.VerticalOptions = LayoutOptions.Center;
-            lblRegion.VerticalTextAlignment = TextAlignment.Center;
-            parent.Add(lblRegion, 0,1);
+            Label lblRegion = UI_Utilities.CreateLabel(parent, c.name, 0, 1, 20);
+            lblRegion.LineBreakMode = LineBreakMode.WordWrap;
 
-            Button editBtn = new Button();
-            editBtn.Text = "Edit";
-            editBtn.CommandParameter = manufactorer;
-            editBtn.Clicked += EditBtn_Clicked;
-            editBtn.HorizontalOptions = LayoutOptions.Fill;
-            editBtn.VerticalOptions = LayoutOptions.End;
-            parent.Add(editBtn, 0, 2);
+            Button editBtn = UI_Utilities.CreateButton(false, parent, "Edit", manufactorer, EditBtn_Clicked, 0, 2);
 
-            return f;
+            Button deleteBtn = UI_Utilities.CreateButton(true, parent, "Delete", manufactorer, DeleteBtn_Clicked, 0, 3);
+
+            return b;
+        }
+
+        private void DeleteBtn_Clicked(object? sender, EventArgs e)
+        {
+            Button b = sender as Button;
+            DeleteClickedHandler handler = DeleteClicked;
+            handler(b.CommandParameter as Manufactorer);
         }
 
         private void EditBtn_Clicked(object sender, EventArgs e)
