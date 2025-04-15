@@ -3,10 +3,27 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="SpottersDB_FrontEnd.Classes.Views.HomeAircrafts"
              Title="HomeAircrafts">
-    <VerticalStackLayout>
-        <Label 
-            Text="Welcome to .NET MAUI!"
-            VerticalOptions="Center" 
-            HorizontalOptions="Center" />
-    </VerticalStackLayout>
+    <Grid Margin="10">
+        <Grid.RowDefinitions>
+            <RowDefinition></RowDefinition>
+            <RowDefinition Height="10*"></RowDefinition>
+        </Grid.RowDefinitions>
+        <Grid ColumnSpacing="10" Margin="10" Grid.Row="0">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="3*"></ColumnDefinition>
+                <ColumnDefinition></ColumnDefinition>
+                <ColumnDefinition></ColumnDefinition>
+                <ColumnDefinition></ColumnDefinition>
+            </Grid.ColumnDefinitions>
+            <SearchBar x:Name="Search" Placeholder="Search for an Aircraft" Grid.Column="0" VerticalOptions="End"></SearchBar>
+            <Picker x:Name="TypePicker" Title="Filter by Aircraft Type" Grid.Column="1"></Picker>
+            <Picker x:Name="AirlinePicker" Title="Filter by Airline" Grid.Column="2"></Picker>
+            <Picker x:Name="CountryPicker" Title="Filter by Country" Grid.Column="3"></Picker>
+        </Grid>
+        <ScrollView IsClippedToBounds="True" Orientation="Vertical" Grid.Row="1">
+            <FlexLayout  Padding="10" AlignItems="Center" Wrap="Wrap"  FlowDirection="LeftToRight" HorizontalOptions="Fill" JustifyContent="SpaceBetween" x:Name="ContentParent" VerticalOptions="Fill">
+                
+            </FlexLayout>
+        </ScrollView>
+    </Grid>
 </ContentPage>

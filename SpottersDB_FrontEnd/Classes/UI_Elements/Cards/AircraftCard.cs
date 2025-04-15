@@ -50,6 +50,35 @@ namespace SpottersDB_FrontEnd.Classes.UI_Elements.Cards
             return b;
         }
 
+        public async Task<Border> CardHome(Aircraft aircraft)
+        {
+            // Create the Border which adds the roundness to the edges and acts as the final content container
+            Border b = UI_Utilities.CreateBorder(Margin: 10);
+
+            // Creates the Parent Grid where all of the different UI Elements are aligned in
+            Grid parent = UI_Utilities.CreateGrid(b, 6);
+
+            // Name Label
+            Label lblName = UI_Utilities.CreateLabel(parent, aircraft.registration, 0, 0, 50, FontAttributes.Bold);
+
+            // Aircraft Type Label
+            AircraftType type = await aircraft.GetAircraftType();
+            Label lblType = UI_Utilities.CreateLabel(parent, type.icaoCode, 0, 1, 30);
+
+            // Airline Label
+            Airline airline = await aircraft.GetAirline();
+            Label lblAirline = UI_Utilities.CreateLabel(parent, airline.iata, 0, 2, 30);
+
+            // Country Label
+            Country c = await aircraft.GetCountry();
+            Label lblRegion = UI_Utilities.CreateLabel(parent, c.name, 0, 3, 30);
+
+            // Edit Button
+            Button Open = UI_Utilities.CreateButton(false, parent, "Open", aircraft, EditBtn_Clicked, 0, 4);
+
+            return b;
+        }
+
         private void DeleteBtn_Clicked(object? sender, EventArgs e)
         {
             Button b = sender as Button;

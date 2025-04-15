@@ -9,6 +9,7 @@
     Title="SpottersDB_FrontEnd">
 
     <FlyoutItem Title="Home">
+        
         <Tab Title="Aircrafts">
             <ShellContent
                 Title="Aircrafts"
@@ -19,7 +20,7 @@
                 Title="Aircraft Types"
                 ContentTemplate="{DataTemplate views:HomeAircrafts}"></ShellContent>
         </Tab>
-        <Tab Title="Airlines" IsEnabled="False">
+        <Tab Title="Airlines" IsEnabled="True">
             <ShellContent
                 Title="Airlines"
                 ContentTemplate="{DataTemplate views:HomeAircrafts}"></ShellContent>
