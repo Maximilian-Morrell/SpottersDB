@@ -3,6 +3,9 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="SpottersDB_FrontEnd.Classes.Views.HomeAircrafts"
              Title="HomeAircrafts">
+    <ContentPage.ToolbarItems >
+        <ToolbarItem Text="Dev Build" IsEnabled="False"></ToolbarItem>
+    </ContentPage.ToolbarItems>
     <Grid Margin="10">
         <Grid.RowDefinitions>
             <RowDefinition></RowDefinition>
@@ -15,13 +18,13 @@
                 <ColumnDefinition></ColumnDefinition>
                 <ColumnDefinition></ColumnDefinition>
             </Grid.ColumnDefinitions>
-            <SearchBar x:Name="Search" Placeholder="Search for an Aircraft" Grid.Column="0" VerticalOptions="End"></SearchBar>
-            <Picker x:Name="TypePicker" Title="Filter by Aircraft Type" Grid.Column="1"></Picker>
-            <Picker x:Name="AirlinePicker" Title="Filter by Airline" Grid.Column="2"></Picker>
-            <Picker x:Name="CountryPicker" Title="Filter by Country" Grid.Column="3"></Picker>
+            <SearchBar x:Name="Search" Placeholder="Search for an Aircraft" Grid.Column="0" VerticalOptions="End" TextChanged="Search_TextChanged" Text=""></SearchBar>
+            <Picker x:Name="TypePicker" Title="Filter by Aircraft Type" Grid.Column="1" SelectedIndexChanged="SelectionChanged"></Picker>
+            <Picker x:Name="AirlinePicker" Title="Filter by Airline" Grid.Column="2" SelectedIndexChanged="SelectionChanged"></Picker>
+            <Picker x:Name="CountryPicker" Title="Filter by Country" Grid.Column="3" SelectedIndexChanged="SelectionChanged"></Picker>
         </Grid>
         <ScrollView IsClippedToBounds="True" Orientation="Vertical" Grid.Row="1">
-            <FlexLayout  Padding="10" AlignItems="Center" Wrap="Wrap"  FlowDirection="LeftToRight" HorizontalOptions="Fill" JustifyContent="SpaceBetween" x:Name="ContentParent" VerticalOptions="Fill">
+            <FlexLayout  Padding="10" AlignItems="Center" Wrap="Wrap"  FlowDirection="LeftToRight" HorizontalOptions="Fill" JustifyContent="SpaceBetween" x:Name="ContentParent" VerticalOptions="Fill" Direction="Row" Position="Relative" AlignContent="SpaceEvenly">
                 
             </FlexLayout>
         </ScrollView>

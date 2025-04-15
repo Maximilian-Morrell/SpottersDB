@@ -21,6 +21,7 @@ namespace SpottersDB_FrontEnd.Classes.Utilities
         public static Border CreateBorder(int CornerRadius = 10, int Padding = 10, int Margin = 0)
         {
             Border b = new Border();
+            b.StrokeThickness = 0;
             RoundRectangle rr = new RoundRectangle();
             rr.CornerRadius = CornerRadius;
             b.StrokeShape = rr;
