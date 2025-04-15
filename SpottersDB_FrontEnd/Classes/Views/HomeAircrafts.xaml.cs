@@ -1,8 +1,8 @@
 namespace SpottersDB_FrontEnd.Classes.Views;
 
-public partial class HomeCountries : ContentPage
+public partial class HomeAircrafts : ContentPage
 {
-	public HomeCountries()
+	public HomeAircrafts()
 	{
 		InitializeComponent();
 	}
