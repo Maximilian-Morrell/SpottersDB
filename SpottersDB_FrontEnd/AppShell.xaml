@@ -8,6 +8,18 @@
     Shell.FlyoutBehavior="Flyout"
     Title="SpottersDB_FrontEnd">
 
+    <FlyoutItem Title="Home">
+        <Tab Title="Countries">
+            <ShellContent
+                Title="Countries"
+                ContentTemplate="{DataTemplate views:HomeCountries}"></ShellContent>
+        </Tab>
+        <Tab Title="Countries">
+            <ShellContent
+                Title="Countries"
+                ContentTemplate="{DataTemplate views:HomeCountries}"></ShellContent>
+        </Tab>
+    </FlyoutItem>
     <!--<FlyoutItem Title="Home">
         <ShellContent 
             Title="Edit Page"

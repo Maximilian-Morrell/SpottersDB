@@ -302,6 +302,7 @@ namespace SpottersDB_BackEnd.Classes.Utilities
         #endregion
 
         #region Get Objects
+
         public List<Country> GetCountries()
         {
             List<Country> Countries = new List<Country>();

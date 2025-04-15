@@ -66,6 +66,12 @@
 	</ItemGroup>
 
 	<ItemGroup>
+	  <MauiXaml Update="Classes\Views\HomeCountries.xaml">
+	    <Generator>MSBuild:Compile</Generator>
+	  </MauiXaml>
+	</ItemGroup>
+
+	<ItemGroup>
 	  <None Update="Classes\Views\EditAircraftModal.xaml">
 	    <Generator>MSBuild:Compile</Generator>
 	  </None>
