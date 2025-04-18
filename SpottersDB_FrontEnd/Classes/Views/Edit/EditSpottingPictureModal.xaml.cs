@@ -284,7 +284,14 @@ public partial class EditSpottingPictureModal : ContentPage
     {
         if(IsLoaded)
         {
-            Submit.IsEnabled = SpottingPictureName.Text.Length > 0 && fileResult != null && AircraftPicker.SelectedIndex >= 1 && AirportPicker != null && AirportPicker.SelectedIndex >= 1;
+            if(IsEditing)
+            {
+                Submit.IsEnabled = SpottingPictureName.Text.Length > 0 && AircraftPicker.SelectedIndex >= 1 && AirportPicker != null && AirportPicker.SelectedIndex >= 1;
+            }
+            else
+            {
+                Submit.IsEnabled = SpottingPictureName.Text.Length > 0 && fileResult != null && AircraftPicker.SelectedIndex >= 1 && AirportPicker != null && AirportPicker.SelectedIndex >= 1;
+            }
         }
     }
 

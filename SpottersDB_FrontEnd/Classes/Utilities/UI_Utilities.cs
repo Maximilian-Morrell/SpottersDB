@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Microsoft.Maui.Controls;
 using Microsoft.Maui.Controls.Shapes;
 using Microsoft.Maui.Graphics;
 
@@ -58,6 +59,19 @@ namespace SpottersDB_FrontEnd.Classes.Utilities
             lbl.VerticalTextAlignment = TextAlignment.Center;
             lbl.VerticalOptions = LayoutOptions.Fill;
             parent.Add(lbl, Column, Row);
+            return lbl;
+        }
+
+        public static Label CreateLabel(VerticalStackLayout parent, string Content, int fontSize, FontAttributes fontAttributes)
+        {
+            Label lbl = new Label();
+            lbl.Text = Content;
+            lbl.FontSize = fontSize;
+            lbl.FontAttributes = fontAttributes;
+            lbl.HorizontalTextAlignment = TextAlignment.Center;
+            lbl.VerticalTextAlignment = TextAlignment.Center;
+            lbl.VerticalOptions = LayoutOptions.Fill;
+            parent.Add(lbl);
             return lbl;
         }
         public static Label CreateLabel(Grid parent, string Content, int Column, int Row, int fontSize, FontAttributes fontAttributes)

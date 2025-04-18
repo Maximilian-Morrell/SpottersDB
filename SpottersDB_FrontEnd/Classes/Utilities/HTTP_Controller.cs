@@ -380,6 +380,11 @@ namespace SpottersDB_FrontEnd.Classes.Utilities
         {
             return (List<SpottingPicture>) await APIGet("/Get/SpottingPictures", new List<SpottingPicture>().GetType());
         }
+
+        public static async Task<List<SpottingPicture>> GetSpottingPicturesByAircraft(int AircraftID)
+        {
+            return (List<SpottingPicture>)await APIGet($"/Get/SpottingPictures/Aircraft?AircraftID={AircraftID}", new List<SpottingPicture>().GetType());
+        }
         #endregion
 
         #region Delete

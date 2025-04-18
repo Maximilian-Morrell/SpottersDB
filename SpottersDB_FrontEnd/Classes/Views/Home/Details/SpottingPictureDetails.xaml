@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="SpottersDB_FrontEnd.Classes.Views.Home.Details.SpottingPictureDetails"
+             Title="SpottingPictureDetails">
+    
+    <Grid ColumnSpacing="5" RowSpacing="5">
+        <Grid.RowDefinitions>
+            <!--Title-->
+            <RowDefinition Height="Auto"></RowDefinition>
+            <!--Description-->
+            <RowDefinition Height="Auto"></RowDefinition>
+            <RowDefinition></RowDefinition>
+            <!--Airport-->
+            <RowDefinition Height="Auto"></RowDefinition>
+            <RowDefinition></RowDefinition>
+            <!--Country-->
+            <RowDefinition Height="Auto"></RowDefinition>
+            <RowDefinition></RowDefinition>
+            <!--SpottingTrip-->
+            <RowDefinition Height="Auto"></RowDefinition>
+            <RowDefinition></RowDefinition>
+            <!--Date-->
+            <RowDefinition Height="Auto"></RowDefinition>
+            <RowDefinition></RowDefinition>
+            <!--Registration-->
+            <RowDefinition Height="Auto"></RowDefinition>
+            <RowDefinition></RowDefinition>
+            <!--Type-->
+            <RowDefinition Height="Auto"></RowDefinition>
+            <RowDefinition></RowDefinition>
+            <!--Manufactorer-->
+            <RowDefinition Height="Auto"></RowDefinition>
+            <RowDefinition></RowDefinition>
+            <!--Airline-->
+            <RowDefinition Height="Auto"></RowDefinition>
+            <RowDefinition></RowDefinition>
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <!--Image-->
+            <ColumnDefinition Width="2*"></ColumnDefinition>
+            <!--Content-->
+            <ColumnDefinition Width="2*"></ColumnDefinition>
+        </Grid.ColumnDefinitions>
+
+
+        <Border VerticalOptions="Center" Margin="10" Grid.RowSpan="18" Grid.Row="1" Grid.Column="0" Stroke="Transparent" StrokeThickness="0" StrokeShape="RoundRectangle 10">
+            <Image x:Name="ImgUI" VerticalOptions="Center"></Image>
+        </Border>
+
+        <Label Margin="10" Text="TBD" FontSize="Title" FontAttributes="Bold" Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2" HorizontalOptions="CenterAndExpand" x:Name="LBL_Title"></Label>
+
+        <Label VerticalOptions="End" Text="Description: " Grid.Column="1" Grid.Row="1"></Label>
+        <Label VerticalOptions="Start" FontAttributes="Bold" Text="TBD" x:Name="LBL_Description" Grid.Column="1" Grid.Row="2"></Label>
+
+        <Label VerticalOptions="End" Text="Airport: " Grid.Column="1" Grid.Row="3"></Label>
+        <Label VerticalOptions="Start" FontAttributes="Bold" Text="TBD" x:Name="LBL_Airport" Grid.Column="1" Grid.Row="4"></Label>
+
+        <Label VerticalOptions="End" Text="Country: " Grid.Column="1" Grid.Row="5"></Label>
+        <Label VerticalOptions="Start" FontAttributes="Bold" Text="Empty" x:Name="LBL_Country" Grid.Column="1" Grid.Row="6"></Label>
+
+        <Label VerticalOptions="End" Text="SpottingTrip: " Grid.Column="1" Grid.Row="7"></Label>
+        <Label VerticalOptions="Start" FontAttributes="Bold"  Text="TBD" x:Name="LBL_SpottingTrip" Grid.Column="1" Grid.Row="8"></Label>
+
+        <Label VerticalOptions="End" Text="Date: " Grid.Column="1" Grid.Row="9"></Label>
+        <Label VerticalOptions="Start" FontAttributes="Bold" Text="TBD" x:Name="LBL_SpottingTripDate" Grid.Column="1" Grid.Row="10"></Label>
+
+        <Label VerticalOptions="End" Text="Registration: " Grid.Column="1" Grid.Row="11"></Label>
+        <Label VerticalOptions="Start" FontAttributes="Bold" Text="Empty" x:Name="LBL_Registration" Grid.Column="1" Grid.Row="12"></Label>
+
+        <Label VerticalOptions="End" Text="Type: " Grid.Column="1" Grid.Row="12"></Label>
+        <Label VerticalOptions="Start" FontAttributes="Bold" Text="Empty" x:Name="LBL_Type" Grid.Column="1" Grid.Row="13"></Label>
+
+        <Label VerticalOptions="End" Text="Manufactorer: " Grid.Column="1" Grid.Row="14"></Label>
+        <Label VerticalOptions="Start" FontAttributes="Bold"  Text="TBD" x:Name="LBL_Manufactorer" Grid.Column="1" Grid.Row="15"></Label>
+
+        <Label VerticalOptions="End" Text="Airline: " Grid.Column="1" Grid.Row="16"></Label>
+        <Label VerticalOptions="Start" FontAttributes="Bold" Text="TBD" x:Name="LBL_Airline" Grid.Column="1" Grid.Row="17"></Label>
+    </Grid>
+</ContentPage>

@@ -1,4 +1,5 @@
-﻿using SpottersDB_BackEnd.Classes.Structure;
+﻿using Microsoft.AspNetCore.Mvc;
+using SpottersDB_BackEnd.Classes.Structure;
 using SpottersDB_BackEnd.Classes.Utilities;
 using System.Reflection;
 using System.Text.Json;
@@ -57,6 +58,8 @@ namespace SpottersDB_BackEnd.Classes.API
             app.MapGet("/Get/SpottingPictures", GET_SpottingPictures);
             // Get SpottingPicture By ID Route
             app.MapGet("/Get/SpottingPicture", (int ID) => GET_SpottingPicture(ID));
+            // Get SpottingPicture By Aircraft Route
+            app.MapGet("/Get/SpottingPictures/Aircraft", (int AircraftID) => GET_SpottingPicturesByAircraftID(AircraftID));
 
             // Get NewestImageFromCountry Route
             app.MapGet("/Get/Newest/Country", (int ID) => GET_NewestImageFromCountry(ID));
@@ -152,6 +155,11 @@ namespace SpottersDB_BackEnd.Classes.API
         private SpottingPicture GET_SpottingPicture(int ID)
         {
             return sqlcontroller.GetSpottingPictureByID(ID);
+        }
+
+        private List<SpottingPicture> GET_SpottingPicturesByAircraftID(int ID)
+        {
+            return sqlcontroller.GetSpottingPictureByAircraftID(ID);
         }
 
         private List<Country> GET_Regions()

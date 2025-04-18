@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="SpottersDB_FrontEnd.Classes.Views.Home.Details.AircraftDetails"
+             Title="AircraftDetails">
+
+    <Grid ColumnSpacing="5">
+        <Grid.RowDefinitions>
+            <!--Title-->
+            <RowDefinition Height="1*"></RowDefinition>
+            <!--Info-->
+            <RowDefinition Height="1*"></RowDefinition>
+            <!--Content-->
+            <RowDefinition Height="25*"></RowDefinition>
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <!--Registration-->
+            <ColumnDefinition Width="Auto"></ColumnDefinition>
+            <ColumnDefinition></ColumnDefinition>
+            <!--Type-->
+            <ColumnDefinition Width="Auto"></ColumnDefinition>
+            <ColumnDefinition></ColumnDefinition>
+            <!--Manufactorer-->
+            <ColumnDefinition Width="Auto"></ColumnDefinition>
+            <ColumnDefinition></ColumnDefinition>
+            <!--Airline-->
+            <ColumnDefinition Width="Auto"></ColumnDefinition>
+            <ColumnDefinition></ColumnDefinition>
+        </Grid.ColumnDefinitions>
+        <Label Text="TBD" FontSize="Title" FontAttributes="Bold" Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="8" HorizontalOptions="Center" x:Name="LBL_Registration"></Label>
+        
+        <Label Text="Country: " Grid.Column="0" Grid.Row="1"></Label>
+        <Label FontAttributes="Bold" Text="TBD" x:Name="LBL_Coutnry" Grid.Column="1" Grid.Row="1"></Label>
+
+        <Label Text="Type: " Grid.Column="2" Grid.Row="1"></Label>
+        <Label FontAttributes="Bold" Text="Empty" x:Name="LBL_Type" Grid.Column="3" Grid.Row="1"></Label>
+
+        <Label Text="Manufactorer: " Grid.Column="4" Grid.Row="1"></Label>
+        <Label FontAttributes="Bold"  Text="TBD" x:Name="LBL_Manufactorer" Grid.Column="5" Grid.Row="1"></Label>
+
+        <Label Text="Airline: " Grid.Column="6" Grid.Row="1"></Label>
+        <Label FontAttributes="Bold" Text="TBD" x:Name="LBL_Airline" Grid.Column="7" Grid.Row="1"></Label>
+        
+        <ScrollView Grid.Column="0" Grid.ColumnSpan="8" Grid.Row="2">
+            <VerticalStackLayout x:Name="SpottingTripParent" Padding="5">
+
+            </VerticalStackLayout>
+        </ScrollView>
+    </Grid>
+</ContentPage>

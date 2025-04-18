@@ -1,6 +1,7 @@
 using SpottersDB_FrontEnd.Classes.Structure;
 using SpottersDB_FrontEnd.Classes.UI_Elements.Cards;
 using SpottersDB_FrontEnd.Classes.Utilities;
+using SpottersDB_FrontEnd.Classes.Views.Home.Details;
 
 namespace SpottersDB_FrontEnd.Classes.Views;
 
@@ -20,8 +21,8 @@ public partial class HomeAircrafts : ContentPage
 
     private EventHandler OpenClicked(Aircraft aircraft)
     {
-        //EditAirlineModal editAirlineModal = new EditAirlineModal(airline);
-        //Navigation.PushAsync(editAirlineModal);
+        AircraftDetails aircraftDetails = new AircraftDetails(aircraft);
+        Navigation.PushAsync(aircraftDetails);
         return null;
     }
 

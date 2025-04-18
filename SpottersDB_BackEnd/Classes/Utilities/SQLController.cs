@@ -511,6 +511,17 @@ namespace SpottersDB_BackEnd.Classes.Utilities
             return spottingPicture;
         }
 
+        public List<SpottingPicture> GetSpottingPictureByAircraftID(int id)
+        {
+            List<SpottingPicture> spottingPictures = new List<SpottingPicture>();
+            ReaderData = ExecuteReadCMD($"SELECT * FROM SpottingPictures WHERE SpottingPictureAircraftID = {id}", $"Reading SpottingPicture with ID {id}");
+            foreach (Dictionary<string, object> Data in ReaderData)
+            {
+                spottingPictures.Add(new SpottingPicture(Convert.ToInt32(Data["SpottingPictureID"]), Convert.ToString(Data["SpottingPictureName"]), Convert.ToString(Data["SpottingPictureDescription"]), Convert.ToString(Data["SpottingPictureURL"]), Convert.ToString(Data["SpottingPictureOriginalFileName"]), Convert.ToInt32(Data["SpottingTripAirportID"]), Convert.ToInt32(Data["SpottingPictureAircraftID"])));
+            }
+            return spottingPictures;
+        }
+
         public string GetNewestImageFromCountry(int Country)
         {
             string newestImage = "";
