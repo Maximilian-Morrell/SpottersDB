@@ -12,8 +12,7 @@ public partial class AircraftDetails : ContentPage
     AircraftType aircraftType;
     Manufactorer manufactorer;
     List<SpottingPicture> pictures;
-    HashSet<SpottingTrip> trips = new HashSet<SpottingTrip>();
-    Dictionary<int, int> Trip_Link = new Dictionary<int, int>();
+    HashSet<int> trips = new HashSet<int>();
     public AircraftDetails(Aircraft aircraft)
     {
         this.aircraft = aircraft;
@@ -40,8 +39,7 @@ public partial class AircraftDetails : ContentPage
         foreach (SpottingPicture pic in pictures)
         {
             Dictionary<string, int> Trip_Airport = await HTTP_Controller.GetSpottingTripAirport(pic.spottingTripAirportID);
-            trips.Add(await HTTP_Controller.GetSpottingTrip(Trip_Airport["SpottingTrip"]));
-            Trip_Link.Add(Trip_Airport["SpottingTrip"], pic.spottingTripAirportID);
+            trips.Add(Trip_Airport["SpottingTrip"]);
         }
         FillInformation();
     }
@@ -54,12 +52,18 @@ public partial class AircraftDetails : ContentPage
         LBL_Type.Text = aircraftType.fullName;
         LBL_Manufactorer.Text = manufactorer.name;
         LBL_Airline.Text = airline.name;
-        foreach (SpottingTrip trip in trips)
+        foreach (int tripID in trips)
         {
+            SpottingTrip trip = await HTTP_Controller.GetSpottingTrip(tripID);
             VerticalStackLayout parent = new VerticalStackLayout();
             Label lbl = UI_Utilities.CreateLabel(parent, trip.name, 50, FontAttributes.Bold);
             FlexLayout Test = new FlexLayout();
-            foreach (SpottingPicture pic in pictures.Where(p => p.spottingTripAirportID == Trip_Link[trip.id]))
+            Test.Wrap = Microsoft.Maui.Layouts.FlexWrap.Wrap;
+            Test.JustifyContent = Microsoft.Maui.Layouts.FlexJustify.SpaceEvenly;
+            Test.Direction = Microsoft.Maui.Layouts.FlexDirection.Row;
+            Dictionary<string, int> LinkID = await HTTP_Controller.GetSpottingTripAirport(trip.id);
+            int searchID = LinkID["SpottingTrip"];
+            foreach (SpottingPicture pic in pictures.Where(p => p.spottingTripAirportID == searchID))
             {
                 SpottingPictureCard picCard = new SpottingPictureCard();
                 Border b = await picCard.CardHome(pic);

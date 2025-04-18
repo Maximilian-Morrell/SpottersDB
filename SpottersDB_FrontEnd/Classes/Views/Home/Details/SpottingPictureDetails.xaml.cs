@@ -39,6 +39,7 @@ public partial class SpottingPictureDetails : ContentPage
 		ImgUI.Source = pic.pictureUrl;
         Title = "Spotting Picture: " + pic.name;
 		LBL_Title.Text = pic.name;
+		LBL_Description.Text = pic.description;
 		LBL_Airport.Text = airport.icaO_Code + "/" + airport.iatA_Code + " - " + airport.name;
 		LBL_Country.Text = country.name;
 		LBL_SpottingTrip.Text = trip.name;

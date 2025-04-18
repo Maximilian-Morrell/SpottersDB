@@ -147,4 +147,9 @@ public partial class HomeAircrafts : ContentPage
             LoadAircrafts();
         }
     }
+
+    private void ToolbarItem_Clicked(object sender, EventArgs e)
+    {
+        Launcher.OpenAsync("https://www.instagram.com/morlol.cc");
+    }
 }
