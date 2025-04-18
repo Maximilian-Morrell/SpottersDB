@@ -8,48 +8,48 @@
     Shell.FlyoutBehavior="Flyout"
     Title="SpottersDB_FrontEnd">
 
-    <FlyoutItem Title="Home">
+    <FlyoutItem Title="Home" FlyoutDisplayOptions="AsSingleItem">
         
-        <Tab Title="Aircrafts">
-            <ShellContent
-                Title="Aircrafts"
-                ContentTemplate="{DataTemplate views:HomeAircrafts}"></ShellContent>
-        </Tab>
-        <Tab Title="Aircraft Types" IsEnabled="False">
-            <ShellContent
-                Title="Aircraft Types"
-                ContentTemplate="{DataTemplate views:HomeAircrafts}"></ShellContent>
-        </Tab>
-        <Tab Title="Airlines" IsEnabled="True">
-            <ShellContent
-                Title="Airlines"
-                ContentTemplate="{DataTemplate views:HomeAircrafts}"></ShellContent>
-        </Tab>
-        <Tab Title="Airports" IsEnabled="False">
-            <ShellContent
-                Title="Airports"
-                ContentTemplate="{DataTemplate views:HomeAircrafts}"></ShellContent>
-        </Tab>
-        <Tab Title="Countries" IsEnabled="False">
-            <ShellContent
-                Title="Countries"
-                ContentTemplate="{DataTemplate views:HomeAircrafts}"></ShellContent>
-        </Tab>
-        <Tab Title="Manufactorers" IsEnabled="False">
-            <ShellContent
-                Title="Manufactorers"
-                ContentTemplate="{DataTemplate views:HomeAircrafts}"></ShellContent>
-        </Tab>
-        <Tab Title="SpottingPictures" IsEnabled="False">
-            <ShellContent
-                Title="SpottingPictures"
-                ContentTemplate="{DataTemplate views:HomeAircrafts}"></ShellContent>
-        </Tab>
-        <Tab Title="SpottingTrips" IsEnabled="False">
-            <ShellContent
-                Title="SpottingTrips"
-                ContentTemplate="{DataTemplate views:HomeAircrafts}"></ShellContent>
-        </Tab>
+		<Tab Title="Aircrafts" IsVisible="True">
+			<ShellContent
+				Title="Aircrafts"
+				ContentTemplate="{DataTemplate TypeName=views:HomeAircrafts}"/>
+		</Tab>
+        <Tab Title="Aircraft Types" IsVisible="False">
+			<ShellContent
+				Title="Aircraft Types"
+				ContentTemplate="{DataTemplate TypeName=views:HomeAircrafts}"/>
+		</Tab>
+		<Tab Title="Airlines" IsVisible="False">
+			<ShellContent
+				Title="Airlines"
+				ContentTemplate="{DataTemplate TypeName=views:HomeAircrafts}"/>
+		</Tab>
+		<Tab Title="Airports" IsVisible="False">
+			<ShellContent
+				Title="Airports"
+				ContentTemplate="{DataTemplate TypeName=views:HomeAircrafts}"/>
+		</Tab>
+		<Tab Title="Countries" IsVisible="False">
+			<ShellContent
+				Title="Countries"
+				ContentTemplate="{DataTemplate TypeName=views:HomeAircrafts}"/>
+		</Tab>
+		<Tab Title="Manufactorers" IsVisible="False">
+			<ShellContent
+				Title="Manufactorers"
+				ContentTemplate="{DataTemplate TypeName=views:HomeAircrafts}"/>
+		</Tab>
+		<Tab Title="SpottingPictures" IsVisible="False">
+			<ShellContent
+				Title="SpottingPictures"
+				ContentTemplate="{DataTemplate TypeName=views:HomeAircrafts}"/>
+		</Tab>
+		<Tab Title="SpottingTrips" IsVisible="False">
+			<ShellContent
+				Title="SpottingTrips"
+				ContentTemplate="{DataTemplate TypeName=views:HomeAircrafts}"/>
+		</Tab>
     </FlyoutItem>
     <!--<FlyoutItem Title="Home">
         <ShellContent 

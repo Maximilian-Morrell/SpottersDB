@@ -4,7 +4,7 @@
              x:Class="SpottersDB_FrontEnd.Classes.Views.HomeAircrafts"
              Title="HomeAircrafts">
     <ContentPage.ToolbarItems >
-        <ToolbarItem Text="Dev Build" IsEnabled="False"></ToolbarItem>
+        <ToolbarItem Text="Dev Build" IsEnabled="False" x:Name="testing"></ToolbarItem>
     </ContentPage.ToolbarItems>
     <Grid Margin="10">
         <Grid.RowDefinitions>
