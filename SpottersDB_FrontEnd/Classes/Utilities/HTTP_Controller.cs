@@ -287,6 +287,11 @@ namespace SpottersDB_FrontEnd.Classes.Utilities
             return (List<Aircraft>) await APIGet("/Get/Aircrafts", new List<Aircraft>().GetType());
         }
 
+        public static async Task<List<Aircraft>> GetAircraftsByTypeID(int TypeID)
+        {
+            return (List<Aircraft>)await APIGet("/Get/Aircrafts/Type?TypeID=" + TypeID, new List<Aircraft>().GetType());
+        }
+
         public static async Task<Aircraft> GetAircraft(int ID)
         {
             return (Aircraft) await APIGet("/Get/Aircraft?ID=" + ID, new Aircraft().GetType());

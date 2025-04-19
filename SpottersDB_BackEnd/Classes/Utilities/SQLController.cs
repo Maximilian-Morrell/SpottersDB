@@ -454,6 +454,18 @@ namespace SpottersDB_BackEnd.Classes.Utilities
             return aircrafts;
         }
 
+        public List<Aircraft> GetAircraftsByTypeID(int TypeID)
+        {
+            List<Aircraft> aircrafts = new List<Aircraft>();
+            ReaderData = ExecuteReadCMD($"SELECT * FROM Aircrafts WHERE AircraftTypeID = {TypeID}", $"Reading Aircraft Objects with the TypeID {TypeID}");
+            foreach (Dictionary<string, object> Data in ReaderData)
+            {
+                Aircraft aircraft = new Aircraft(Convert.ToInt32(Data["AircraftID"]), Convert.ToString(Data["AircraftRegistration"]), Convert.ToString(Data["AircraftDescription"]), Convert.ToInt32(Data["AircraftTypeID"]), Convert.ToInt32(Data["AircraftCountryID"]), Convert.ToInt32(Data["AircraftAirlineID"]));
+                aircrafts.Add(aircraft);
+            }
+            return aircrafts;
+        }
+
         public Aircraft GetAircraftByID(int id)
         {
             Aircraft aircraft = null;

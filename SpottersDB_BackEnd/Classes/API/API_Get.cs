@@ -46,6 +46,8 @@ namespace SpottersDB_BackEnd.Classes.API
 
             // Get Aircrafts Route
             app.MapGet("/Get/Aircrafts", GET_Aircrafts);
+            // Get Aircraft By Type Route
+            app.MapGet("/Get/Aircrafts/Type", (int TypeID) => GET_AircraftsByTypeID(TypeID));
             // Get Aircraft By ID Route
             app.MapGet("/Get/Aircraft", (int ID) => GET_Aircraft(ID));
 
@@ -130,6 +132,11 @@ namespace SpottersDB_BackEnd.Classes.API
         private List<Aircraft> GET_Aircrafts()
         {
             return sqlcontroller.GetAircrafts();
+        }
+
+        private List<Aircraft> GET_AircraftsByTypeID(int TypeID)
+        {
+            return sqlcontroller.GetAircraftsByTypeID(TypeID);
         }
 
         private Aircraft GET_Aircraft(int ID)

@@ -3,7 +3,7 @@ using SpottersDB_FrontEnd.Classes.UI_Elements.Cards;
 using SpottersDB_FrontEnd.Classes.Utilities;
 using SpottersDB_FrontEnd.Classes.Views.Home.Details;
 
-namespace SpottersDB_FrontEnd.Classes.Views;
+namespace SpottersDB_FrontEnd.Classes.Views.Home;
 
 public partial class HomeAircrafts : ContentPage
 {
@@ -148,8 +148,4 @@ public partial class HomeAircrafts : ContentPage
         }
     }
 
-    private void ToolbarItem_Clicked(object sender, EventArgs e)
-    {
-        Launcher.OpenAsync("https://www.instagram.com/morlol.cc");
-    }
 }
