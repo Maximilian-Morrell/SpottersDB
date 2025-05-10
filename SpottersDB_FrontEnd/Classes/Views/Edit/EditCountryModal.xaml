@@ -2,7 +2,7 @@
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="SpottersDB_FrontEnd.Classes.Views.EditCountryModal"
-             Title="EditCountryModal">
+             Title="Create Country">
     
     <Grid MaximumHeightRequest="320" Padding="20" RowSpacing="10" VerticalOptions="StartAndExpand">
         <Grid.RowDefinitions>

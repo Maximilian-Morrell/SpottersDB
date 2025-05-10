@@ -77,6 +77,7 @@ public partial class HomeAircrafts : ContentPage
             }
         }
         IsLoaded = true;
+        ContentParent.Clear();
         LoadAircrafts();
     }
 

@@ -99,7 +99,7 @@ public partial class EditSpottingTripModal : ContentPage
         List<string> airportNames = new List<string>();
         foreach (Airport airport in airports)
         {
-            airportNames.Add(airport.name + " - " + airport.id);
+            airportNames.Add(airport.name);
         }
 
         AirportPicker = UI_Utilities.CreatePicker(GridMain, AirportPickerSelectionChange, 1, 4, airportNames, "Select an Airport");

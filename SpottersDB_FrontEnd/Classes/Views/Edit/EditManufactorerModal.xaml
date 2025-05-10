@@ -3,7 +3,7 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:Structure="clr-namespace:SpottersDB_FrontEnd.Classes.Structure"
              x:Class="SpottersDB_FrontEnd.Classes.Views.EditManufactorerModal"
-             Title="EditManufactorerModal">
+             Title="Create Manufactorer">
     
     <Grid MaximumHeightRequest="520" Padding="20" RowSpacing="10" VerticalOptions="StartAndExpand" x:Name="GridMain">
         <Grid.RowDefinitions>

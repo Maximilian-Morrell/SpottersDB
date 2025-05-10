@@ -144,7 +144,7 @@ public partial class EditSpottingPictureModal : ContentPage
         List<string> spottingTripNames = new List<string>();
         foreach (SpottingTrip spottingTrip in SpottingTrips)
         {
-            spottingTripNames.Add(spottingTrip.name + " - " + spottingTrip.id);
+            spottingTripNames.Add(spottingTrip.name);
         }
 
         if(IsEditing)
@@ -170,7 +170,7 @@ public partial class EditSpottingPictureModal : ContentPage
         List<string> aircraftNames = new List<string>();
         foreach (Aircraft aircraft in Aircrafts)
         {
-            aircraftNames.Add(aircraft.registration + " - " + aircraft.id);
+            aircraftNames.Add(aircraft.registration);
         }
 
         if(IsEditing)
@@ -234,7 +234,7 @@ public partial class EditSpottingPictureModal : ContentPage
         List<string> airportNames = new List<string>();
         foreach (Airport airport in Airports)
         {
-            airportNames.Add(airport.name + " - " + airport.id);
+            airportNames.Add(airport.name);
         }
 
         if (IsEditing)
