@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="SpottersDB_FrontEnd.Classes.Views.Home.HomeAircraftType"
+             Title="HomeAircraftType">
+    
+    <Grid Margin="10">
+        <Grid.RowDefinitions>
+            <RowDefinition></RowDefinition>
+            <RowDefinition Height="10*"></RowDefinition>
+        </Grid.RowDefinitions>
+        <Grid ColumnSpacing="10" Margin="10" Grid.Row="0">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="5*"></ColumnDefinition>
+                <ColumnDefinition></ColumnDefinition>
+            </Grid.ColumnDefinitions>
+            <SearchBar x:Name="Search" Placeholder="Search for an Aircrafttype" Grid.Column="0" VerticalOptions="End" Text="" TextChanged="Search_TextChanged"></SearchBar>
+            <Picker x:Name="ManufactorerPicker" Title="Filter by Manufactorer" Grid.Column="1" SelectedIndexChanged="SelectionChanged"></Picker>
+        </Grid>
+        <ScrollView IsClippedToBounds="True" Orientation="Vertical" Grid.Row="1">
+            <FlexLayout  Padding="10" AlignItems="Center" Wrap="Wrap"  FlowDirection="LeftToRight" HorizontalOptions="Fill" JustifyContent="SpaceBetween" x:Name="ContentParent" VerticalOptions="Fill" Direction="Row" Position="Relative" AlignContent="SpaceEvenly">
+
+            </FlexLayout>
+        </ScrollView>
+    </Grid>
+</ContentPage>

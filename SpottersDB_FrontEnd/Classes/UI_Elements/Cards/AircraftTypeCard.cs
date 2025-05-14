@@ -44,6 +44,32 @@ namespace SpottersDB_FrontEnd.Classes.UI_Elements.Cards
             return b;
         }
 
+        public async Task<Border> CardHome(AircraftType aircraftType)
+        {
+            Border b = UI_Utilities.CreateBorder(Margin:10);
+
+            Grid parent = UI_Utilities.CreateGrid(b, 5);
+
+            Label lblTypeCode = UI_Utilities.CreateLabel(parent, aircraftType.icaoCode, 0, 0, 50, FontAttributes.Bold);
+
+            Label lblName = UI_Utilities.CreateLabel(parent, aircraftType.fullName, 0, 1, 30);
+
+            if (aircraftType.nickName != "")
+            {
+                Label lblNickName = UI_Utilities.CreateLabel(parent, "\"" + aircraftType.nickName + "\"", 0, 2, 20);
+            }
+            else
+            {
+                Grid.SetRowSpan(lblName, 2);
+            }
+
+            Manufactorer m = await aircraftType.GetManufactorer();
+
+            Button editBtn = UI_Utilities.CreateButton(false, parent, "Open", aircraftType, EditBtn_Clicked, 0, 4);
+
+            return b;
+        }
+
         private void DeleteBtn_Clicked(object? sender, EventArgs e)
         {
             Button b = sender as Button;

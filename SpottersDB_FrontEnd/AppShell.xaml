@@ -5,15 +5,55 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
     xmlns:local="clr-namespace:SpottersDB_FrontEnd"
     xmlns:views="clr-namespace:SpottersDB_FrontEnd.Classes.Views"
+    xmlns:homeviews="clr-namespace:SpottersDB_FrontEnd.Classes.Views.Home"
     Shell.FlyoutBehavior="Flyout"
     Title="SpottersDB_FrontEnd">
 
-    <!--<FlyoutItem Title="Home">
-        <ShellContent 
-            Title="Edit Page"
-            ContentTemplate="{DataTemplate views:EditPage}"
-            />
-    </FlyoutItem>-->
+    <Shell.FlyoutHeader>
+        <Label FontSize="18" HorizontalOptions="Center" Text="SpottersDB by Maximilian Morrell" Padding="10"></Label>
+    </Shell.FlyoutHeader>
+    <FlyoutItem Title="Home" FlyoutDisplayOptions="AsSingleItem">
+        <Tab Title="Aircrafts" IsVisible="True">
+            <ShellContent
+				Title="Aircrafts"
+				ContentTemplate="{DataTemplate homeviews:HomeAircrafts}"/>
+        </Tab>
+        <Tab Title="Aircraft Types" IsVisible="True">
+            <ShellContent
+				Title="Aircraft Types"
+				ContentTemplate="{DataTemplate homeviews:HomeAircraftType}"/>
+        </Tab>
+        <Tab Title="Airlines" IsVisible="False">
+            <ShellContent
+				Title="Airlines"
+				ContentTemplate="{DataTemplate homeviews:HomeAircrafts}"/>
+        </Tab>
+        <Tab Title="Airports" IsVisible="False">
+            <ShellContent
+				Title="Airports"
+				ContentTemplate="{DataTemplate homeviews:HomeAircrafts}"/>
+        </Tab>
+        <Tab Title="Countries" IsVisible="False">
+            <ShellContent
+				Title="Countries"
+				ContentTemplate="{DataTemplate homeviews:HomeAircrafts}"/>
+        </Tab>
+        <Tab Title="Manufactorers" IsVisible="False">
+            <ShellContent
+				Title="Manufactorers"
+				ContentTemplate="{DataTemplate homeviews:HomeAircrafts}"/>
+        </Tab>
+        <Tab Title="SpottingPictures" IsVisible="False">
+            <ShellContent
+				Title="SpottingPictures"
+				ContentTemplate="{DataTemplate homeviews:HomeAircrafts}"/>
+        </Tab>
+        <Tab Title="SpottingTrips" IsVisible="False">
+            <ShellContent
+				Title="SpottingTrips"
+				ContentTemplate="{DataTemplate homeviews:HomeAircrafts}"/>
+        </Tab>
+    </FlyoutItem>
 
     <FlyoutItem Title="Edit">
         <ShellContent 
@@ -21,5 +61,5 @@
             ContentTemplate="{DataTemplate views:EditPage}"
             />
     </FlyoutItem>
-
+    
 </Shell>

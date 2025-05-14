@@ -302,6 +302,7 @@ namespace SpottersDB_BackEnd.Classes.Utilities
         #endregion
 
         #region Get Objects
+
         public List<Country> GetCountries()
         {
             List<Country> Countries = new List<Country>();
@@ -453,6 +454,18 @@ namespace SpottersDB_BackEnd.Classes.Utilities
             return aircrafts;
         }
 
+        public List<Aircraft> GetAircraftsByTypeID(int TypeID)
+        {
+            List<Aircraft> aircrafts = new List<Aircraft>();
+            ReaderData = ExecuteReadCMD($"SELECT * FROM Aircrafts WHERE AircraftTypeID = {TypeID}", $"Reading Aircraft Objects with the TypeID {TypeID}");
+            foreach (Dictionary<string, object> Data in ReaderData)
+            {
+                Aircraft aircraft = new Aircraft(Convert.ToInt32(Data["AircraftID"]), Convert.ToString(Data["AircraftRegistration"]), Convert.ToString(Data["AircraftDescription"]), Convert.ToInt32(Data["AircraftTypeID"]), Convert.ToInt32(Data["AircraftCountryID"]), Convert.ToInt32(Data["AircraftAirlineID"]));
+                aircrafts.Add(aircraft);
+            }
+            return aircrafts;
+        }
+
         public Aircraft GetAircraftByID(int id)
         {
             Aircraft aircraft = null;
@@ -508,6 +521,17 @@ namespace SpottersDB_BackEnd.Classes.Utilities
                 spottingPicture = new SpottingPicture(Convert.ToInt32(Data["SpottingPictureID"]), Convert.ToString(Data["SpottingPictureName"]), Convert.ToString(Data["SpottingPictureDescription"]), Convert.ToString(Data["SpottingPictureURL"]), Convert.ToString(Data["SpottingPictureOriginalFileName"]), Convert.ToInt32(Data["SpottingTripAirportID"]), Convert.ToInt32(Data["SpottingPictureAircraftID"]));
             }
             return spottingPicture;
+        }
+
+        public List<SpottingPicture> GetSpottingPictureByAircraftID(int id)
+        {
+            List<SpottingPicture> spottingPictures = new List<SpottingPicture>();
+            ReaderData = ExecuteReadCMD($"SELECT * FROM SpottingPictures WHERE SpottingPictureAircraftID = {id}", $"Reading SpottingPicture with ID {id}");
+            foreach (Dictionary<string, object> Data in ReaderData)
+            {
+                spottingPictures.Add(new SpottingPicture(Convert.ToInt32(Data["SpottingPictureID"]), Convert.ToString(Data["SpottingPictureName"]), Convert.ToString(Data["SpottingPictureDescription"]), Convert.ToString(Data["SpottingPictureURL"]), Convert.ToString(Data["SpottingPictureOriginalFileName"]), Convert.ToInt32(Data["SpottingTripAirportID"]), Convert.ToInt32(Data["SpottingPictureAircraftID"])));
+            }
+            return spottingPictures;
         }
 
         public string GetNewestImageFromCountry(int Country)

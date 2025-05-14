@@ -66,6 +66,24 @@
 	</ItemGroup>
 
 	<ItemGroup>
+	  <MauiXaml Update="Classes\Views\Home\Details\AircraftDetails.xaml">
+	    <Generator>MSBuild:Compile</Generator>
+	  </MauiXaml>
+	  <MauiXaml Update="Classes\Views\Home\Details\AircraftTypeDetails.xaml">
+	    <Generator>MSBuild:Compile</Generator>
+	  </MauiXaml>
+	  <MauiXaml Update="Classes\Views\Home\Details\SpottingPictureDetails.xaml">
+	    <Generator>MSBuild:Compile</Generator>
+	  </MauiXaml>
+	  <MauiXaml Update="Classes\Views\Home\HomeAircrafts.xaml">
+	    <Generator>MSBuild:Compile</Generator>
+	  </MauiXaml>
+	  <MauiXaml Update="Classes\Views\Home\HomeAircraftType.xaml">
+	    <Generator>MSBuild:Compile</Generator>
+	  </MauiXaml>
+	</ItemGroup>
+
+	<ItemGroup>
 	  <None Update="Classes\Views\EditAircraftModal.xaml">
 	    <Generator>MSBuild:Compile</Generator>
 	  </None>

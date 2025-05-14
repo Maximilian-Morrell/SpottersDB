@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="SpottersDB_FrontEnd.Classes.Views.Home.Details.AircraftTypeDetails"
+             Title="AircraftTypeDetails">
+
+    <Grid ColumnSpacing="5">
+        <Grid.RowDefinitions>
+            <!--Title-->
+            <RowDefinition Height="1*"></RowDefinition>
+            <!--Info-->
+            <RowDefinition Height="1*"></RowDefinition>
+            <!--Content-->
+            <RowDefinition Height="25*"></RowDefinition>
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <!--Name-->
+            <ColumnDefinition Width="Auto"></ColumnDefinition>
+            <ColumnDefinition></ColumnDefinition>
+            <!--Nickname-->
+            <ColumnDefinition Width="Auto"></ColumnDefinition>
+            <ColumnDefinition></ColumnDefinition>
+            <!--Manufactorer-->
+            <ColumnDefinition Width="Auto"></ColumnDefinition>
+            <ColumnDefinition></ColumnDefinition>
+        </Grid.ColumnDefinitions>
+        <Label Text="TBD" FontSize="Title" FontAttributes="Bold" Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="8" HorizontalOptions="Center" x:Name="LBL_ICAOCode"></Label>
+
+        <Label Text="Name: " Grid.Column="0" Grid.Row="1"></Label>
+        <Label FontAttributes="Bold" Text="TBD" x:Name="LBL_Name" Grid.Column="1" Grid.Row="1"></Label>
+
+        <Label Text="Nickname: " Grid.Column="2" Grid.Row="1"></Label>
+        <Label FontAttributes="Bold" Text="Empty" x:Name="LBL_Nickname" Grid.Column="3" Grid.Row="1"></Label>
+
+        <Label Text="Manufactorer: " Grid.Column="4" Grid.Row="1"></Label>
+        <Label FontAttributes="Bold"  Text="TBD" x:Name="LBL_Manufactorer" Grid.Column="5" Grid.Row="1"></Label>
+
+        <ScrollView Grid.Column="0" Grid.ColumnSpan="8" Grid.Row="2">
+            <VerticalStackLayout x:Name="AircraftParent" Padding="5">
+
+            </VerticalStackLayout>
+        </ScrollView>
+    </Grid>
+</ContentPage>
